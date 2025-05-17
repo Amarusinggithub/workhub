@@ -1,0 +1,7 @@
+﻿services:
+  drive-hub:
+    image: drive-hub
+    build:
+      context: .
+      dockerfile: drive-hub/Dockerfile
+

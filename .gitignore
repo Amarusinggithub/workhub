@@ -50,3 +50,25 @@ secrets.dev.yaml
 values.dev.yaml
 
 
+# Logs
+logs
+
+yarn-error.log*
+
+
+node_modules
+dist
+dist-ssr
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+

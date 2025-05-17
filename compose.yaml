@@ -1,7 +1,62 @@
 ﻿services:
-  drive-hub:
-    image: drive-hub
+  
+  
+  backend:
+    networks:
+      - notetify-net
+    image: backend
     build:
-      context: .
-      dockerfile: drive-hub/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      
+  
+  frontend: 
+      
+      networks:
+        - driver-hub-net
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      environment:
+        NODE_ENV: production
+      ports:
+        - 3000:3000
+
+
+
+  db:
+      networks:
+        - driver-hub-net
+      image: postgres
+      restart: always
+      user: postgres
+      volumes:
+        - db-data:/var/lib/postgresql/data
+      environment:
+        - POSTGRES_DB=example
+        - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      expose:
+        - 5432
+      healthcheck:
+        test: [ "CMD", "pg_isready" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+      env_file:
+        - env         
+        
+        
+networks:
+  driver-hub-net:
+    driver: bridge
+
+volumes:
+  db-data:
+
+
+
+
 

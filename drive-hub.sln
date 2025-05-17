@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "drive-hub", "drive-hub\drive-hub.csproj", "{9B99457D-0996-468E-A05B-65F79675DE19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend", "backend\backend.csproj", "{9B99457D-0996-468E-A05B-65F79675DE19}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A6C7D52-3A16-44D5-9FD7-E9B800D29D2D}"
 	ProjectSection(SolutionItems) = preProject

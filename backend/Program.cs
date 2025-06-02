@@ -12,16 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 builder.Services.AddAuthorization();
-builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-builder.Services.AddAWSService<IAmazonS3>();
+//builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+//builder.Services.AddAWSService<IAmazonS3>();
 
 
-builder.Services.AddIdentityCore<User>()
+builder.Services.AddIdentityCore<User>(options =>
+        options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -36,6 +37,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapIdentityApi<User>();
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.UseHttpsRedirection();
 

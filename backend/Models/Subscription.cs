@@ -5,20 +5,33 @@ namespace backend.Models;
 
 public class Subscription
 {
+
     [Key]
     public int Id { get; set; }
-    public User User { get; set; }
-    public int UserId { get; set; }
-    public Plan Plan { get; set; }
-    public int PlanId { get; set; }
+
+    [Required]
+    public int UserGroupId { get; set; }
+    public UserGroup UserGroup { get; set; }
+
+    [Required]
+    public int CurrentPlanId { get; set; }
+    public Plan CurrentPlan { get; set; }
+
+    public int? OfferId { get; set; }
+    public Offer? Offer { get; set; }
+
+    public bool SubscribeAfterTrial { get; set; } = false;
     public SubscriptionStatus Status { get; set; }
-    public PaymentMethod  PaymentMethod { get; set; }
-    public DateTime StaterdAt { get; set; }
-    public DateTime EndedAt { get; set; }
-    public DateTime PurchasedAt { get; set; }
-    public DateTime TrialStaterdAt { get; set; }
-    public DateTime TrialEndedAt { get; set; }
 
+    public DateTime? TrialPeriodStartDate { get; set; }
+    public DateTime? TrialPeriodEndDate { get; set; }
+    public DateTime? ValidTo { get; set; }
 
+    public DateTime? SubscribedAt { get; set; }
+    public DateTime? UnSubscribedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
+    public ICollection<PlanHistory> PlanHistories { get; set; } = new List<PlanHistory>();
+    public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 }
+

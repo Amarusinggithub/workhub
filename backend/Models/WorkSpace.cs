@@ -4,11 +4,17 @@ namespace backend.Models;
 
 public class WorkSpace
 {
+
     [Key]
     public int Id { get; set; }
-    public int GroupTypeId { get; set; }
-    public WorkSpaceType WorkSpaceType { get; set; }
+
+    [Required]
+    public string WorkSpaceName { get; set; } = string.Empty;
+
     public DateTime CreatedAt { get; set; }
-    public DateTime ModifiedAt { get; set; }
-    public invoice Invoice { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
+    public ICollection<Project> Projects { get; set; } = new List<Project>();
+    public ICollection<InWorkSpace> UserWorkSpaces { get; set; } = new List<InWorkSpace>();
 }

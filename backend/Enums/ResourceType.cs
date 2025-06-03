@@ -1,6 +1,6 @@
 namespace backend.Enums;
 
-public enum ItemType
+public enum ResourceType
 {
     Documents,Videos,Folders,Images,PDFs,
 }

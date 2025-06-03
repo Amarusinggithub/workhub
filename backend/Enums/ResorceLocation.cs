@@ -1,6 +1,6 @@
 namespace backend.Enums;
 
-public enum Location
+public enum ResorceLocation
 {
     OnComputer,
     InDrive

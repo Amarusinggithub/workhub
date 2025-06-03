@@ -2,21 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models;
 
-public class PlanHistory
+public class Include
 {
-
-
     [Key]
     public int Id { get; set; }
 
     [Required]
-    public int SubscriptionId { get; set; }
-    public Subscription Subscription { get; set; }
+    public int OfferId { get; set; }
+    public Offer Offer { get; set; }
 
     [Required]
     public int PlanId { get; set; }
     public Plan Plan { get; set; }
-
-    public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-
 }

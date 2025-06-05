@@ -17,7 +17,7 @@ public class Task
 
     public TaskStatus TaskStatus { get; set; }
 
-    public int? AssignedToId { get; set; }
+    public string? AssignedToId { get; set; }
     public User? AssignedTo { get; set; }
 
     [Required]

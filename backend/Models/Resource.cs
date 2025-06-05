@@ -31,7 +31,7 @@ public class Resource
     public  ResourceType  ResourceType{ get; set; }
 
     [Required]
-    public int UploadedByUserId { get; set; }
+    public string UploadedByUserId { get; set; }
     public User UploadedByUser { get; set; }
 
     public int? TaskId { get; set; }

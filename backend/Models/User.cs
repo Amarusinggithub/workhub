@@ -33,7 +33,7 @@ public class User: IdentityUser
     public ICollection<UserProjectRole> UserProjectRoles { get; set; } = new List<UserProjectRole>();
 
     // ToDo: add id For notification if not many to many relation or  make join table for user and group
-    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    public ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
     public ICollection<UserGroupResource> UserResources { get; set; } = new List<UserGroupResource>();
     public ICollection<OAuthAccount> OAuthAccounts { get; set; } = new List<OAuthAccount>();
     public ICollection<InWorkSpace> UserWorkSpaces { get; set; } = new List<InWorkSpace>();

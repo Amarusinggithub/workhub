@@ -28,4 +28,7 @@ public class Notification
 
     public string? Message { get; set; }
 
+
+    public ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
+
 }

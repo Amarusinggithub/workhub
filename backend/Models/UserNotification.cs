@@ -16,7 +16,9 @@ public class UserNotification
 
     [Required]
     public Notification Notification { get; set; }
-    public int Notificationid { get; set; }
+    public int NotificationId { get; set; }
+
+
 
 
 }

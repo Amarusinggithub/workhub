@@ -33,7 +33,7 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
-      <Folder Include="Repositorys\" />
+      <Folder Include="Repositorys\interfaces\" />
       <Folder Include="Services\" />
       <Folder Include="Tests\" />
     </ItemGroup>

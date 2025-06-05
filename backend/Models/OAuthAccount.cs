@@ -14,7 +14,7 @@ public class OAuthAccount
     public string UserId { get; set; }
     public User User { get; set; }
 
-    public AuthProvider AuthProvider { get; set; }
+    public OAuthProvider OAuthProvider { get; set; }
     public string? ProviderUserId { get; set; }
     public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }

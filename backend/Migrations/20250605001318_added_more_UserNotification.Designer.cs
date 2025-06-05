@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Database;
@@ -11,9 +12,11 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605001318_added_more_UserNotification")]
+    partial class added_more_UserNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -702,8 +705,10 @@ namespace backend.Migrations
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UploadedByUserId")
-                        .IsRequired()
+                    b.Property<int>("UploadedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UploadedByUserId1")
                         .HasColumnType("text");
 
                     b.Property<int>("UserGroupId")
@@ -718,7 +723,7 @@ namespace backend.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.HasIndex("UploadedByUserId");
+                    b.HasIndex("UploadedByUserId1");
 
                     b.HasIndex("UserGroupId");
 
@@ -827,7 +832,10 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AssignedToId")
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AssignedToId1")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -854,7 +862,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedToId");
+                    b.HasIndex("AssignedToId1");
 
                     b.HasIndex("ProjectId");
 
@@ -1416,9 +1424,7 @@ namespace backend.Migrations
 
                     b.HasOne("backend.Models.User", "UploadedByUser")
                         .WithMany()
-                        .HasForeignKey("UploadedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UploadedByUserId1");
 
                     b.HasOne("backend.Models.UserGroup", "UserGroup")
                         .WithMany()
@@ -1471,7 +1477,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.User", "AssignedTo")
                         .WithMany("Tasks")
-                        .HasForeignKey("AssignedToId");
+                        .HasForeignKey("AssignedToId1");
 
                     b.HasOne("backend.Models.Project", "Project")
                         .WithMany()

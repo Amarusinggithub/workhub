@@ -1,6 +1,6 @@
 namespace backend.Enums;
 
-public enum AuthProvider
+public enum OAuthProvider
 {
 GOOGLE,FACEBOOK,GITHUB,SLACK
 

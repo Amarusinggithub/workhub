@@ -118,6 +118,18 @@ public class ApplicationDbContext: IdentityDbContext<User>
                    .HasForeignKey(upr => upr.ProjectId);
                // .OnDelete(DeleteBehavior.Cascade);
 
+               modelBuilder.Entity<UserNotification>()
+                   .HasOne(u => u.User)
+                   .WithMany(u => u.UserNotifications)
+                   .HasForeignKey(u=> u.Userid)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+               modelBuilder.Entity<UserNotification>()
+                   .HasOne(n => n.Notification)
+                   .WithMany(u => u.UserNotifications)
+                   .HasForeignKey(n=> n.NotificationId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Include>()
                 .HasOne(inc => inc.Offer)
                 .WithMany(o => o.Includes)

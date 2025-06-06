@@ -1,6 +1,6 @@
 namespace backend.Services;
 
-public class RoleService
+public class SubscritionService
 {
 
 }

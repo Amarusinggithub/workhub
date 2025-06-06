@@ -12,7 +12,7 @@ public class UserResource
     public Resource Resource { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
 
     public ResorceLocation ResourceLocation { get; set; }

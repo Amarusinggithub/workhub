@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models;
 
-public class UserNotification
+public class NotificationMember
 {
     [Key]
     public int id { get; set; }
@@ -11,7 +11,7 @@ public class UserNotification
 
     [Required]
     public User User { get; set; }
-    public string Userid { get; set; }
+    public int Userid { get; set; }
 
 
     [Required]

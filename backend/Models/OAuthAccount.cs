@@ -11,11 +11,11 @@ public class OAuthAccount
     public int Id { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
 
     public OAuthProvider OAuthProvider { get; set; }
-    public string? ProviderUserId { get; set; }
+    public string? OAuthProviderUserId { get; set; }
     public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime? ExpiresAt { get; set; }

@@ -22,13 +22,11 @@ public class Notification
     public DateTime? ScheduledAt { get; set; }
     public DateTime? SentAt { get; set; }
 
-    [Required]
-    public string RecipientUserId { get; set; }
-    public User RecipientUser { get; set; }
+
 
     public string? Message { get; set; }
 
 
-    public ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
+    public ICollection<NotificationMember> UserNotifications { get; set; } = new List<NotificationMember>();
 
 }

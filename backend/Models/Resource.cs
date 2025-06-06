@@ -11,8 +11,6 @@ public class Resource
     [Required]
     public string ResourceName { get; set; } = string.Empty;
 
-    [Required]
-    public string ResourceLocation { get; set; } = string.Empty;
 
     [Required]
     public string S3Url { get; set; } = string.Empty;
@@ -31,17 +29,17 @@ public class Resource
     public  ResourceType  ResourceType{ get; set; }
 
     [Required]
-    public string UploadedByUserId { get; set; }
+    public int UploadedByUserId { get; set; }
     public User UploadedByUser { get; set; }
 
-    public int? TaskId { get; set; }
+   /* public int? TaskId { get; set; }
     public Task? Task { get; set; }
 
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }
 
     public int? WorkSpaceId { get; set; }
-    public WorkSpace? WorkSpace { get; set; }
+    public WorkSpace? WorkSpace { get; set; }*/
 
     public ICollection<UserGroupResource> UserResource { get; set; } = new List<UserGroupResource>();
 

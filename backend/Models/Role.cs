@@ -1,17 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace backend.Models;
 
-public class Role
+public class Role: IdentityRole<int>
 {
+    public DateTime CreatedOn { get; set; }
+    public DateTime ModifiedOn { get; set; }
 
-    [Key]
-    public int Id { get; set; }
+    public bool IsDeleted { get; set; }
 
     [Required]
-    public string RoleName { get; set; } = string.Empty;
 
-    public ICollection<InWorkSpace> WorkSpaceRoles { get; set; } = new List<InWorkSpace>();
+    public ICollection<WorkSpaceMember> WorkSpaceRoles { get; set; } = new List<WorkSpaceMember>();
     //public ICollection<UserGroupResource> ResourceRoles { get; set; } = new List<UserGroupResource>();
     public ICollection<UserProjectRole> ProjectRoles { get; set; } = new List<UserProjectRole>();
 }

@@ -26,7 +26,7 @@ public class Project
     public ICollection<UserProjectRole> UserProjectRoles { get; set; } = new List<UserProjectRole>();
 
 
-    public ICollection<InProject> UserProjects { get; set; } = new List<InProject>();
+    public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
 }

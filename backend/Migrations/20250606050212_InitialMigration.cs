@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_Create : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,11 @@ namespace backend.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
@@ -30,7 +34,10 @@ namespace backend.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirtName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
                     ProfilePicture = table.Column<string>(type: "text", nullable: false),
                     HeaderImage = table.Column<string>(type: "text", nullable: false),
                     JobTItle = table.Column<string>(type: "text", nullable: false),
@@ -78,6 +85,22 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ScheduledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Offers",
                 columns: table => new
                 {
@@ -107,19 +130,6 @@ namespace backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Options", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Roles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleName = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -174,7 +184,7 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -195,7 +205,7 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -217,7 +227,7 @@ namespace backend.Migrations
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -234,8 +244,8 @@ namespace backend.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,7 +268,7 @@ namespace backend.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
@@ -275,36 +285,13 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ScheduledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RecipientUserId = table.Column<string>(type: "text", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_RecipientUserId",
-                        column: x => x.RecipientUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OAuthAccounts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    AuthProvider = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    OAuthProvider = table.Column<int>(type: "integer", nullable: false),
                     ProviderUserId = table.Column<string>(type: "text", nullable: true),
                     AccessToken = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
@@ -317,6 +304,32 @@ namespace backend.Migrations
                         name: "FK_OAuthAccounts_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationMembers",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Userid = table.Column<int>(type: "integer", nullable: false),
+                    NotificationId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationMembers", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_NotificationMembers_AspNetUsers_Userid",
+                        column: x => x.Userid,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NotificationMembers_Notifications_NotificationId",
+                        column: x => x.NotificationId,
+                        principalTable: "Notifications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -374,41 +387,6 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InWorkSpaces",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    WorkSpaceId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RemovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RoleId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InWorkSpaces", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_InWorkSpaces_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InWorkSpaces_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InWorkSpaces_WorkSpaces_WorkSpaceId",
-                        column: x => x.WorkSpaceId,
-                        principalTable: "WorkSpaces",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
@@ -435,6 +413,41 @@ namespace backend.Migrations
                         column: x => x.WorkSpaceId,
                         principalTable: "WorkSpaces",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkSpaceMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WorkSpaceId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RemovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkSpaceMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkSpaceMembers_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkSpaceMembers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkSpaceMembers_WorkSpaces_WorkSpaceId",
+                        column: x => x.WorkSpaceId,
+                        principalTable: "WorkSpaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -524,7 +537,7 @@ namespace backend.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserGroupId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     RemovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsAdmin = table.Column<bool>(type: "boolean", nullable: false)
@@ -540,6 +553,39 @@ namespace backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_InUserGroups_UserGroups_UserGroupId",
+                        column: x => x.UserGroupId,
+                        principalTable: "UserGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Resources",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ResourceName = table.Column<string>(type: "text", nullable: false),
+                    S3Url = table.Column<string>(type: "text", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsShared = table.Column<bool>(type: "boolean", nullable: false),
+                    ResourceSize = table.Column<long>(type: "bigint", nullable: false),
+                    UserGroupId = table.Column<int>(type: "integer", nullable: false),
+                    ResourceType = table.Column<int>(type: "integer", nullable: false),
+                    UploadedByUserId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resources", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Resources_AspNetUsers_UploadedByUserId",
+                        column: x => x.UploadedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Resources_UserGroups_UserGroupId",
                         column: x => x.UserGroupId,
                         principalTable: "UserGroups",
                         principalColumn: "Id",
@@ -588,34 +634,6 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InProjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    ProjectId = table.Column<int>(type: "integer", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RemovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InProjects", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_InProjects_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InProjects_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProjectCategories",
                 columns: table => new
                 {
@@ -642,6 +660,34 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ProjectId = table.Column<int>(type: "integer", nullable: false),
+                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RemovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectMembers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectMembers_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
@@ -651,7 +697,6 @@ namespace backend.Migrations
                     TaskDescription = table.Column<string>(type: "text", nullable: true),
                     TaskStatus = table.Column<int>(type: "integer", nullable: false),
                     AssignedToId = table.Column<int>(type: "integer", nullable: true),
-                    AssignedToId1 = table.Column<string>(type: "text", nullable: true),
                     ProjectId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -661,8 +706,8 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_AspNetUsers_AssignedToId1",
-                        column: x => x.AssignedToId1,
+                        name: "FK_Tasks_AspNetUsers_AssignedToId",
+                        column: x => x.AssignedToId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -679,7 +724,7 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     ProjectId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
                     AssignedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -688,6 +733,12 @@ namespace backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserProjectRoles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserProjectRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserProjectRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -700,10 +751,38 @@ namespace backend.Migrations
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserGroupResources",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ResourceId = table.Column<int>(type: "integer", nullable: false),
+                    UserGroupId = table.Column<int>(type: "integer", nullable: false),
+                    ResourceLocation = table.Column<int>(type: "integer", nullable: false),
+                    LastDownloadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserGroupResources", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProjectRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
+                        name: "FK_UserGroupResources_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserGroupResources_Resources_ResourceId",
+                        column: x => x.ResourceId,
+                        principalTable: "Resources",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserGroupResources_UserGroups_UserGroupId",
+                        column: x => x.UserGroupId,
+                        principalTable: "UserGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -732,58 +811,6 @@ namespace backend.Migrations
                         principalTable: "Subscriptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Resources",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ResourceName = table.Column<string>(type: "text", nullable: false),
-                    ResourceLocation = table.Column<string>(type: "text", nullable: false),
-                    S3Url = table.Column<string>(type: "text", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsShared = table.Column<bool>(type: "boolean", nullable: false),
-                    ResourceSize = table.Column<long>(type: "bigint", nullable: false),
-                    UserGroupId = table.Column<int>(type: "integer", nullable: false),
-                    ResourceType = table.Column<int>(type: "integer", nullable: false),
-                    UploadedByUserId = table.Column<int>(type: "integer", nullable: false),
-                    UploadedByUserId1 = table.Column<string>(type: "text", nullable: true),
-                    TaskId = table.Column<int>(type: "integer", nullable: true),
-                    ProjectId = table.Column<int>(type: "integer", nullable: true),
-                    WorkSpaceId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Resources", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Resources_AspNetUsers_UploadedByUserId1",
-                        column: x => x.UploadedByUserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Resources_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Resources_Tasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "Tasks",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Resources_UserGroups_UserGroupId",
-                        column: x => x.UserGroupId,
-                        principalTable: "UserGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Resources_WorkSpaces_WorkSpaceId",
-                        column: x => x.WorkSpaceId,
-                        principalTable: "WorkSpaces",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -818,40 +845,6 @@ namespace backend.Migrations
                         name: "FK_Invoices_Subscriptions_SubscriptionId",
                         column: x => x.SubscriptionId,
                         principalTable: "Subscriptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserGroupResources",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ResourceId = table.Column<int>(type: "integer", nullable: false),
-                    UserGroupId = table.Column<int>(type: "integer", nullable: false),
-                    ResourceLocation = table.Column<int>(type: "integer", nullable: false),
-                    LastDownloadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserGroupResources", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserGroupResources_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserGroupResources_Resources_ResourceId",
-                        column: x => x.ResourceId,
-                        principalTable: "Resources",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserGroupResources_UserGroups_UserGroupId",
-                        column: x => x.UserGroupId,
-                        principalTable: "UserGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -904,16 +897,6 @@ namespace backend.Migrations
                 column: "PlanId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InProjects_ProjectId",
-                table: "InProjects",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InProjects_UserId",
-                table: "InProjects",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InUserGroups_UserGroupId",
                 table: "InUserGroups",
                 column: "UserGroupId");
@@ -934,24 +917,14 @@ namespace backend.Migrations
                 column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InWorkSpaces_RoleId",
-                table: "InWorkSpaces",
-                column: "RoleId");
+                name: "IX_NotificationMembers_NotificationId",
+                table: "NotificationMembers",
+                column: "NotificationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InWorkSpaces_UserId",
-                table: "InWorkSpaces",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InWorkSpaces_WorkSpaceId",
-                table: "InWorkSpaces",
-                column: "WorkSpaceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_RecipientUserId",
-                table: "Notifications",
-                column: "RecipientUserId");
+                name: "IX_NotificationMembers_Userid",
+                table: "NotificationMembers",
+                column: "Userid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OAuthAccounts_UserId",
@@ -1009,34 +982,29 @@ namespace backend.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectMembers_ProjectId",
+                table: "ProjectMembers",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectMembers_UserId",
+                table: "ProjectMembers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Projects_WorkSpaceId",
                 table: "Projects",
                 column: "WorkSpaceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Resources_ProjectId",
+                name: "IX_Resources_UploadedByUserId",
                 table: "Resources",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_TaskId",
-                table: "Resources",
-                column: "TaskId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_UploadedByUserId1",
-                table: "Resources",
-                column: "UploadedByUserId1");
+                column: "UploadedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Resources_UserGroupId",
                 table: "Resources",
                 column: "UserGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_WorkSpaceId",
-                table: "Resources",
-                column: "WorkSpaceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_CurrentPlanId",
@@ -1054,9 +1022,9 @@ namespace backend.Migrations
                 column: "UserGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_AssignedToId1",
+                name: "IX_Tasks_AssignedToId",
                 table: "Tasks",
-                column: "AssignedToId1");
+                column: "AssignedToId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_ProjectId",
@@ -1097,6 +1065,21 @@ namespace backend.Migrations
                 name: "IX_UserProjectRoles_UserId",
                 table: "UserProjectRoles",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkSpaceMembers_RoleId",
+                table: "WorkSpaceMembers",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkSpaceMembers_UserId",
+                table: "WorkSpaceMembers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkSpaceMembers_WorkSpaceId",
+                table: "WorkSpaceMembers",
+                column: "WorkSpaceId");
         }
 
         /// <inheritdoc />
@@ -1121,19 +1104,13 @@ namespace backend.Migrations
                 name: "Includes");
 
             migrationBuilder.DropTable(
-                name: "InProjects");
-
-            migrationBuilder.DropTable(
                 name: "InUserGroups");
 
             migrationBuilder.DropTable(
                 name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "InWorkSpaces");
-
-            migrationBuilder.DropTable(
-                name: "Notifications");
+                name: "NotificationMembers");
 
             migrationBuilder.DropTable(
                 name: "OAuthAccounts");
@@ -1148,16 +1125,25 @@ namespace backend.Migrations
                 name: "ProjectCategories");
 
             migrationBuilder.DropTable(
+                name: "ProjectMembers");
+
+            migrationBuilder.DropTable(
+                name: "Tasks");
+
+            migrationBuilder.DropTable(
                 name: "UserGroupResources");
 
             migrationBuilder.DropTable(
                 name: "UserProjectRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "WorkSpaceMembers");
 
             migrationBuilder.DropTable(
                 name: "PlanHistories");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "Options");
@@ -1169,13 +1155,19 @@ namespace backend.Migrations
                 name: "Resources");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "WorkSpaces");
 
             migrationBuilder.DropTable(
                 name: "Offers");
@@ -1187,19 +1179,10 @@ namespace backend.Migrations
                 name: "UserGroups");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Projects");
-
-            migrationBuilder.DropTable(
                 name: "Softwares");
 
             migrationBuilder.DropTable(
                 name: "UserGroupTypes");
-
-            migrationBuilder.DropTable(
-                name: "WorkSpaces");
         }
     }
 }

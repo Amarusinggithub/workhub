@@ -1,10 +1,9 @@
 using backend.Models;
 using backend.Repository.interfaces;
 
-
 namespace backend.Repositorys.interfaces;
 
-public interface IUserRepository: IGenericRepository<User>
+public interface IResourceRepository: IGenericRepository<Resource>
 {
 
 }

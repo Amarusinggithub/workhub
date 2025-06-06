@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models;
 
-public class InProject
+public class ProjectMember
 {
 
 
@@ -11,7 +11,7 @@ public class InProject
     public int Id { get; set; }
 
     [Required]
-    public string UserId { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
 
     [Required]

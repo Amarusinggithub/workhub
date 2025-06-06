@@ -16,5 +16,5 @@ public class WorkSpace
     public DateTime? DeletedAt { get; set; }
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
-    public ICollection<InWorkSpace> UserWorkSpaces { get; set; } = new List<InWorkSpace>();
+    public ICollection<WorkSpaceMember> UserWorkSpaces { get; set; } = new List<WorkSpaceMember>();
 }

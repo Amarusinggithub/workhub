@@ -17,5 +17,5 @@ public class UserGroup
 
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public ICollection<UserGroupResource> Resources { get; set; } = new List<UserGroupResource>();
-    public ICollection<InUserGroup> Users { get; set; } = new List<InUserGroup>();
+    public ICollection<UserGroupMember> Users { get; set; } = new List<UserGroupMember>();
 }

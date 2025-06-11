@@ -6,6 +6,8 @@ using Amazon.S3;
 using backend.Repository;
 using backend.Repository.interfaces;
 using backend.Repositorys.interfaces;
+using backend.Services;
+using backend.Services.interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,10 +26,13 @@ builder.Services.AddIdentityCore<User>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints();
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 

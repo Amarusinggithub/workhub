@@ -1,6 +1,6 @@
 namespace backend.Services;
 
-public class TaskService
+public class StorageService
 {
 
 }

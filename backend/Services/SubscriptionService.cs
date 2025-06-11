@@ -1,6 +1,6 @@
 namespace backend.Services;
 
-public class SubscritionService
+public class SubscriptionService
 {
 
 }

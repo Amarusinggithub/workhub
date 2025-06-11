@@ -1,5 +1,7 @@
 using backend.Models;
 using backend.Repository.interfaces;
+using backend.Services;
+using backend.Services.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -8,13 +10,11 @@ namespace backend.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly ILogger<UserController> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _service;
 
-    public UserController(ILogger<UserController> logger, IUnitOfWork unitOfWork)
+    public UserController( IUserService service)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
 
@@ -23,8 +23,7 @@ public class UserController : ControllerBase
     {
         if (ModelState.IsValid)
         {
-            await _unitOfWork.Users.Add(user);
-            await _unitOfWork.CompleteAsync();
+            await _service.AddUser(user);
 
             return CreatedAtAction("GetItem", new { user.Id }, user);
         }
@@ -35,7 +34,7 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(int id)
     {
-        var user = await _unitOfWork.Users.GetById(id);
+        var user = await _service.GetUserById(id);
         if (user == null)
         {
             return NotFound();

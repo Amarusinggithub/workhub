@@ -24,6 +24,9 @@ public class Task
     public int ProjectId { get; set; }
     public Project Project { get; set; }
 
+
+
+
     public DateTime CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
     public DateTime? FinishedAt { get; set; }

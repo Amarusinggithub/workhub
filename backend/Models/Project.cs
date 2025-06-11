@@ -23,6 +23,11 @@ public class Project
     public bool IsTrashed { get; set; } = false;
     public DateTime? TrashedAt { get; set; }
 
+
+    [Required]
+    public int WorkSpaceId { get; set; }
+    public WorkSpace WorkSpace { get; set; }
+
     public ICollection<UserProjectRole> UserProjectRoles { get; set; } = new List<UserProjectRole>();
 
 

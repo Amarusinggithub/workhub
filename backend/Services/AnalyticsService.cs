@@ -1,6 +1,6 @@
 namespace backend.Services;
 
-public class ResourceService
+public class AnalyticsService
 {
     
 }

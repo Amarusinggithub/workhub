@@ -517,7 +517,7 @@ namespace backend.Migrations
                     b.Property<DateTime?>("TrashedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("WorkSpaceId")
+                    b.Property<int>("WorkSpaceId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -1289,9 +1289,13 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Project", b =>
                 {
-                    b.HasOne("backend.Models.WorkSpace", null)
+                    b.HasOne("backend.Models.WorkSpace", "WorkSpace")
                         .WithMany("Projects")
-                        .HasForeignKey("WorkSpaceId");
+                        .HasForeignKey("WorkSpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkSpace");
                 });
 
             modelBuilder.Entity("backend.Models.ProjectCategory", b =>

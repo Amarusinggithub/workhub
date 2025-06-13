@@ -1,7 +1,6 @@
 using backend.Models;
-using backend.Repository.interfaces;
 
-namespace backend.Repositorys.interfaces;
+namespace backend.Repository.interfaces;
 
 public interface INotificationRepository: IGenericRepository<Notification>
 {

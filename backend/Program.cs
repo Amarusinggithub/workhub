@@ -31,7 +31,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.AddScoped<IWorkSpaceService, WorkSpaceService>();
+//builder.Services.AddScoped<INotificationService, NotificationService>();
+//builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+//builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 
 var app = builder.Build();

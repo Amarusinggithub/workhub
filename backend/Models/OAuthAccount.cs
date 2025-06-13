@@ -15,6 +15,9 @@ public class OAuthAccount
     public User User { get; set; }
 
     public OAuthProvider OAuthProvider { get; set; }
+    public string ProviderUrl { get; set; }
+    public string RedirectUrl { get; set; }
+
     public string? OAuthProviderUserId { get; set; }
     public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }

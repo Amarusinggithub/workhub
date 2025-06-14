@@ -28,12 +28,5 @@
 		"noUncheckedSideEffectImports": true,
 		"types": ["vitest/globals"] /* Skip type checking all .d.ts files. */
 	},
-	"include": [
-		"src",
-		"tests",
-		"cypress.config.ts",
-		"cypress/**/*.ts",
-		"cypress",
-		"src/vite-env.d.ts"
-	]
+	"include": ["src", "tests", "cypress.config.ts", "cypress/**/*.ts", "cypress", "src/vite-env.d.ts"]
 }

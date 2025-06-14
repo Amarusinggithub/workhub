@@ -1,74 +1,86 @@
- type CreateUser ={
-    FirtName:string;
- LastName :string;
- ProfilePicture?:string;
- HeaderImage?:string;
-  JobTItle?:string;
-Email:string;
-password?:string
-   Organization?:string;
-  Location?:string;
-  UpdatedAt:Date;
-  CreatedAt:Date;
-  LastLoggedIn:Date;
- IsActive:boolean;
- }
+import { LucideIcon } from 'lucide-react';
 
- interface User extends CreateUser{
-    id:number;
 
- }
+type CreateUser = {
+	FirtName: string;
+	LastName: string;
+	ProfilePicture?: string;
+	HeaderImage?: string;
+	JobTItle?: string;
+	Email: string;
+	password?: string;
+	Organization?: string;
+	Location?: string;
+	UpdatedAt: Date;
+	CreatedAt: Date;
+	LastLoggedIn: Date;
+	IsActive: boolean;
 
- type OAuthAccount={
+};
 
- }
+interface User extends CreateUser {
+	id: number;
+    name: string;
+    EmailVerifiedAt: Date | null;
+    [key: string]: unknown;
 
- type WorkSpace={
+}
 
- }
+type OAuthAccount = {};
 
- type Project={
+type WorkSpace = {};
 
- }
+type Project = {};
 
- type Category={
+type Category = {};
 
- }
+type Plan = {};
 
- type Plan={
+type Notification = {};
 
- }
+type Task = {};
 
- type Notification={
+type Project = {};
 
- }
+type Resource = {};
 
- type Task={
+type Role = {};
 
- }
+type Offer = {};
 
- type Project={
-
- }
-
- type Resource={
-
- }
-
- type Role={
-
- }
-
- type Offer={
-
- }
-
- type UserGroUp={
-
- }
+type UserGroUp = {};
 
 
 
+
+export interface Auth {
+    user: User;
+}
+
+export interface BreadcrumbItem {
+    title: string;
+    href: string;
+}
+
+export interface NavGroup {
+    title: string;
+    items: NavItem[];
+}
+
+export interface NavItem {
+    title: string;
+    href: string;
+    icon?: LucideIcon | null;
+    isActive?: boolean;
+}
+
+export interface SharedData {
+    name: string;
+    quote: { message: string; author: string };
+    auth: Auth;
+    sidebarOpen: boolean;
+    [key: string]: unknown;
+}
 
 
 

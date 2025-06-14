@@ -6,11 +6,12 @@ name: Frontend CI
 on:
   push:
     branches:
+      - develop
       - main
-
   pull_request:
     branches:
-    - main    
+      - develop
+      - main
 
 jobs:
   build:
@@ -39,9 +40,9 @@ jobs:
       - name: Run tests
         run: npm test
       - run: npm run build
-          
-          
-          
+
+
+
           # - name: Deploy to EC2
           # uses: appleboy/scp-action@v0.1.4
           # with:
@@ -50,9 +51,9 @@ jobs:
           # key: ${{ secrets.EC2_SSH_KEY }}
           # source: "frontend/dist/*"
           # target: "/var/www/notetify-frontend"
-          
-          
-          
+
+
+
           #- name: Reload Nginx
           #  uses: appleboy/ssh-action@v1.0.0
           #  with:

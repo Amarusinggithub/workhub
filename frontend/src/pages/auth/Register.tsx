@@ -6,8 +6,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import AuthLayout from '../../layouts/auth-layout';
 
-
-type ResgisterProps = {
+type RegisterForm = {
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -16,7 +15,7 @@ type ResgisterProps = {
 };
 
 const Register = () => {
-	const [form, setForm] = useState<ResgisterProps>({
+	const [form, setForm] = useState<RegisterForm>({
 		firstName: '',
 		lastName: '',
 		email: '',
@@ -24,33 +23,34 @@ const Register = () => {
 		confirmPassword: '',
 	});
 
-    const[isLoading,setLoading]=useState<boolean>(false);
-    const[error,setError]=useState(null);
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [errors, setError] = useState(null);
 
-	function submit(e: React.FormEventHandler<HTMLFormElement> ) {
+	function submit(e: React.FormEventHandler<HTMLFormElement>) {
 		e.preventDefault();
 	}
 
 	return (
-		<>
-			<form className="flex flex-col gap-6" onSubmit={(e)=>submit(e)}>
+		<AuthLayout title="Create an account" description="Enter your details below to create your account">
+			<Head title="Register" />
+			<form className="flex flex-col gap-6" onSubmit={(e) => submit(e)}>
 				<div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="firstname">First Name</Label>
-                        <Input
-                            id="firstname"
-                            type="text"
-                            required
-                            autoFocus
-                            tabIndex={1}
-                            autoComplete="firstName"
-                            value={form.name}
-                            onChange={(e) => setForm('firstName', e.target.value)}
-                            disabled={isLoading}
-                            placeholder="First Name"
-                        />
-                        <InputError message={errors.name} className="mt-2" />
-                    </div>
+					<div className="grid gap-2">
+						<Label htmlFor="firstname">First Name</Label>
+						<Input
+							id="firstname"
+							type="text"
+							required
+							autoFocus
+							tabIndex={1}
+							autoComplete="firstName"
+							value={form.name}
+							onChange={(e) => setForm('firstName', e.target.value)}
+							disabled={isLoading}
+							placeholder="First Name"
+						/>
+						<InputError message={errors.name} className="mt-2" />
+					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="lastName">Last Name</Label>
 						<Input
@@ -123,13 +123,10 @@ const Register = () => {
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
-					Already have an account?{' '}
-					<TextLink href={} tabIndex={6}>
-						Log in
-					</TextLink>
+					Already have an account? <TextLink tabIndex={6}>Log in</TextLink>
 				</div>
 			</form>
-		</>
+		</AuthLayout>
 	);
 };
 

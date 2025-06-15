@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
@@ -6,27 +6,34 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import AuthLayout from '../../layouts/auth-layout';
 
-
-type LoginProps = {
+type LoginForm = {
 	email: string;
 	password: string;
+	remember: boolean;
 };
 
-const Login = () => {
-	const [form, setForm] = useState<LoginProps>({
+interface LoginProps {
+	status?: string;
+	canResetPassword: boolean;
+}
+
+const Login = ({ status, canResetPassword }: LoginProps) => {
+	const [form, setForm] = useState<LoginForm>({
 		email: '',
 		password: '',
 	});
 
-    const[isLoading,setLoading]=useState<boolean>(false);
-    const[error,setError]=useState(null);
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [errors, setError] = useState(null);
 
 	function submit(e) {
 		e.preventDefault();
 	}
 
 	return (
-		<>
+		<AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
+			<Head title="Log in" />
+
 			<form className="flex flex-col gap-6" onSubmit={submit}>
 				<div className="grid gap-6">
 					<div className="grid gap-2">
@@ -35,46 +42,59 @@ const Login = () => {
 							id="email"
 							type="email"
 							required
+							autoFocus
 							tabIndex={1}
 							autoComplete="email"
 							value={form.email}
 							onChange={(e) => setForm('email', e.target.value)}
-							disabled={isLoading}
 							placeholder="email@example.com"
 						/>
 						<InputError message={errors.email} />
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password">Password</Label>
+						<div className="flex items-center">
+							<Label htmlFor="password">Password</Label>
+							{canResetPassword && (
+								<TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
+									Forgot password?
+								</TextLink>
+							)}
+						</div>
 						<Input
 							id="password"
 							type="password"
 							required
 							tabIndex={2}
-							autoComplete="new-password"
+							autoComplete="current-password"
 							value={form.password}
 							onChange={(e) => setForm('password', e.target.value)}
-							disabled={isLoading}
 							placeholder="Password"
 						/>
-						<InputError message={error.password} />
+						<InputError message={errors.password} />
 					</div>
 
-					<Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
+					<div className="flex items-center space-x-3">
+						<Checkbox id="remember" name="remember" checked={form.remember} onClick={() => setForm('remember', !form.remember)} tabIndex={3} />
+						<Label htmlFor="remember">Remember me</Label>
+					</div>
+
+					<Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={isLoading}>
 						{isLoading && <LoaderCircle className="h-4 w-4 animate-spin" />}
-						LogIn{' '}
+						Log in
 					</Button>
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
-					Dont have an account?{' '}
-					<TextLink href={} tabIndex={6}>
-						Register{' '}
+					Don't have an account?{' '}
+					<TextLink to="/register" tabIndex={5}>
+						Sign up
 					</TextLink>
 				</div>
 			</form>
-		</>
+
+			{status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+		</AuthLayout>
 	);
 };
 

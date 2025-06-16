@@ -1,16 +1,16 @@
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
-import { useInitials } from '../hooks/use-initials';
-import { type BreadcrumbItem, type NavItem, type SharedData } from '../types';
 import { Link } from 'react-router';
+import { useInitials } from '../hooks/use-initials';
+import { type BreadcrumbItem, type NavItem } from '../types';
 
 import { cn } from '../lib/utils';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Breadcrumbs } from './breadcrumbs';
+import { Icon } from './icon';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { Icon } from './icon';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -95,7 +95,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 						</Sheet>
 					</div>
 
-					<Link to ={"/dashboard"}  className="flex items-center space-x-2">
+					<Link to={'/dashboard'} className="flex items-center space-x-2">
 						<AppLogo />
 					</Link>
 

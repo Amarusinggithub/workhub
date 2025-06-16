@@ -1,8 +1,7 @@
 import { type PropsWithChildren } from 'react';
+import { Link } from 'react-router';
 import AppLogoIcon from '../../components/app-logo-icon';
 import { type SharedData } from '../../types/index.ts';
-import { Link } from 'react-router';
-
 
 interface AuthLayoutProps {
 	title?: string;

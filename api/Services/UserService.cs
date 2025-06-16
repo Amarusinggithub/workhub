@@ -8,13 +8,11 @@ public class UserService: IUserService
 {
     private readonly ILogger<UserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidtateDictionary _validationDictionary;
 
-    public UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork,IValidtateDictionary validationDictionary)
+    public UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _validationDictionary = validationDictionary;
     }
 
     public async Task<bool> AddUser(User entity)

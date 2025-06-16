@@ -1,13 +1,13 @@
+import { LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
+import { Checkbox } from '../../components/ui/checkbox';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import AuthLayout from '../../layouts/auth-layout';
-import { Checkbox } from '../../components/ui/checkbox';
-import { LoaderCircle } from 'lucide-react';
 import useAuth from '../../hooks/use-auth';
+import AuthLayout from '../../layouts/auth-layout';
 
 type LoginForm = {
 	email: string;
@@ -24,15 +24,14 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 	const [form, setForm] = useState<LoginForm>({
 		email: '',
 		password: '',
-		remember:false,
+		remember: false,
 	});
 
-    function change(e: React.ChangeEvent<HTMLInputElement>) {
-			setForm({ ...form, [e.target.name]: e.target.value.trim() });
-		}
+	function change(e: React.ChangeEvent<HTMLInputElement>) {
+		setForm({ ...form, [e.target.name]: e.target.value.trim() });
+	}
 
-    const{isLoading,errors}=useAuth();
-
+	const { isLoading, errors } = useAuth();
 
 	function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();

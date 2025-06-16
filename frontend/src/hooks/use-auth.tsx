@@ -9,7 +9,7 @@ type AuthContextType = {
 	isCheckingAuth: boolean;
 	isLoading: boolean;
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	setError: React.Dispatch<React.SetStateAction< string>>;
+	setError: React.Dispatch<React.SetStateAction<string>>;
 	setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 	setIsCheckingAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	setSharedData: React.Dispatch<React.SetStateAction<SharedData | undefined>>;
@@ -23,8 +23,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
 	const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(false);
 	const [sharedData, setSharedData] = useState<SharedData | undefined>();
-    const [isLoading, setLoading] = useState<boolean>(false);
-    const [errors, setError] = useState<string>('');
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [errors, setError] = useState<string>('');
 
 	return (
 		<AuthContext.Provider

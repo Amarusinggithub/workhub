@@ -2,7 +2,7 @@ using api.Services.interfaces;
 
 namespace api.Services;
 
-public class SubscriptionService:ISubscriptionService
+public class WorkSpaceService:IWorkSpaceService
 {
 
 }

@@ -1,34 +1,31 @@
 import { LoaderCircle } from 'lucide-react';
-import {type FormEventHandler, useState } from 'react';
+import { type FormEventHandler, useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import AuthLayout from '../../layouts/auth-layout';
 import useAuth from '../../hooks/use-auth';
+import AuthLayout from '../../layouts/auth-layout';
 
 type ForgotPasswordProps = {
 	status?: string;
 };
 
-
 type ForgotPasswordForm = {
 	email: string;
 };
 
-
 export default function ForgotPassword({ status }: ForgotPasswordProps) {
 	const [form, setForm] = useState<ForgotPasswordForm>({
-        email:''
-    });
+		email: '',
+	});
 
-    const{isLoading,errors}=useAuth();
+	const { isLoading, errors } = useAuth();
 
-    function change(e: React.ChangeEvent<HTMLInputElement>) {
-			setForm({ ...form, [e.target.name]: e.target.value.trim() });
-		}
-
+	function change(e: React.ChangeEvent<HTMLInputElement>) {
+		setForm({ ...form, [e.target.name]: e.target.value.trim() });
+	}
 
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();

@@ -1,12 +1,11 @@
 //import { usePage } from '@inertiajs/react';
 import { ChevronsUpDown } from 'lucide-react';
+import useAuth from '../hooks/use-auth';
 import { useIsMobile } from '../hooks/use-mobile';
-import { type SharedData } from '../types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
 import { UserInfo } from './user-info';
 import { UserMenuContent } from './user-menu-content';
-import useAuth from '../hooks/use-auth';
 
 export function NavUser() {
 	const { sharedData } = useAuth();

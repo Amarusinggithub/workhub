@@ -1,8 +1,7 @@
 import { type PropsWithChildren } from 'react';
+import { Link } from 'react-router';
 import AppLogoIcon from '../../components/app-logo-icon';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Link } from 'react-router';
-
 
 export default function AuthCardLayout({
 	children,

@@ -1,6 +1,6 @@
 namespace api.Services.interfaces;
 
-public interface IWorkSpceService
+public interface IWorkSpaceService
 {
 
 }

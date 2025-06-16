@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
-import  useAuth  from '../hooks/use-auth'
+import useAuth from '../hooks/use-auth';
 import AppLayout from '../layouts/app-layout';
 import Login from '../pages/auth/login';
 import Register from '../pages/auth/register';

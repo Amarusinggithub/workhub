@@ -1,9 +1,9 @@
+import { Link } from 'react-router';
 import Heading from '../../components/heading';
 import { Button } from '../../components/ui/button';
 import { Separator } from '../../components/ui/separator';
 import { cn } from '../../lib/utils.ts';
 import { type NavItem } from '../../types';
-import { Link } from 'react-router';
 
 import { type PropsWithChildren } from 'react';
 
@@ -50,9 +50,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 									'bg-muted': currentPath === item.href,
 								})}
 							>
-								<Link to={item.href} >
-									{item.title}
-								</Link>
+								<Link to={item.href}>{item.title}</Link>
 							</Button>
 						))}
 					</nav>

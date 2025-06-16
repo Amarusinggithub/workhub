@@ -1,12 +1,12 @@
+import { LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import AuthLayout from '../../layouts/auth-layout';
-import { LoaderCircle } from 'lucide-react';
 import useAuth from '../../hooks/use-auth';
+import AuthLayout from '../../layouts/auth-layout';
 
 type RegisterForm = {
 	firstName: string;
@@ -25,14 +25,14 @@ const Register = () => {
 		confirmPassword: '',
 	});
 
-    const{isLoading,errors}=useAuth();
-    function change(e: React.ChangeEvent<HTMLInputElement>) {
-			setForm({ ...form, [e.target.name]: e.target.value.trim() });
-		}
-
+	const { isLoading, errors } = useAuth();
+	function change(e: React.ChangeEvent<HTMLInputElement>) {
+		setForm({ ...form, [e.target.name]: e.target.value.trim() });
+	}
 
 	function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+        
 	}
 
 	return (
@@ -128,7 +128,10 @@ const Register = () => {
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
-					Already have an account? <TextLink to={"/login"}tabIndex={6}>Log in</TextLink>
+					Already have an account?{' '}
+					<TextLink to={'/login'} tabIndex={6}>
+						Log in
+					</TextLink>
 				</div>
 			</form>
 		</AuthLayout>

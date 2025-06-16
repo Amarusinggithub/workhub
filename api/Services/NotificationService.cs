@@ -1,6 +1,8 @@
+using api.Services.interfaces;
+
 namespace api.Services;
 
-public class NotificationService
+public class NotificationService:INotificationService
 {
-    
+
 }

@@ -19,7 +19,8 @@ public class UserController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+[Route("Register")]
+    public async Task<IActionResult> Register([FromBody]User user)
     {
         if (ModelState.IsValid)
         {
@@ -31,8 +32,11 @@ public class UserController : ControllerBase
         return new JsonResult("Somthing went wrong") { StatusCode = 500 };
     }
 
+
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(int id)
+    [Route("Login")]
+    public async Task<IActionResult> Login(int id)
     {
         var user = await _service.GetUserById(id);
         if (user == null)

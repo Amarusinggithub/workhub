@@ -1,8 +1,10 @@
-import { LucideIcon } from 'lucide-react';
-interface User {
+import { type LucideIcon } from 'lucide-react';
+export interface User {
 	id: number;
+	email: string;
 	name: string;
-	FirtName: string;
+
+	FirstName: string;
 	LastName: string;
 	ProfilePicture?: string;
 	HeaderImage?: string;

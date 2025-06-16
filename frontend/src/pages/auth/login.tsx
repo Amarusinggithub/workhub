@@ -5,6 +5,9 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import AuthLayout from '../../layouts/auth-layout';
+import { Checkbox } from '../../components/ui/checkbox';
+import { LoaderCircle } from 'lucide-react';
+import useAuth from '../../hooks/use-auth';
 
 type LoginForm = {
 	email: string;
@@ -21,18 +24,23 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 	const [form, setForm] = useState<LoginForm>({
 		email: '',
 		password: '',
+		remember:false,
 	});
 
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [errors, setError] = useState(null);
+    function change(e: React.ChangeEvent<HTMLInputElement>) {
+			setForm({ ...form, [e.target.name]: e.target.value.trim() });
+		}
 
-	function submit(e) {
+    const{isLoading,errors}=useAuth();
+
+
+	function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 	}
 
 	return (
 		<AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-			<Head title="Log in" />
+			<h1>Log in</h1>
 
 			<form className="flex flex-col gap-6" onSubmit={submit}>
 				<div className="grid gap-6">
@@ -46,17 +54,17 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 							tabIndex={1}
 							autoComplete="email"
 							value={form.email}
-							onChange={(e) => setForm('email', e.target.value)}
+							onChange={(e) => change(e)}
 							placeholder="email@example.com"
 						/>
-						<InputError message={errors.email} />
+						<InputError message={errors} />
 					</div>
 
 					<div className="grid gap-2">
 						<div className="flex items-center">
 							<Label htmlFor="password">Password</Label>
 							{canResetPassword && (
-								<TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
+								<TextLink to={'/reset-password'} className="ml-auto text-sm" tabIndex={5}>
 									Forgot password?
 								</TextLink>
 							)}
@@ -68,10 +76,10 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 							tabIndex={2}
 							autoComplete="current-password"
 							value={form.password}
-							onChange={(e) => setForm('password', e.target.value)}
+							onChange={(e) => change(e)}
 							placeholder="Password"
 						/>
-						<InputError message={errors.password} />
+						<InputError message={errors} />
 					</div>
 
 					<div className="flex items-center space-x-3">

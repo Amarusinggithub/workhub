@@ -5,6 +5,8 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import AuthLayout from '../../layouts/auth-layout';
+import { LoaderCircle } from 'lucide-react';
+import useAuth from '../../hooks/use-auth';
 
 type RegisterForm = {
 	firstName: string;
@@ -23,16 +25,19 @@ const Register = () => {
 		confirmPassword: '',
 	});
 
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [errors, setError] = useState(null);
+    const{isLoading,errors}=useAuth();
+    function change(e: React.ChangeEvent<HTMLInputElement>) {
+			setForm({ ...form, [e.target.name]: e.target.value.trim() });
+		}
 
-	function submit(e: React.FormEventHandler<HTMLFormElement>) {
+
+	function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 	}
 
 	return (
 		<AuthLayout title="Create an account" description="Enter your details below to create your account">
-			<Head title="Register" />
+			<h1>Register</h1>
 			<form className="flex flex-col gap-6" onSubmit={(e) => submit(e)}>
 				<div className="grid gap-6">
 					<div className="grid gap-2">
@@ -44,12 +49,12 @@ const Register = () => {
 							autoFocus
 							tabIndex={1}
 							autoComplete="firstName"
-							value={form.name}
-							onChange={(e) => setForm('firstName', e.target.value)}
+							value={form.firstName}
+							onChange={(e) => change(e)}
 							disabled={isLoading}
 							placeholder="First Name"
 						/>
-						<InputError message={errors.name} className="mt-2" />
+						<InputError message={errors} className="mt-2" />
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="lastName">Last Name</Label>
@@ -60,12 +65,12 @@ const Register = () => {
 							autoFocus
 							tabIndex={2}
 							autoComplete="lastName"
-							value={form.name}
-							onChange={(e) => setForm('lastName', e.target.value)}
+							value={form.lastName}
+							onChange={(e) => change(e)}
 							disabled={isLoading}
 							placeholder="last Name"
 						/>
-						<InputError message={errors.name} className="mt-2" />
+						<InputError message={errors} className="mt-2" />
 					</div>
 
 					<div className="grid gap-2">
@@ -77,11 +82,11 @@ const Register = () => {
 							tabIndex={3}
 							autoComplete="email"
 							value={form.email}
-							onChange={(e) => setForm('email', e.target.value)}
+							onChange={(e) => change(e)}
 							disabled={isLoading}
 							placeholder="email@example.com"
 						/>
-						<InputError message={errors.email} />
+						<InputError message={errors} />
 					</div>
 
 					<div className="grid gap-2">
@@ -93,11 +98,11 @@ const Register = () => {
 							tabIndex={4}
 							autoComplete="new-password"
 							value={form.password}
-							onChange={(e) => setForm('password', e.target.value)}
+							onChange={(e) => change(e)}
 							disabled={isLoading}
 							placeholder="Password"
 						/>
-						<InputError message={errors.password} />
+						<InputError message={errors} />
 					</div>
 
 					<div className="grid gap-2">
@@ -109,21 +114,21 @@ const Register = () => {
 							tabIndex={5}
 							autoComplete="new-password"
 							value={form.confirmPassword}
-							onChange={(e) => setForm('confirmPassword', e.target.value)}
+							onChange={(e) => change(e)}
 							disabled={isLoading}
 							placeholder="Confirm password"
 						/>
-						<InputError message={error.confirmPassword} />
+						<InputError message={errors} />
 					</div>
 
-					<Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
+					<Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={isLoading}>
 						{isLoading && <LoaderCircle className="h-4 w-4 animate-spin" />}
 						Create account
 					</Button>
 				</div>
 
 				<div className="text-muted-foreground text-center text-sm">
-					Already have an account? <TextLink tabIndex={6}>Log in</TextLink>
+					Already have an account? <TextLink to={"/login"}tabIndex={6}>Log in</TextLink>
 				</div>
 			</form>
 		</AuthLayout>

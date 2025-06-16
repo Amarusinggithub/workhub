@@ -1,4 +1,6 @@
 //import { Link, router } from '@inertiajs/react';
+import { Link } from 'react-router';
+
 import { LogOut, Settings } from 'lucide-react';
 import { useMobileNavigation } from '../hooks/use-mobile-navigation';
 import { type User } from '../types';
@@ -27,7 +29,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
 			<DropdownMenuSeparator />
 			<DropdownMenuGroup>
 				<DropdownMenuItem asChild>
-					<Link className="block w-full" to={'./profile.edit'}as="button" prefetch onClick={cleanup}>
+					<Link className="block w-full" to={'./profile.edit'}  onClick={cleanup}>
 						<Settings className="mr-2" />
 						Settings
 					</Link>
@@ -35,7 +37,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
 			</DropdownMenuGroup>
 			<DropdownMenuSeparator />
 			<DropdownMenuItem asChild>
-				<Link className="block w-full" method="post" href={route('logout')} as="button" onClick={handleLogout}>
+				<Link className="block w-full"  to={'/logout'}  onClick={handleLogout}>
 					<LogOut className="mr-2" />
 					Log out
 				</Link>

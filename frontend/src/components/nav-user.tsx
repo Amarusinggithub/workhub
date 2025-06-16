@@ -6,9 +6,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dro
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
 import { UserInfo } from './user-info';
 import { UserMenuContent } from './user-menu-content';
+import useAuth from '../hooks/use-auth';
 
 export function NavUser() {
-	const { auth } = usePage<SharedData>().props;
+	const { sharedData } = useAuth();
 	const { state } = useSidebar();
 	const isMobile = useIsMobile();
 
@@ -18,7 +19,7 @@ export function NavUser() {
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton size="lg" className="group text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent">
-							<UserInfo user={auth.user} />
+							<UserInfo user={sharedData!.auth.user} />
 							<ChevronsUpDown className="ml-auto size-4" />
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
@@ -27,7 +28,7 @@ export function NavUser() {
 						align="end"
 						side={isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'}
 					>
-						<UserMenuContent user={auth.user} />
+						<UserMenuContent user={sharedData!.auth.user} />
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>

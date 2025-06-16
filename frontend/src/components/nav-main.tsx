@@ -1,5 +1,6 @@
-//import { Link, usePage } from '@inertiajs/react';
 import { type NavItem } from '../types';
+import { Link } from 'react-router';
+
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
 
 type NavMainProps={ items: NavItem[] }
@@ -12,7 +13,7 @@ export function NavMain({ items = [] }:NavMainProps ) {
 				{items.map((item) => (
 					<SidebarMenuItem key={item.title}>
 						<SidebarMenuButton asChild isActive={page.url.startsWith(item.href)} tooltip={{ children: item.title }}>
-							<Link href={item.href} prefetch>
+							<Link to={item.href} >
 								{item.icon && <item.icon />}
 								<span>{item.title}</span>
 							</Link>

@@ -1,18 +1,19 @@
-import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
-import { useInitials } from '../../hooks/use-initials';
-import { type BreadcrumbItem, type NavItem, type SharedData } from '../../types';
+import { useInitials } from '../hooks/use-initials';
+import { type BreadcrumbItem, type NavItem, type SharedData } from '../types';
+import { Link } from 'react-router';
+
 import { cn } from '../lib/utils';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
-import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Breadcrumbs } from './breadcrumbs';
-import { Button } from './button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './dropdown-menu';
+import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Icon } from './icon';
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from './navigation-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { UserMenuContent } from './user-menu-content';
 
 const mainNavItems: NavItem[] = [
@@ -26,12 +27,12 @@ const mainNavItems: NavItem[] = [
 const rightNavItems: NavItem[] = [
 	{
 		title: 'Repository',
-		href: 'https://github.com/laravel/react-starter-kit',
+		href: '',
 		icon: Folder,
 	},
 	{
 		title: 'Documentation',
-		href: 'https://laravel.com/docs/starter-kits#react',
+		href: '',
 		icon: BookOpen,
 	},
 ];
@@ -43,7 +44,7 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
-	const page = usePage<SharedData>();
+	//const page = usePage<SharedData>();
 	const { auth } = page.props;
 	const getInitials = useInitials();
 	return (
@@ -67,10 +68,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 									<div className="flex h-full flex-col justify-between text-sm">
 										<div className="flex flex-col space-y-4">
 											{mainNavItems.map((item) => (
-												<link key={item.title} href={item.href} className="flex items-center space-x-2 font-medium">
+												<Link key={item.title} to={item.href} className="flex items-center space-x-2 font-medium">
 													{item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
 													<span>{item.title}</span>
-												</link>
+												</Link>
 											))}
 										</div>
 
@@ -94,7 +95,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 						</Sheet>
 					</div>
 
-					<Link href="/dashboard" prefetch className="flex items-center space-x-2">
+					<Link to ={"/dashboard"}  className="flex items-center space-x-2">
 						<AppLogo />
 					</Link>
 
@@ -105,7 +106,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 								{mainNavItems.map((item, index) => (
 									<NavigationMenuItem key={index} className="relative flex h-full items-center">
 										<Link
-											href={item.href}
+											to={item.href}
 											className={cn(navigationMenuTriggerStyle(), page.url === item.href && activeItemStyles, 'h-9 cursor-pointer px-3')}
 										>
 											{item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}

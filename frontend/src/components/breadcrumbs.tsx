@@ -1,5 +1,7 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from './ui/breadcrumb';
 //import { Link } from '@inertiajs/react';
+import { Link } from 'react-router';
+
 import { Fragment } from 'react';
 import { type BreadcrumbItem as BreadcrumbItemType } from '../types';
 

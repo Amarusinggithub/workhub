@@ -1,20 +1,34 @@
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import {type FormEventHandler, useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import AuthLayout from '../../layouts/auth-layout';
+import useAuth from '../../hooks/use-auth';
 
 type ForgotPasswordProps = {
 	status?: string;
 };
 
+
+type ForgotPasswordForm = {
+	email: string;
+};
+
+
 export default function ForgotPassword({ status }: ForgotPasswordProps) {
-	const [form, setForm] = useState<string>('');
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState(null);
+	const [form, setForm] = useState<ForgotPasswordForm>({
+        email:''
+    });
+
+    const{isLoading,errors}=useAuth();
+
+    function change(e: React.ChangeEvent<HTMLInputElement>) {
+			setForm({ ...form, [e.target.name]: e.target.value.trim() });
+		}
+
 
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();
@@ -37,11 +51,11 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 							autoComplete="off"
 							value={form.email}
 							autoFocus
-							onChange={(e) => setForm('email', e.target.value)}
+							onChange={(e) => change(e)}
 							placeholder="email@example.com"
 						/>
 
-						<InputError message={error.email} />
+						<InputError message={errors!} />
 					</div>
 
 					<div className="my-6 flex items-center justify-start">
@@ -54,7 +68,7 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 
 				<div className="text-muted-foreground space-x-1 text-center text-sm">
 					<span>Or, return to</span>
-					<TextLink href={}>log in</TextLink>
+					<TextLink to={'/login'}>log in</TextLink>
 				</div>
 			</div>
 		</AuthLayout>

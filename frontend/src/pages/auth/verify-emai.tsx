@@ -1,18 +1,18 @@
 // Components
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import {type FormEventHandler } from 'react';
 
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
 import AuthLayout from '../../layouts/auth-layout';
+import useAuth from '../../hooks/use-auth';
 
 interface VerifyEmailProps {
 	status?: string;
 }
 
 export default function VerifyEmail({ status }: VerifyEmailProps) {
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState(null);
+	const {isLoading}=useAuth();
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();
 	};
@@ -33,7 +33,7 @@ export default function VerifyEmail({ status }: VerifyEmailProps) {
 					Resend verification email
 				</Button>
 
-				<TextLink href={} method="post" className="mx-auto block text-sm">
+				<TextLink to={"/logout"}  className="mx-auto block text-sm">
 					Log out
 				</TextLink>
 			</form>

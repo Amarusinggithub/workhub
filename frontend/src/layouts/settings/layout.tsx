@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/button';
 import { Separator } from '../../components/ui/separator';
 import { cn } from '../../lib/utils.ts';
 import { type NavItem } from '../../types';
+import { Link } from 'react-router';
 
 import { type PropsWithChildren } from 'react';
 
@@ -44,12 +45,12 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 								key={`${item.href}-${index}`}
 								size="sm"
 								variant="ghost"
-								asChild
+								//asChild
 								className={cn('w-full justify-start', {
 									'bg-muted': currentPath === item.href,
 								})}
 							>
-								<Link href={item.href} prefetch>
+								<Link to={item.href} >
 									{item.title}
 								</Link>
 							</Button>

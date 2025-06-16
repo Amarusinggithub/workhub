@@ -1,8 +1,9 @@
-import { Link, usePage } from '@inertiajs/react';
+//import { Link, usePage } from '@inertiajs/react';
 import { type NavItem } from '../types';
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
 
-export function NavMain({ items = [] }: { items: NavItem[] }) {
+type NavMainProps={ items: NavItem[] }
+export function NavMain({ items = [] }:NavMainProps ) {
 	const page = usePage();
 	return (
 		<SidebarGroup className="px-2 py-0">

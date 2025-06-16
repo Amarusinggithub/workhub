@@ -1,10 +1,11 @@
-import { initializeTheme } from 'hooks/useApperance';
-import Register from 'pages/auth/Register';
+import { initializeTheme } from './hooks/use-apperance';
+import Register from './pages/auth/register';
 import './App.css';
+import AppRoutes from './routes/app-routes'
+import {AuthProvider} from'./hooks/use-auth'
 
 function App() {
-	return;
-	<Register />;
+	return(<Register/>);
 }
 // This will set light / dark mode on load...
 initializeTheme();

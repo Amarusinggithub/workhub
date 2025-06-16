@@ -1,5 +1,5 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { Link } from '@inertiajs/react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from './ui/breadcrumb';
+//import { Link } from '@inertiajs/react';
 import { Fragment } from 'react';
 import { type BreadcrumbItem as BreadcrumbItemType } from '../types';
 
@@ -18,7 +18,7 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[]
 											<BreadcrumbPage>{item.title}</BreadcrumbPage>
 										) : (
 											<BreadcrumbLink asChild>
-												<Link href={item.href}>{item.title}</Link>
+												<Link to={item.href}>{item.title}</Link>
 											</BreadcrumbLink>
 										)}
 									</BreadcrumbItem>

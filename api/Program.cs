@@ -7,28 +7,36 @@ using api.Repository;
 using api.Repository.interfaces;
 using api.Services;
 using api.Services.interfaces;
+using Asp.Versioning;
 using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder();
 //builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 //builder.Services.AddAWSService<IAmazonS3>();
 
 
 builder.Services.AddIdentityCore<User>(options =>
-        options.SignIn.RequireConfirmedAccount = false)
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.SignIn.RequireConfirmedEmail = true;
+        options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(4);
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -48,7 +56,33 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    string? connect = builder.Configuration.GetConnectionString("Redis");
+    options.Configuration =connect;
+    if (options.Configuration != null)
+        options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions()
+        {
+            AbortOnConnectFail = true,
+            EndPoints = { options.Configuration }
+        };
+});
 
+builder.Services.AddScoped<ICacheService, CacheService>();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+}).AddMvc().AddApiExplorer(options =>
+{
+    options.SubstituteApiVersionInUrl = true;
+    options.DefaultApiVersion = new ApiVersion(1);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.GroupNameFormat="'v'VVV";
+});
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();

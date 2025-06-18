@@ -3,7 +3,6 @@ using Task=api.Models;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Models_Task = api.Models.Task;
 
 namespace api.Database;
 
@@ -15,7 +14,7 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
 
     }
     public DbSet<Resource> Resources { get; set; }
-    public DbSet<UserGroupResource> UserGroupResources { get; set; }
+    public DbSet<ProjectResource> UserGroupResources { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<UserGroupType> UserGroupTypes { get; set; }
     public DbSet<UserGroupMember> InUserGroups { get; set; }
@@ -27,7 +26,7 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
     public DbSet<Category> Categories { get; set; }
     public DbSet<UserProjectRole> UserProjectRoles { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<Models_Task> Tasks { get; set; }
+    public DbSet<Issue> Issues { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationMember> NotificationMembers { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
@@ -38,6 +37,9 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
     public DbSet<Option> Options { get; set; }
     public DbSet<OptionIncluded> OptionIncludes { get; set; }
     public DbSet<Offer> Offers { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Label> Labels { get; set; }
+    public DbSet<IssueLabel> IssueLabels { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<PlanHistory> PlanHistories { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
@@ -45,17 +47,42 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+
+
             base.OnModelCreating(builder);
             builder.Entity<User>().ToTable("AspNetUsers");
 
+            builder.Entity<Comment>()
+                .HasOne(co => co.Commenter)
+                .WithMany(o => o.Comments)
+                .HasForeignKey(inc => inc.CommenterId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<UserGroupResource>()
+            builder.Entity<Comment>()
+                .HasOne(issue => issue.Issue)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(inc => inc.IssueId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<IssueLabel>()
+                .HasOne(isl => isl.Label)
+                .WithMany(l => l.Issues)
+                .HasForeignKey(il => il.LabelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<IssueLabel>()
+                .HasOne(issue => issue.Issue)
+                .WithMany(p => p.Labels)
+                .HasForeignKey(inc => inc.IssueId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProjectResource>()
                 .HasOne(ugr => ugr.Resource)
                 .WithMany(r => r.UserResource)
                 .HasForeignKey(ugr => ugr.ResourceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<UserGroupResource>()
+            builder.Entity<ProjectResource>()
                 .HasOne(ugr => ugr.UserGroup)
                 .WithMany(u => u.Resources)
                 .HasForeignKey(ugr => ugr.UserGroupId)
@@ -82,8 +109,8 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
             builder.Entity<WorkSpaceMember>()
                 .HasOne(iws => iws.User)
                 .WithMany(u => u.UserWorkSpaces)
-                .HasForeignKey(iws => iws.UserId);
-                //.OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(iws => iws.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<ProjectMember>()
                 .HasOne(inp => inp.Project)
@@ -94,32 +121,32 @@ public class ApplicationDbContext: IdentityDbContext<User,Role,int>
             builder.Entity<ProjectMember>()
                 .HasOne(inp => inp.User)
                 .WithMany(u => u.UserProjects)
-                .HasForeignKey(inp => inp.UserId);
-                //.OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(inp => inp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 builder.Entity<ProjectCategory>()
                     .HasOne(pc => pc.Project)
                     .WithMany(p => p.ProjectCategories)
-                    .HasForeignKey(pc => pc.ProjectId);
-                //.OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(pc => pc.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 builder.Entity<ProjectCategory>()
                     .HasOne(pc => pc.Category)
                     .WithMany(c => c.ProjectCategories)
-                    .HasForeignKey(pc => pc.CategoryId);
-                //.OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(pc => pc.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 builder.Entity<UserProjectRole>()
                     .HasOne(upr => upr.User)
                     .WithMany(u => u.UserProjectRoles)
-                    .HasForeignKey(upr => upr.UserId);
-               // .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(upr => upr.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
 
                builder.Entity<UserProjectRole>()
                    .HasOne(upr => upr.Project)
                    .WithMany(p => p.UserProjectRoles)
-                   .HasForeignKey(upr => upr.ProjectId);
-               // .OnDelete(DeleteBehavior.Cascade);
+                   .HasForeignKey(upr => upr.ProjectId)
+               .OnDelete(DeleteBehavior.Cascade);
 
                builder.Entity<NotificationMember>()
                    .HasOne(u => u.User)

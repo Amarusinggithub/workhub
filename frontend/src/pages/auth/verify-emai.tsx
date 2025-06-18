@@ -1,4 +1,3 @@
-// Components
 import { LoaderCircle } from 'lucide-react';
 import { type FormEventHandler } from 'react';
 

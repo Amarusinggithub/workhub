@@ -16,6 +16,6 @@ public class UserGroup
     public DateTime? DeletedAt { get; set; }
 
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-    public ICollection<UserGroupResource> Resources { get; set; } = new List<UserGroupResource>();
+    public ICollection<ProjectResource> Resources { get; set; } = new List<ProjectResource>();
     public ICollection<UserGroupMember> Users { get; set; } = new List<UserGroupMember>();
 }

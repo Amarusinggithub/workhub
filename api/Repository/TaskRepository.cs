@@ -1,18 +1,17 @@
 using api.Database;
+using api.Models;
 using api.Repositorys.interfaces;
 using Microsoft.EntityFrameworkCore;
-using ApplicationTask = api.Models.Task;
-using Task = api.Models.Task;
 
 namespace api.Repository.interfaces;
 
-public class TaskRepository: GenericRepository<Task>,ITaskRepository
+public class TaskRepository: GenericRepository<Issue>,ITaskRepository
 {
     public TaskRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
     }
 
-    public override async Task<IEnumerable<Task>> GetAll()
+    public override async Task<IEnumerable<Issue>> GetAll()
     {
         try
         {
@@ -21,12 +20,12 @@ public class TaskRepository: GenericRepository<Task>,ITaskRepository
         catch (Exception e)
         {
             _logger.LogError(e,"{Repo} All method error ",typeof(WorkSpaceRepository));
-            return new List<Task>();
+            return new List<Issue>();
         }
 
     }
 
-    public override async Task<bool> Upsert(Task entity)
+    public override async Task<bool> Upsert(Issue entity)
     {
         try
         {

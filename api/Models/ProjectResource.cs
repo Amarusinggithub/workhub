@@ -3,7 +3,7 @@ using api.Enums;
 
 namespace api.Models;
 
-public class UserGroupResource
+public class ProjectResource
 {
 
 
@@ -17,6 +17,11 @@ public class UserGroupResource
     [Required]
     public int UserGroupId { get; set; }
     public UserGroup UserGroup { get; set; }
+
+
+    [Required]
+    public int ProjectId { get; set; }
+    public Project Project { get; set; }
 
     public ResorceLocation ResourceLocation { get; set; }
     public DateTime LastDownloadAt { get; set; }

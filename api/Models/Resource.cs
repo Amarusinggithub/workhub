@@ -41,6 +41,6 @@ public class Resource
     public int? WorkSpaceId { get; set; }
     public WorkSpace? WorkSpace { get; set; }*/
 
-    public ICollection<UserGroupResource> UserResource { get; set; } = new List<UserGroupResource>();
+    public ICollection<ProjectResource> UserResource { get; set; } = new List<ProjectResource>();
 
 }

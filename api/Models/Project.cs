@@ -34,4 +34,7 @@ public class Project
     public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
+
+    public ICollection<ProjectResource> ProjectResources { get; set; } = new List<ProjectResource>();
+
 }

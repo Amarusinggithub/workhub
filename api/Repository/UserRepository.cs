@@ -15,7 +15,7 @@ public class UserRepository:GenericRepository<User>,IUserRepository
     {
         try
         {
-            return await dbSet.ToListAsync();
+            return await dbSet.Where(x => x.IsActive == true).ToListAsync();
         }
         catch (Exception e)
         {
@@ -23,6 +23,23 @@ public class UserRepository:GenericRepository<User>,IUserRepository
             return new List<User>();
         }
     }
+
+    public async Task<User> Authenticate(string password,string email)
+    {
+
+
+        var newUser = await dbSet.SingleOrDefaultAsync(x => x.Email == email && x.PasswordHash == password);
+
+        // return null if user not found
+        if (newUser == null) return null;
+
+        // authentication successful so generate jwt token
+        //var token = await generateJwtToken(newUser);
+
+        return newUser;
+    }
+
+
 
     public override async Task<bool> Upsert(User entity)
     {

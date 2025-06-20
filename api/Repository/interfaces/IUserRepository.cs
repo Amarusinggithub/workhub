@@ -7,4 +7,6 @@ namespace api.Repositorys.interfaces;
 public interface IUserRepository: IGenericRepository<User>
 {
 
+    public Task<User> Authenticate(string password, string email);
+
 }

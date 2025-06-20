@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using api.Models;
 using api.Services.interfaces;
 using Asp.Versioning;
@@ -22,28 +23,22 @@ public class UserController : ControllerBase
 [Route("register")]
     public async Task<IActionResult> Register([FromBody]User user)
     {
-        if (ModelState.IsValid)
 
 
-        {
+
             await _service.AddUser(user);
 
             return CreatedAtAction("GetItem", new { user.Id }, user);
-        }
+
 
         return new JsonResult("Somthing went wrong") { StatusCode = 500 };
     }
 
     [HttpGet]
     [Route("login")]
-    public async Task<IActionResult> Login(int id)
+    public async Task<IActionResult> Login([FromBody] string Email,[FromBody] string Password)
     {
-        var user = await _service.GetUserById(id);
-        if (user == null)
-        {
-            return NotFound();
-
-        }
+        var user = await _service.Authenticate(Password,Email);
 
         return Ok(user);
     }

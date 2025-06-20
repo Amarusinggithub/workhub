@@ -27,4 +27,14 @@ public class UserService: IUserService
     {
         return await _unitOfWork.Users.GetById(id);
     }
+
+
+
+    public async Task<User> Authenticate(string password, string email)
+    {
+        return await _unitOfWork.Users.Authenticate(password, email);
+
+    }
+
+
 }

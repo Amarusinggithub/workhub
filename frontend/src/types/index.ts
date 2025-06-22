@@ -1,9 +1,20 @@
 import { type LucideIcon } from 'lucide-react';
+
+export type AuthField = 'firstName' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'auth';
+
+export type AuthErrorType =
+	| 'This field cannot be empty'
+	| 'invalid-credentials'
+	| 'user-not-found'
+	| 'password and confirm password must match'
+	| 'unknown';
+
+export type AuthErrorCode = `${AuthField}:${AuthErrorType}`;
+
 export interface User {
 	id: number;
 	email: string;
 	name: string;
-
 	FirstName: string;
 	LastName: string;
 	ProfilePicture?: string;

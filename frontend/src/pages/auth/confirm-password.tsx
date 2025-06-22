@@ -1,25 +1,36 @@
 // Components
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { useState, type FormEventHandler } from 'react';
 
+import type { AuthField } from 'types';
 import InputError from '../../components/input-error';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import useAuth from '../../hooks/use-auth';
 import AuthLayout from '../../layouts/auth-layout';
 
+type ConfirmPasswordType = { password: string };
+
 export default function ConfirmPassword() {
-	const { data, setData, post, processing, errors, reset } = useForm<Required<{ password: string }>>({
+	const [form, setForm] = useState<ConfirmPasswordType>({
 		password: '',
 	});
+	const { isLoading, errors } = useAuth();
 
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();
-
-		post(route('password.confirm'), {
-			onFinish: () => reset('password'),
-		});
 	};
+
+	function getFieldError(field: AuthField): string | undefined {
+		if (!errors) return undefined;
+		const error = errors.find((err) => err.startsWith(`${field}:`));
+		return error ? error.split(':')[1] : undefined;
+	}
+
+	function change(e: React.ChangeEvent<HTMLInputElement>) {
+		setForm({ ...form, [e.target.name]: e.target.value.trim() });
+	}
 
 	return (
 		<AuthLayout title="Confirm your password" description="This is a secure area of the application. Please confirm your password before continuing.">
@@ -35,17 +46,17 @@ export default function ConfirmPassword() {
 							name="password"
 							placeholder="Password"
 							autoComplete="current-password"
-							value={data.password}
+							value={form!.password}
 							autoFocus
-							onChange={(e) => setData('password', e.target.value)}
+							onChange={change}
 						/>
 
-						<InputError message={errors.password} />
+						{getFieldError('password') && <InputError message={getFieldError('password')} className="mt-2" />}
 					</div>
 
 					<div className="flex items-center">
-						<Button className="w-full" disabled={processing}>
-							{processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+						<Button className="w-full" disabled={isLoading}>
+							{isLoading && <LoaderCircle className="h-4 w-4 animate-spin" />}
 							Confirm password
 						</Button>
 					</div>

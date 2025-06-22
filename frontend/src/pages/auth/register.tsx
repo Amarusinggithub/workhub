@@ -1,5 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
+import type { AuthField } from 'types';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
 import { Button } from '../../components/ui/button';
@@ -25,14 +26,21 @@ const Register = () => {
 		confirmPassword: '',
 	});
 
-	const { isLoading, errors } = useAuth();
+	const { isLoading, errors, SignUp } = useAuth();
+
 	function change(e: React.ChangeEvent<HTMLInputElement>) {
 		setForm({ ...form, [e.target.name]: e.target.value.trim() });
 	}
 
-	function submit(e: React.FormEvent<HTMLFormElement>) {
+	function getFieldError(field: AuthField): string | undefined {
+		if (!errors) return undefined;
+		const error = errors.find((err) => err.startsWith(`${field}:`));
+		return error ? error.split(':')[1] : undefined;
+	}
+
+	async function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-        
+		await SignUp(form.firstName, form.lastName, form.email, form.password, form.confirmPassword);
 	}
 
 	return (
@@ -41,36 +49,38 @@ const Register = () => {
 			<form className="flex flex-col gap-6" onSubmit={(e) => submit(e)}>
 				<div className="grid gap-6">
 					<div className="grid gap-2">
-						<Label htmlFor="firstname">First Name</Label>
+						<Label htmlFor="first-name">First Name</Label>
 						<Input
-							id="firstname"
+							id="first-name"
 							type="text"
 							required
 							autoFocus
 							tabIndex={1}
+							name="firstName"
 							autoComplete="firstName"
 							value={form.firstName}
-							onChange={(e) => change(e)}
+							onChange={change}
 							disabled={isLoading}
-							placeholder="First Name"
+							placeholder="first name"
 						/>
-						<InputError message={errors} className="mt-2" />
+						{getFieldError('firstName') && <InputError message={getFieldError('firstName')} className="mt-2" />}
 					</div>
 					<div className="grid gap-2">
-						<Label htmlFor="lastName">Last Name</Label>
+						<Label htmlFor="last-name">Last Name</Label>
 						<Input
-							id="lastName"
+							id="last-name"
 							type="text"
 							required
 							autoFocus
+							name="lastName"
 							tabIndex={2}
 							autoComplete="lastName"
 							value={form.lastName}
-							onChange={(e) => change(e)}
+							onChange={change}
 							disabled={isLoading}
-							placeholder="last Name"
+							placeholder="last name"
 						/>
-						<InputError message={errors} className="mt-2" />
+						{getFieldError('lastName') && <InputError message={getFieldError('lastName')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
@@ -80,13 +90,14 @@ const Register = () => {
 							type="email"
 							required
 							tabIndex={3}
+							name="email"
 							autoComplete="email"
 							value={form.email}
-							onChange={(e) => change(e)}
+							onChange={change}
 							disabled={isLoading}
 							placeholder="email@example.com"
 						/>
-						<InputError message={errors} />
+						{getFieldError('email') && <InputError message={getFieldError('email')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
@@ -96,29 +107,31 @@ const Register = () => {
 							type="password"
 							required
 							tabIndex={4}
+							name="password"
 							autoComplete="new-password"
 							value={form.password}
-							onChange={(e) => change(e)}
+							onChange={change}
 							disabled={isLoading}
 							placeholder="Password"
 						/>
-						<InputError message={errors} />
+						{getFieldError('password') && <InputError message={getFieldError('password')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password_confirmation">Confirm password</Label>
+						<Label htmlFor="password-confirmation">Confirm password</Label>
 						<Input
 							id="password_confirmation"
 							type="password"
 							required
 							tabIndex={5}
+							name="confirmPassword"
 							autoComplete="new-password"
 							value={form.confirmPassword}
-							onChange={(e) => change(e)}
+							onChange={change}
 							disabled={isLoading}
 							placeholder="Confirm password"
 						/>
-						<InputError message={errors} />
+						{getFieldError('confirmPassword') && <InputError message={getFieldError('confirmPassword')} className="mt-2" />}
 					</div>
 
 					<Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={isLoading}>

@@ -7,7 +7,7 @@ interface AppShellProps {
 
 export function AppShell({ children, variant = 'header' }: AppShellProps) {
 	//const isOpen = usePage<SharedData>().props.sidebarOpen;
-	const isOpen = false;
+	const isOpen = true;
 	if (variant === 'header') {
 		return <div className="flex min-h-screen w-full flex-col">{children}</div>;
 	}

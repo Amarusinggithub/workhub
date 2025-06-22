@@ -4,6 +4,7 @@ import AppLayout from '../layouts/app-layout';
 import Login from '../pages/auth/login';
 import Register from '../pages/auth/register';
 import Welcome from '../pages/welcome';
+import Dashboard from '../pages/dashboard';
 
 /*const AppLayout = lazy(() => import('../layouts/AppLayout.tsx'));
 const Login = lazy(() => import('../pages/auth/Login.tsx'));
@@ -34,7 +35,7 @@ const privateRoutes = [
 		children: [
 			{
 				index: true,
-				Component: Welcome,
+				Component: Dashboard,
 			},
 
 			{ path: '*', Component: () => <Navigate to="/" replace /> },

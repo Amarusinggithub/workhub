@@ -8,6 +8,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import useAuth from '../../hooks/use-auth';
 import AuthLayout from '../../layouts/auth-layout';
+import type { AuthField } from 'types';
 
 type LoginForm = {
 	email: string;
@@ -27,15 +28,24 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 		remember: false,
 	});
 
-	function change(e: React.ChangeEvent<HTMLInputElement>) {
-		setForm({ ...form, [e.target.name]: e.target.value.trim() });
-	}
+
 
 	const { isLoading, errors } = useAuth();
 
+    function change(e: React.ChangeEvent<HTMLInputElement>) {
+			setForm({ ...form, [e.target.name]: e.target.value.trim() });
+		}
+
 	function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+
 	}
+
+    function getFieldError(field: AuthField): string | undefined {
+                if (!errors) return undefined;
+                const error = errors.find((err) => err.startsWith(`${field}:`));
+                return error ? error.split(':')[1] : undefined;
+            }
 
 	return (
 		<AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
@@ -51,12 +61,13 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 							required
 							autoFocus
 							tabIndex={1}
+							name="email"
 							autoComplete="email"
 							value={form.email}
-							onChange={(e) => change(e)}
+							onChange={change}
 							placeholder="email@example.com"
 						/>
-						<InputError message={errors} />
+						{getFieldError('email') && <InputError message={getFieldError('email')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
@@ -73,16 +84,23 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 							type="password"
 							required
 							tabIndex={2}
+							name="password"
 							autoComplete="current-password"
 							value={form.password}
-							onChange={(e) => change(e)}
+							onChange={change}
 							placeholder="Password"
 						/>
-						<InputError message={errors} />
+						{getFieldError('password') && <InputError message={getFieldError('password')} className="mt-2" />}
 					</div>
 
 					<div className="flex items-center space-x-3">
-						<Checkbox id="remember" name="remember" checked={form.remember} onClick={() => setForm('remember', !form.remember)} tabIndex={3} />
+						<Checkbox
+							id="remember"
+							name="remember"
+							checked={form.remember}
+							onClick={() => setForm({ ...form, ['remember']: !form.remember })}
+							tabIndex={3}
+						/>
 						<Label htmlFor="remember">Remember me</Label>
 					</div>
 

@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import useAuth from '../../hooks/use-auth';
 import AuthLayout from '../../layouts/auth-layout';
+import type { AuthField } from 'types';
 
 type ForgotPasswordProps = {
 	status?: string;
@@ -31,6 +32,12 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 		e.preventDefault();
 	};
 
+    function getFieldError(field: AuthField): string | undefined {
+                if (!errors) return undefined;
+                const error = errors.find((err) => err.startsWith(`${field}:`));
+                return error ? error.split(':')[1] : undefined;
+            }
+
 	return (
 		<AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
 			<h1> Forgot password</h1>
@@ -52,7 +59,7 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 							placeholder="email@example.com"
 						/>
 
-						<InputError message={errors!} />
+                        {getFieldError('email') && <InputError message={getFieldError('email')} className="mt-2" />}
 					</div>
 
 					<div className="my-6 flex items-center justify-start">

@@ -1,6 +1,8 @@
 import { Button } from ' ../../components/ui/button';
+import useAuth from 'hooks/use-auth';
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { type FormEventHandler, useState } from 'react';
+import type { AuthField } from 'types';
 import InputError from '../../components/input-error';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -26,13 +28,21 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 		password_confirmation: '',
 	});
 
-	const [isLoading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState(null);
+	const { isLoading, errors } = useAuth();
 
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();
 	};
 
+	function getFieldError(field: AuthField): string | undefined {
+		if (!errors) return undefined;
+		const error = errors.find((err) => err.startsWith(`${field}:`));
+		return error ? error.split(':')[1] : undefined;
+	}
+
+	function change(e: React.ChangeEvent<HTMLInputElement>) {
+		setForm({ ...form, [e.target.name]: e.target.value.trim() });
+	}
 	return (
 		<AuthLayout title="Reset password" description="Please enter your new password below">
 			<h1 title="Reset password" />
@@ -49,9 +59,9 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 							value={form.email}
 							className="mt-1 block w-full"
 							readOnly
-							onChange={(e) => setForm('email', e.target.value)}
+							onChange={change}
 						/>
-						<InputError message={error.email} className="mt-2" />
+						{getFieldError('email') && <InputError message={getFieldError('email')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
@@ -64,10 +74,10 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 							value={form.password}
 							className="mt-1 block w-full"
 							autoFocus
-							onChange={(e) => setForm('password', e.target.value)}
+							onChange={change}
 							placeholder="Password"
 						/>
-						<InputError message={error.password} />
+						{getFieldError('password') && <InputError message={getFieldError('password')} className="mt-2" />}
 					</div>
 
 					<div className="grid gap-2">
@@ -79,10 +89,10 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 							autoComplete="new-password"
 							value={form.password_confirmation}
 							className="mt-1 block w-full"
-							onChange={(e) => setForm('password_confirmation', e.target.value)}
+							onChange={change}
 							placeholder="Confirm password"
 						/>
-						<InputError message={error.password_confirmation} className="mt-2" />
+						{getFieldError('confirmPassword') && <InputError message={getFieldError('confirmPassword')} className="mt-2" />}
 					</div>
 
 					<Button type="submit" className="mt-4 w-full" disabled={isLoading}>

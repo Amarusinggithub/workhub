@@ -1,7 +1,8 @@
 import './App.css';
-import { initializeTheme } from './hooks/use-appearance';
 import { AuthProvider } from './hooks/use-auth';
 import AppRoutes from './routes/app-routes';
+
+
 
 function App() {
 	return (
@@ -10,7 +11,5 @@ function App() {
 		</AuthProvider>
 	);
 }
-// This will set light / dark mode on load...
-initializeTheme();
 
 export default App;

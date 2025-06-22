@@ -9,4 +9,9 @@ public interface IUserRepository: IGenericRepository<User>
 
     public Task<User> Authenticate(string password, string email);
 
+    Task<User?> GetByEmail(string email);
+
+
+
+
 }

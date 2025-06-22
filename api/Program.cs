@@ -68,7 +68,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
         };
 });
 
-builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -90,6 +89,9 @@ builder.Services.AddScoped<IWorkSpaceService, WorkSpaceService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
+
 
 
 builder.Services.AddSwaggerGen(c =>

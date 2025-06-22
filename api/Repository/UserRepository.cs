@@ -5,12 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository;
 
-public class UserRepository:GenericRepository<User>,IUserRepository
+public class UserRepository(ApplicationDbContext context, ILogger logger)
+    : GenericRepository<User>(context, logger), IUserRepository
 {
-    public UserRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
-    {
-    }
-
     public override async Task<IEnumerable<User>> GetAll()
     {
         try
@@ -30,7 +27,6 @@ public class UserRepository:GenericRepository<User>,IUserRepository
 
         var newUser = await dbSet.SingleOrDefaultAsync(x => x.Email == email && x.PasswordHash == password);
 
-        // return null if user not found
         if (newUser == null) return null;
 
         // authentication successful so generate jwt token
@@ -39,6 +35,13 @@ public class UserRepository:GenericRepository<User>,IUserRepository
         return newUser;
     }
 
+    public async Task<User?> GetByEmail(string email)
+    {
+        var newUser = await dbSet.SingleOrDefaultAsync(x => x.Email == email );
+        return newUser;
+
+
+    }
 
 
     public override async Task<bool> Upsert(User entity)
@@ -62,6 +65,9 @@ public class UserRepository:GenericRepository<User>,IUserRepository
         }
 
     }
+
+
+
 
     public override async Task<bool> Delete(int id)
     {

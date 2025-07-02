@@ -56,8 +56,8 @@ public class WorkSpaceRepository : GenericRepository<WorkSpace>,IWorkSpaceReposi
 
             if (existingUser != null)
             {
-               dbSet.Remove(existingUser);
-               return true;
+            dbSet.Remove(existingUser);
+            return true;
 
             }
 

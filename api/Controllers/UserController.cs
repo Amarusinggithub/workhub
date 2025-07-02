@@ -13,12 +13,13 @@ public class UserController(IUserService service) : ControllerBase
     private readonly IUserService _service = service ?? throw new ArgumentNullException(nameof(service));
 
 
-    [HttpPost]
+[HttpPost]
 [Route("register")]
     public async Task<IActionResult> Register([FromBody]string firstName,[FromBody] string lastName,[FromBody]string email,[FromBody] string password)
     {
 
-  User? user = await _service.GetByEmail(email);
+
+    User? user = await _service.GetByEmail(email);
 
         if (user is null)
         {

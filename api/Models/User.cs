@@ -5,7 +5,7 @@ namespace api.Models;
 
 public class User: IdentityUser<int>
 {
-   public string FirtName { get; set; }
+   public string FirstName { get; set; }
    public string LastName { get; set; }
     public string? ProfilePicture { get; set; }
     public string? HeaderImage { get; set; }

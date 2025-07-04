@@ -6,9 +6,15 @@ using Amazon.S3;
 using api.Repository;
 using api.Repository.interfaces;
 using api.Services;
+using api.Services.Boards;
+using api.Services.Boards.interfaces;
 using api.Services.interfaces;
+using api.Services.Issues.interfaces;
+using api.Services.Projects;
+using api.Services.Tasks;
 using Asp.Versioning;
 using Microsoft.OpenApi.Models;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,16 +89,70 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat="'v'VVV";
 });
 
+
+
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IWorkSpaceService, WorkSpaceService>();
+builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBillingService, BillingService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IUserInvitationService, UserInvitationService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IWorkSpaceSettingsService, WorkSpaceSettingsService>();
+builder.Services.AddScoped<IWorkSpaceAccessControlService, WorkSpaceAccessControlService>();
+builder.Services.AddScoped<IWorkSpaceMemberService, WorkSpaceMemberService>();
+builder.Services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
+builder.Services.AddScoped<IUsageTrackingService, UsageTrackingService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
+builder.Services.AddScoped<IProjectSettingsService, ProjectSettingsService>();
+builder.Services.AddScoped<IRateLimiterService, RateLimiterService>();
+builder.Services.AddScoped<IBoardService, BoardService>();
+builder.Services.AddScoped<IBoardColumnService, BoardColumnService>();
+builder.Services.AddScoped<IBoardFilterService, BoardFilterService>();
+builder.Services.AddScoped<IBoardSortService, BoardSortService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
+builder.Services.AddScoped<ITaskStatusService, TaskStatusService>();
+builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
+builder.Services.AddScoped<ITaskLabelService, TaskLabelService>();
+builder.Services.AddScoped<ITaskAttachmentService, TaskAttachmentService>();
+builder.Services.AddScoped<ISubtaskService, SubtaskService>();
+builder.Services.AddScoped<IWebhookService, WebhookService>();
+builder.Services.AddScoped<IIntegrationService, IntegrationService>();
+builder.Services.AddScoped<IAIService	, AIService	>();
 
 
+
+var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name:myAllowSpecificOrigins,
+        b =>
+        {
+            b.WithOrigins("http://localhost",
+                    "http://localhost:5173",
+                    "https://localhost:5174",
+                    "http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();        });
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -118,12 +178,13 @@ if (app.Environment.IsDevelopment())
 
 app.MapIdentityApi<User>();
 app.UseHttpsRedirection();
+app.UseCors(myAllowSpecificOrigins);
+
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRouting();
-app.UseHttpsRedirection();
 
 
 app.Run();

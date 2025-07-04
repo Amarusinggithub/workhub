@@ -22,7 +22,7 @@ public class UserService: IUserService
 
         User entity=new User
         {
-            FirtName = firstName,
+            FirstName = firstName,
             LastName = lastName,
             Email = email,
             PasswordHash = password
@@ -58,7 +58,7 @@ public class UserService: IUserService
     {
         User user = new User
         {
-            FirtName = firstName,
+            FirstName = firstName,
             LastName = lastName,
             Email = email,
             PasswordHash = _hashService.Hash(password)

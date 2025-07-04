@@ -1,3 +1,4 @@
+using api.DTOs;
 using api.Models;
 using api.Services.interfaces;
 using Asp.Versioning;
@@ -13,46 +14,65 @@ public class UserController(IUserService service) : ControllerBase
     private readonly IUserService _service = service ?? throw new ArgumentNullException(nameof(service));
 
 
-[HttpPost]
-[Route("register")]
-    public async Task<IActionResult> Register([FromBody]string firstName,[FromBody] string lastName,[FromBody]string email,[FromBody] string password)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-
-
-    User? user = await _service.GetByEmail(email);
-
-        if (user is null)
+        if (!ModelState.IsValid)
         {
-            throw new Exception("User was not found");
+            return BadRequest(ModelState);
         }
 
-        if (user.Email== email)
+        var existingUser = await _service.GetByEmail(request.email);
+        if (existingUser is not null)
         {
-            return new JsonResult("user with this email already exist") { StatusCode = 400 };
+            return BadRequest("User with this email already exists");
         }
 
-        var newUser=await _service.AddUser(firstName,lastName,email,password);
+        var success = await _service.AddUser(request.lastName, request.firstName, request.email, request.password);
+        if (!success)
+        {
+            return StatusCode(500, "Something went wrong while creating the user");
+        }
 
-        if(newUser==false) return new JsonResult("Somthing went wrong") { StatusCode = 500 };
-
-        return Ok();
+        return StatusCode(201, "Account created");
     }
 
-    [HttpGet]
-    [Route("login")]
-    public async Task<IActionResult> Login([FromBody] string email,[FromBody] string password)
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-
-        User? user = await _service.GetByEmail(email);
-
-        if (user is null)
+        if (!ModelState.IsValid)
         {
-            return new JsonResult("no user with this email exist") { StatusCode = 400 };
+            return BadRequest(ModelState);
         }
 
-        var isVerified = user.PasswordHash != null &&  _service.Authenticate(password,user.PasswordHash);
+        var user = await _service.GetByEmail(request.Email);
+        if (user is null)
+        {
+            return BadRequest("No user with this email exists");
+        }
 
-        if(isVerified==false) return new JsonResult("Incorrect Password") { StatusCode = 400 };
-        return Ok(user);
+        var isVerified = user.PasswordHash != null && _service.Authenticate(request.Password, user.PasswordHash);
+
+        if (!isVerified)
+        {
+            return BadRequest("Incorrect password");
+        }
+
+        var response = new UserDTO()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            ProfilePicture = user.ProfilePicture,
+            IsActive = user.IsActive,
+            HeaderImage = user.HeaderImage,
+            JobTItle = user.JobTItle,
+            Organization = user.Organization,
+            Location = user.Location
+        };
+
+        return Ok(response);
     }
+
 }

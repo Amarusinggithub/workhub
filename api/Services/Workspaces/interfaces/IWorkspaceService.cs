@@ -2,7 +2,7 @@ using api.Models;
 
 namespace api.Services.interfaces;
 
-public interface IWorkSpaceService
+public interface IWorkspaceService
 {
 
     public Task<bool> CreateWorkspace(string workSpaceName);

@@ -52,7 +52,7 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
 
             if (existingUser == null)
                 return await Add(entity);
-            existingUser.FirtName = entity.FirtName;
+            existingUser.FirstName = entity.FirstName;
             existingUser.LastName = entity.LastName;
             existingUser.Email = entity.Email;
 

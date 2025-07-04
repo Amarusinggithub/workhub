@@ -4,14 +4,14 @@ using api.Services.interfaces;
 
 namespace api.Services;
 
-public class WorkSpaceService : IWorkSpaceService
+public class WorkspaceService : IWorkspaceService
 
 {
 
     private readonly ILogger<UserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public WorkSpaceService(ILogger<UserService> logger, IUnitOfWork unitOfWork)
+    public WorkspaceService(ILogger<UserService> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

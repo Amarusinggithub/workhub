@@ -36,6 +36,29 @@
 
     <ItemGroup>
       <Folder Include="Configuration\" />
+      <Folder Include="Controllers\Analytics\" />
+      <Folder Include="Controllers\Auth\" />
+      <Folder Include="Controllers\Boards\" />
+      <Folder Include="Controllers\Notifications\" />
+      <Folder Include="Controllers\Projects\" />
+      <Folder Include="Controllers\Tasks\" />
+      <Folder Include="Controllers\Users\" />
+      <Folder Include="Controllers\Workspaces\" />
+      <Folder Include="DTOs\Analytics\" />
+      <Folder Include="DTOs\Boards\" />
+      <Folder Include="DTOs\Notifications\" />
+      <Folder Include="DTOs\Projects\" />
+      <Folder Include="DTOs\Tasks\" />
+      <Folder Include="DTOs\Users\" />
+      <Folder Include="DTOs\Workspaces\" />
+      <Folder Include="Repository\Analytics\" />
+      <Folder Include="Repository\Auth\" />
+      <Folder Include="Repository\Boards\" />
+      <Folder Include="Repository\Notifications\" />
+      <Folder Include="Repository\Projects\" />
+      <Folder Include="Repository\Tasks\" />
+      <Folder Include="Repository\Users\" />
+      <Folder Include="Repository\Workspaces\" />
       <Folder Include="Tests\" />
     </ItemGroup>
 

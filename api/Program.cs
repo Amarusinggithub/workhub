@@ -1,8 +1,8 @@
-using api.Database;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Amazon.S3;
+using api.Data;
 using api.Repository;
 using api.Repository.interfaces;
 using api.Services;
@@ -134,7 +134,7 @@ builder.Services.AddScoped<ITaskAttachmentService, TaskAttachmentService>();
 builder.Services.AddScoped<ISubtaskService, SubtaskService>();
 builder.Services.AddScoped<IWebhookService, WebhookService>();
 builder.Services.AddScoped<IIntegrationService, IntegrationService>();
-builder.Services.AddScoped<IAIService	, AIService	>();
+builder.Services.AddScoped<IAIService, AIService	>();
 
 
 

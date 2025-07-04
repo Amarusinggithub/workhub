@@ -1,6 +1,6 @@
 namespace api.Enums;
 
-public enum IssueType
+public enum TaskType
 {
     EPIC,
     STORY,

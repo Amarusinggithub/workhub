@@ -1,6 +1,6 @@
 namespace api.Enums;
 
-public enum IssuePriority
+public enum TaskPriority
 {
     HIGHEST ,
     HIGH ,

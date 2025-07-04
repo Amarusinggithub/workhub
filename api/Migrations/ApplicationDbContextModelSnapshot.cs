@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using api.Database;
+using api.Data;
 
 #nullable disable
 
@@ -165,14 +165,14 @@ namespace api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("IssueId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -182,9 +182,9 @@ namespace api.Migrations
 
                     b.HasIndex("CommenterId");
 
-                    b.HasIndex("IssueId");
-
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("TaskId");
 
                     b.ToTable("Comments");
                 });
@@ -266,88 +266,6 @@ namespace api.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("api.Models.Issue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AssignedToId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("FinishedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("IssueId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IssuePriority")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IssueStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IssueType")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TaskDescription")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TaskName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedToId");
-
-                    b.HasIndex("IssueId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("Issues");
-                });
-
-            modelBuilder.Entity("api.Models.IssueLabel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AttachedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IssueId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LabelId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IssueId");
-
-                    b.HasIndex("LabelId");
-
-                    b.ToTable("IssueLabels");
-                });
-
             modelBuilder.Entity("api.Models.Label", b =>
                 {
                     b.Property<int>("Id")
@@ -401,23 +319,23 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.NotificationMember", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Userid")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("NotificationId");
 
-                    b.HasIndex("Userid");
+                    b.HasIndex("UserId");
 
                     b.ToTable("NotificationMembers");
                 });
@@ -803,7 +721,7 @@ namespace api.Migrations
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UploadedByUserId")
+                    b.Property<int>("UploaderId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserGroupId")
@@ -811,7 +729,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UploadedByUserId");
+                    b.HasIndex("UploaderId");
 
                     b.HasIndex("UserGroupId");
 
@@ -929,6 +847,120 @@ namespace api.Migrations
                     b.HasIndex("UserGroupId");
 
                     b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("api.Models.Task", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaskDescription")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TaskPriority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("api.Models.TaskLabel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AttachedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LabelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabelId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskLabels");
+                });
+
+            modelBuilder.Entity("api.Models.TaskResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastDownloadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastOpenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskResources");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
@@ -1089,7 +1121,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InUserGroups");
+                    b.ToTable("UserGroupMembers");
                 });
 
             modelBuilder.Entity("api.Models.UserGroupType", b =>
@@ -1268,21 +1300,21 @@ namespace api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("api.Models.Issue", "Issue")
-                        .WithMany("Comments")
-                        .HasForeignKey("IssueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("api.Models.Comment", "Parent")
                         .WithMany("Replies")
                         .HasForeignKey("ParentId");
 
+                    b.HasOne("api.Models.Task", "Task")
+                        .WithMany("Comments")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Commenter");
 
-                    b.Navigation("Issue");
-
                     b.Navigation("Parent");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("api.Models.Include", b =>
@@ -1309,7 +1341,7 @@ namespace api.Migrations
                     b.HasOne("api.Models.PlanHistory", "PlanHistory")
                         .WithMany("Invoices")
                         .HasForeignKey("PlanHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("api.Models.Subscription", "Subscription")
@@ -1323,46 +1355,6 @@ namespace api.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("api.Models.Issue", b =>
-                {
-                    b.HasOne("api.Models.User", "AssignedTo")
-                        .WithMany("Issues")
-                        .HasForeignKey("AssignedToId");
-
-                    b.HasOne("api.Models.Issue", null)
-                        .WithMany("Issues")
-                        .HasForeignKey("IssueId");
-
-                    b.HasOne("api.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AssignedTo");
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("api.Models.IssueLabel", b =>
-                {
-                    b.HasOne("api.Models.Issue", "Issue")
-                        .WithMany("Labels")
-                        .HasForeignKey("IssueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("api.Models.Label", "Label")
-                        .WithMany("Issues")
-                        .HasForeignKey("LabelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Issue");
-
-                    b.Navigation("Label");
-                });
-
             modelBuilder.Entity("api.Models.NotificationMember", b =>
                 {
                     b.HasOne("api.Models.Notification", "Notification")
@@ -1373,7 +1365,7 @@ namespace api.Migrations
 
                     b.HasOne("api.Models.User", "User")
                         .WithMany("UserNotifications")
-                        .HasForeignKey("Userid")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1527,7 +1519,7 @@ namespace api.Migrations
                         .IsRequired();
 
                     b.HasOne("api.Models.Resource", "Resource")
-                        .WithMany("UserResource")
+                        .WithMany("UserResources")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1551,9 +1543,9 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Resource", b =>
                 {
-                    b.HasOne("api.Models.User", "UploadedByUser")
+                    b.HasOne("api.Models.User", "Uploader")
                         .WithMany()
-                        .HasForeignKey("UploadedByUserId")
+                        .HasForeignKey("UploaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1563,7 +1555,7 @@ namespace api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UploadedByUser");
+                    b.Navigation("Uploader");
 
                     b.Navigation("UserGroup");
                 });
@@ -1592,6 +1584,65 @@ namespace api.Migrations
                     b.Navigation("Offer");
 
                     b.Navigation("UserGroup");
+                });
+
+            modelBuilder.Entity("api.Models.Task", b =>
+                {
+                    b.HasOne("api.Models.User", "AssignedTo")
+                        .WithMany("Issues")
+                        .HasForeignKey("AssignedToId");
+
+                    b.HasOne("api.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Task", null)
+                        .WithMany("Issues")
+                        .HasForeignKey("TaskId");
+
+                    b.Navigation("AssignedTo");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("api.Models.TaskLabel", b =>
+                {
+                    b.HasOne("api.Models.Label", "Label")
+                        .WithMany("Issues")
+                        .HasForeignKey("LabelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Task", "Task")
+                        .WithMany("Labels")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Label");
+
+                    b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("api.Models.TaskResource", b =>
+                {
+                    b.HasOne("api.Models.Resource", "Resource")
+                        .WithMany("TaskResources")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Task", "Task")
+                        .WithMany("resources")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("api.Models.UserGroup", b =>
@@ -1688,15 +1739,6 @@ namespace api.Migrations
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("api.Models.Issue", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Issues");
-
-                    b.Navigation("Labels");
-                });
-
             modelBuilder.Entity("api.Models.Label", b =>
                 {
                     b.Navigation("Issues");
@@ -1752,7 +1794,9 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.Resource", b =>
                 {
-                    b.Navigation("UserResource");
+                    b.Navigation("TaskResources");
+
+                    b.Navigation("UserResources");
                 });
 
             modelBuilder.Entity("api.Models.Role", b =>
@@ -1772,6 +1816,17 @@ namespace api.Migrations
                     b.Navigation("Invoices");
 
                     b.Navigation("PlanHistories");
+                });
+
+            modelBuilder.Entity("api.Models.Task", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Issues");
+
+                    b.Navigation("Labels");
+
+                    b.Navigation("resources");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>

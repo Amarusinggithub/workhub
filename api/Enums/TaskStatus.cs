@@ -1,6 +1,6 @@
 namespace api.Enums;
 
-public enum IssueStatus
+public enum TaskStatus
 {
     BACKLOG ,
     SELECTED ,

@@ -1,8 +1,8 @@
-using api.Database;
+using api.Repository;
 using api.Repository.interfaces;
 using api.Repositorys.interfaces;
 
-namespace api.Repository;
+namespace api.Data;
 
 public class UnitOfWork:IUnitOfWork,IDisposable
 {

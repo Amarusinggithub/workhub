@@ -24,7 +24,7 @@ public class User: IdentityUser<int>
 
 
     [Required]
-    public ICollection<Issue> Issues { get; set; } = new List<Issue>();
+    public ICollection<Task> Issues { get; set; } = new List<Task>();
     public ICollection<UserGroupMember> UserGroups { get; set; } = new List<UserGroupMember>();
 
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();

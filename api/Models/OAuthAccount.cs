@@ -6,8 +6,6 @@ namespace api.Models;
 public class OAuthAccount
 {
 
-
-
     [Key]
     public int Id { get; set; }
 

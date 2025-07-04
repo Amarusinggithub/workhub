@@ -1,4 +1,3 @@
-using api.DTOs;
 using api.Models;
 using api.Services.interfaces;
 using Asp.Versioning;
@@ -59,20 +58,9 @@ public class UserController(IUserService service) : ControllerBase
             return BadRequest("Incorrect password");
         }
 
-        var response = new UserDTO()
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email!,
-            ProfilePicture = user.ProfilePicture,
-            IsActive = user.IsActive,
-            HeaderImage = user.HeaderImage,
-            JobTItle = user.JobTItle,
-            Organization = user.Organization,
-            Location = user.Location
-        };
 
-        return Ok(response);
+
+        return Ok();
     }
 
 }

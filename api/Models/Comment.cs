@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models;
 
@@ -20,8 +19,8 @@ public class Comment
 
 
     [Required]
-    public int IssueId { get; set; }
-    public Issue Issue { get; set; }
+    public int TaskId { get; set; }
+    public Task Task { get; set; }
 
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; set; }

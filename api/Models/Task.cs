@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using api.Enums;
+using TaskStatus = api.Enums.TaskStatus;
 
 namespace api.Models;
 
-public class Issue
+public class Task
 {
-
-
 
     [Key]
     public int Id { get; set; }
@@ -15,9 +14,9 @@ public class Issue
     public string TaskName { get; set; } = string.Empty;
     public string? TaskDescription { get; set; }
 
-    public IssueStatus IssueStatus { get; set; }
-    public IssueType IssueType { get; set; }
-    public IssuePriority IssuePriority { get; set; }
+    public TaskStatus TaskStatus { get; set; }
+    public TaskType TaskType { get; set; }
+    public TaskPriority TaskPriority { get; set; }
 
     public int? AssignedToId { get; set; }
     public User? AssignedTo { get; set; }
@@ -28,11 +27,14 @@ public class Issue
 
 
     public int ParentId { get; set; }
-    public ICollection<Issue> Issues { get; set; } = new List<Issue>();
+    public ICollection<Task> Issues { get; set; } = new List<Task>();
 
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-    public ICollection<IssueLabel> Labels { get; set; } = new List<IssueLabel>();
+    public ICollection<TaskLabel> Labels { get; set; } = new List<TaskLabel>();
+
+    public ICollection<TaskResource> resources { get; set; } = new List<TaskResource>();
+
 
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

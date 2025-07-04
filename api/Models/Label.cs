@@ -9,7 +9,7 @@ public class Label
     public string Name { get; set; }
     public string? Discription { get; set; }
 
-    public ICollection<IssueLabel> Issues { get; set; } = new List<IssueLabel>();
+    public ICollection<TaskLabel> Issues { get; set; } = new List<TaskLabel>();
 
 
     public DateTime UpdatedAt { get; set; }

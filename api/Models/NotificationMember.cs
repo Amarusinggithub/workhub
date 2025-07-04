@@ -6,12 +6,12 @@ namespace api.Models;
 public class NotificationMember
 {
     [Key]
-    public int id { get; set; }
+    public int Id { get; set; }
 
 
     [Required]
     public User User { get; set; }
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
 
     [Required]

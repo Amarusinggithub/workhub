@@ -29,8 +29,9 @@ public class Resource
     public  ResourceType  ResourceType{ get; set; }
 
     [Required]
-    public int UploadedByUserId { get; set; }
-    public User UploadedByUser { get; set; }
+    public int UploaderId { get; set; }
+    public User Uploader { get; set; }
+
 
    /* public int? TaskId { get; set; }
     public Task? Task { get; set; }
@@ -41,6 +42,7 @@ public class Resource
     public int? WorkSpaceId { get; set; }
     public WorkSpace? WorkSpace { get; set; }*/
 
-    public ICollection<ProjectResource> UserResource { get; set; } = new List<ProjectResource>();
+    public ICollection<ProjectResource> UserResources { get; set; } = new List<ProjectResource>();
+    public ICollection<TaskResource> TaskResources { get; set; } = new List<TaskResource>();
 
 }

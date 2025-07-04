@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api.Models;
 
-public class IssueLabel
+public class TaskLabel
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
-    public int IssueId { get; set; }
-    public Issue Issue { get; set; }
+    public int TaskId { get; set; }
+    public Task Task { get; set; }
 
 
     [Required]

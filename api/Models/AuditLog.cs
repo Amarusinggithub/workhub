@@ -7,7 +7,7 @@ public class AuditLog
     [Key]
     public Guid Id { get; set; }
     public string Action { get; set; }
-    public string  UserId { get; set; }
+    public int  UserId { get; set; }
     public User User { get; set; }
 
     public DateTime PerformedAt { get; set; }
@@ -22,6 +22,6 @@ public class AuditLog
     public string? MethodName { get; set; }
     public string? Parameters { get; set; }
 
-    public string? EntityId { get; set; }
+    public int? EntityId { get; set; }
     public string? EntityName { get; set; }
 }

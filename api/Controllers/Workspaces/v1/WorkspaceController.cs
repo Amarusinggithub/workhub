@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using api.Services.interfaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 
-
-
-namespace api.Controllers;
+namespace api.Controllers.Workspaces.v1;
 
 [ApiController]
 [Route("[controller]")]

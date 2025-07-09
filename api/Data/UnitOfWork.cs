@@ -1,6 +1,7 @@
+using api.Data.interfaces;
 using api.Repository;
 using api.Repository.interfaces;
-using api.Repositorys.interfaces;
+using api.Repositories.interfaces;
 
 namespace api.Data;
 
@@ -28,7 +29,7 @@ public class UnitOfWork:IUnitOfWork,IDisposable
 
     public async Task CompleteAsync()
     {
-        await _context.SaveChangesAsync();
+         await _context.SaveChangesAsync();
     }
 
     /*public async void Dispose()

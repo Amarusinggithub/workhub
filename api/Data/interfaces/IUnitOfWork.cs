@@ -1,6 +1,7 @@
-using api.Repositorys.interfaces;
+using api.Repositories.interfaces;
+using api.Repository.interfaces;
 
-namespace api.Repository.interfaces;
+namespace api.Data.interfaces;
 
 public interface IUnitOfWork
 {
@@ -8,6 +9,7 @@ public interface IUnitOfWork
     IWorkSpaceRepository WorkSpaces {get; }
     IProjectRepository Projects { get; }
     ITaskRepository Tasks { get;  }
+
 
     INotificationRepository Notifications{get; }
     Task CompleteAsync();

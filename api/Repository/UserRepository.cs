@@ -1,6 +1,6 @@
 using api.Data;
 using api.Models;
-using api.Repositorys.interfaces;
+using api.Repositories.interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository;
@@ -21,19 +21,6 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
         }
     }
 
-    public async Task<User> Authenticate(string password,string email)
-    {
-
-
-        var newUser = await dbSet.SingleOrDefaultAsync(x => x.Email == email && x.PasswordHash == password);
-
-        if (newUser == null) return null;
-
-        // authentication successful so generate jwt token
-        //var token = await generateJwtToken(newUser);
-
-        return newUser;
-    }
 
     public async Task<User?> GetByEmail(string email)
     {
@@ -42,6 +29,8 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
 
 
     }
+
+
 
 
     public override async Task<bool> Upsert(User entity)
@@ -66,6 +55,34 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
 
     }
 
+    public async Task<User?> AddAndUpdateUser(User? userObj)
+    {
+        bool isSuccess = false;
+        if (userObj != null && userObj.Id > 0)
+        {
+            var obj = await _context.Users.FirstOrDefaultAsync(c => c.Id == userObj.Id);
+            if (obj != null)
+            {
+                // obj.Address = userObj.Address;
+                obj.FirstName = userObj.FirstName;
+                obj.LastName = userObj.LastName;
+                _context.Users.Update(obj);
+                isSuccess = await _context.SaveChangesAsync() > 0;
+            }
+        }
+        else
+        {
+            await _context.Users.AddAsync(userObj);
+            isSuccess = await _context.SaveChangesAsync() > 0;
+        }
+
+        return isSuccess ? userObj: null;
+    }
+
+    public override async Task<User?> GetById(int id)
+    {
+        return await _context.Users.FirstOrDefaultAsync(x => x != null && x.Id == id);
+    }
 
 
 

@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using api.Enums;
 namespace api.Models;
 
 public class User: IdentityUser<int>
 {
+    [Required]
+    public string Email { get; set; }
+
    public string FirstName { get; set; }
    public string LastName { get; set; }
     public string? ProfilePicture { get; set; }
@@ -12,6 +14,9 @@ public class User: IdentityUser<int>
     public string? JobTItle { get; set; }
     public string?  Organization { get; set; }
     public  string? Location { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryDate { get; set; }
+
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoggedIn { get; set; }

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace api.Models;
-public class RegisterRequest
+namespace api.DTOs.Auth;
+public class RegisterRequestDto
 {
     [Required]
     public string firstName { get; set; } = null!;

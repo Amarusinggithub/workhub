@@ -1,18 +1,26 @@
+using System.Text;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Amazon.S3;
 using api.Data;
-using api.Repository;
-using api.Repository.interfaces;
+using api.Data.interfaces;
+using api.Helpers;
 using api.Services;
+using api.Services.Auth;
+using api.Services.Auth.interfaces;
 using api.Services.Boards;
 using api.Services.Boards.interfaces;
+using api.Services.Infanstructure;
 using api.Services.interfaces;
 using api.Services.Issues.interfaces;
 using api.Services.Projects;
 using api.Services.Tasks;
+using api.Services.Users;
+using api.Services.Users.interfaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 
@@ -20,12 +28,18 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
+
+builder.Services.AddLogging(config =>
+{
+    config.AddConsole();
+    config.AddDebug();
+});
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 builder.Services.AddAuthorizationBuilder();
-//builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
-//builder.Services.AddAWSService<IAmazonS3>();
+
 
 
 builder.Services.AddIdentityCore<User>(options =>
@@ -89,7 +103,20 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat="'v'VVV";
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt=>
+    opt.TokenValidationParameters=new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["AppSettings:Audience"],
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+        ValidateIssuerSigningKey = true,
 
+
+    });
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -100,7 +127,6 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
@@ -134,7 +160,7 @@ builder.Services.AddScoped<ITaskAttachmentService, TaskAttachmentService>();
 builder.Services.AddScoped<ISubtaskService, SubtaskService>();
 builder.Services.AddScoped<IWebhookService, WebhookService>();
 builder.Services.AddScoped<IIntegrationService, IntegrationService>();
-builder.Services.AddScoped<IAIService, AIService	>();
+builder.Services.AddScoped<IAIService, AIService>();
 
 
 
@@ -179,13 +205,16 @@ if (app.Environment.IsDevelopment())
 app.MapIdentityApi<User>();
 app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
-
-
+app.UseMiddleware<JwtMiddleware>();
+// app.UseCookiePolicy();
+app.UseRouting();
+// app.UseRateLimiter();
+// app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseRouting();
-
+// app.UseSession();
+// app.UseResponseCompression();
+// app.UseResponseCaching();
 
 app.Run();
 

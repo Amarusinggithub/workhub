@@ -1,4 +1,4 @@
-namespace api.Services.interfaces;
+namespace api.Services.Auth.interfaces;
 
 public interface IPasswordHashService
 {

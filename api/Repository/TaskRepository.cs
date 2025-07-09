@@ -1,5 +1,5 @@
 using api.Data;
-using api.Repositorys.interfaces;
+using api.Repositories.interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = api.Models.Task;
 

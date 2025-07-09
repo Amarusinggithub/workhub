@@ -38,6 +38,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<PlanHistory> PlanHistories { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<EntityPropertyChange> EntityPropertyChanges { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -231,4 +233,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(inv => inv.PlanHistoryId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
+    
     }

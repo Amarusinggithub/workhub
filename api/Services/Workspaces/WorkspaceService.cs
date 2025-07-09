@@ -1,6 +1,8 @@
+using api.Data.interfaces;
 using api.Models;
 using api.Repository.interfaces;
 using api.Services.interfaces;
+using api.Services.Users;
 
 namespace api.Services;
 

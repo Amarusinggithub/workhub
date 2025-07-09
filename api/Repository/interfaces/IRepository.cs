@@ -1,4 +1,4 @@
-namespace api.Repositorys.interfaces;
+namespace api.Repositories.interfaces;
 
 public interface IRepository<T>
 {

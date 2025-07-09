@@ -1,16 +1,23 @@
+using api.DTOs.Auth;
 using api.Models;
 
-namespace api.Services.interfaces;
+namespace api.Services.Users.interfaces;
 
 public interface IUserService
 {
-    public Task<bool> AddUser(string lastName,string firstName,string password, string email);
 
     public Task<User> GetUserById(int id);
 
-    public bool Authenticate(string password, string email);
-
     Task<User?> GetByEmail(string email);
 
+    public Task<UserResponseDto?> AddUser(string lastName,string firstName,string password, string email);
+
+
+
+    Task<UserResponseDto?> Authenticate(string email, string password);
+    Task<IEnumerable<User>> GetAll();
+    Task<User?> GetById(int id);
+
+    Task<User?> AddAndUpdateUser(User? userObj);
 
 }

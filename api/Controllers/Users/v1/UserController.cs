@@ -2,10 +2,10 @@ using api.Services.Users.interfaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers.Users;
+namespace api.Controllers.Users.v1;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1")]
 public class UserController(IUserService service) : ControllerBase
 {

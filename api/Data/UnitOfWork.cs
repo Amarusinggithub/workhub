@@ -2,6 +2,13 @@ using api.Data.interfaces;
 using api.Repository;
 using api.Repository.interfaces;
 using api.Repositories.interfaces;
+using api.Repository.Notifications;
+using api.Repository.Projects;
+using api.Repository.Projects.interfaces;
+using api.Repository.Users;
+using api.Repository.Users.interfaces;
+using api.Repository.Workspaces;
+using api.Repository.Workspaces.interfaces;
 
 namespace api.Data;
 

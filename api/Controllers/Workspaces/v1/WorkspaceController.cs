@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Workspaces.v1;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1")]
 
 public class WorkspaceController(IWorkspaceService service) : ControllerBase

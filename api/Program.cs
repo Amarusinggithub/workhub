@@ -2,7 +2,6 @@ using System.Text;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Amazon.S3;
 using api.Data;
 using api.Data.interfaces;
 using api.Helpers;
@@ -40,6 +39,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 builder.Services.AddAuthorizationBuilder();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 builder.Services.AddIdentityCore<User>(options =>
@@ -112,7 +112,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = builder.Configuration["AppSettings:Audience"],
         ValidateLifetime = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]!)),
         ValidateIssuerSigningKey = true,
 
 
@@ -203,7 +203,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapIdentityApi<User>();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
 app.UseMiddleware<JwtMiddleware>();
 // app.UseCookiePolicy();

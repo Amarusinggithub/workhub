@@ -1,4 +1,5 @@
 using api.DTOs.Auth;
+using api.DTOs.Auth.Requests;
 using api.Models;
 using api.Services.Auth.interfaces;
 using api.Services.Users.interfaces;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Auth.v1;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiVersion("1")]
 public class AuthController(IUserService service) : ControllerBase
 {

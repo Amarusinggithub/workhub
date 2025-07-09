@@ -20,7 +20,7 @@ public class Comment
 
     [Required]
     public int TaskId { get; set; }
-    public Task Task { get; set; }
+    public TaskItem TaskItem { get; set; }
 
     public DateTime UpdatedAt { get; set; }
     public DateTime CreatedAt { get; set; }

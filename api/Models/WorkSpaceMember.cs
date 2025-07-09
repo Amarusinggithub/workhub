@@ -10,7 +10,7 @@ public class WorkSpaceMember
 
     [Required]
     public int WorkSpaceId { get; set; }
-    public WorkSpace WorkSpace { get; set; }
+    public Workspace Workspace { get; set; }
 
     [Required]
     public int UserId { get; set; }

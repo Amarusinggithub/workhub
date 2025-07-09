@@ -29,7 +29,7 @@ public class User: IdentityUser<int>
 
 
     [Required]
-    public ICollection<Task> Issues { get; set; } = new List<Task>();
+    public ICollection<TaskItem> Issues { get; set; } = new List<TaskItem>();
     public ICollection<UserGroupMember> UserGroups { get; set; } = new List<UserGroupMember>();
 
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
@@ -38,7 +38,7 @@ public class User: IdentityUser<int>
     public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();
 
     [Required]
-    public ICollection<UserProjectRole> UserProjectRoles { get; set; } = new List<UserProjectRole>();
+    public ICollection<UserWorkspaceRole> UserWorkspaceRoles { get; set; } = new List<UserWorkspaceRole>();
 
     // ToDo: add id For notification if not many to many relation or  make join table for user and group
     public ICollection<NotificationMember> UserNotifications { get; set; } = new List<NotificationMember>();

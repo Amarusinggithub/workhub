@@ -43,6 +43,6 @@ public class Resource
     public WorkSpace? WorkSpace { get; set; }*/
 
     public ICollection<ProjectResource> UserResources { get; set; } = new List<ProjectResource>();
-    public ICollection<TaskResource> TaskResources { get; set; } = new List<TaskResource>();
+    public ICollection<TaskAttachment> TaskResources { get; set; } = new List<TaskAttachment>();
 
 }

@@ -9,7 +9,7 @@ public class TaskLabel
 
     [Required]
     public int TaskId { get; set; }
-    public Task Task { get; set; }
+    public TaskItem TaskItem { get; set; }
 
 
     [Required]

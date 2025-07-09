@@ -27,9 +27,12 @@ public class Subscription
     public DateTime? TrialPeriodEndDate { get; set; }
     public DateTime? ValidTo { get; set; }
 
-    public DateTime? SubscribedAt { get; set; }
     public DateTime? UnSubscribedAt { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    public DateTime? EndDate { get; set; }
+    public bool IsActive => EndDate == null || EndDate > DateTime.UtcNow;
+
 
     public ICollection<PlanHistory> PlanHistories { get; set; } = new List<PlanHistory>();
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();

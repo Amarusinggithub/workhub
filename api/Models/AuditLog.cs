@@ -24,4 +24,9 @@ public class AuditLog
 
     public int? EntityId { get; set; }
     public string? EntityName { get; set; }
+    public string EntityType { get; set; }
+
+    public Guid PerformedById { get; set; }
+    public User PerformedBy { get; set; } = null!;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }

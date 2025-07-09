@@ -11,6 +11,7 @@
         <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
         <PackageReference Include="AutoMapper" Version="15.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="AWSSDK.Core" Version="4.0.0.6" />
         <PackageReference Include="AWSSDK.S3" Version="4.0.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
@@ -40,27 +41,25 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Configuration\" />
       <Folder Include="Controllers\Analytics\v1\" />
       <Folder Include="Controllers\Boards\v1\" />
       <Folder Include="Controllers\Notifications\v1\" />
       <Folder Include="Controllers\Tasks\v1\" />
-      <Folder Include="DTOs\Analytics\" />
-      <Folder Include="DTOs\Boards\" />
-      <Folder Include="DTOs\Mapping\" />
-      <Folder Include="DTOs\Notifications\" />
-      <Folder Include="DTOs\Projects\" />
-      <Folder Include="DTOs\Tasks\" />
-      <Folder Include="DTOs\Users\" />
-      <Folder Include="DTOs\Workspaces\" />
-      <Folder Include="Repository\Analytics\" />
-      <Folder Include="Repository\Auth\" />
-      <Folder Include="Repository\Boards\" />
-      <Folder Include="Repository\Notifications\" />
-      <Folder Include="Repository\Projects\" />
-      <Folder Include="Repository\Tasks\" />
-      <Folder Include="Repository\Users\" />
-      <Folder Include="Repository\Workspaces\" />
+      <Folder Include="DTOs\Analytics\Requests\" />
+      <Folder Include="DTOs\Analytics\Responses\" />
+      <Folder Include="DTOs\Boards\Requests\" />
+      <Folder Include="DTOs\Boards\Responses\" />
+      <Folder Include="DTOs\Notifications\Requests\" />
+      <Folder Include="DTOs\Notifications\Responses\" />
+      <Folder Include="DTOs\Projects\Requests\" />
+      <Folder Include="DTOs\Projects\Responses\" />
+      <Folder Include="DTOs\Tasks\Requests\" />
+      <Folder Include="DTOs\Tasks\Responses\" />
+      <Folder Include="DTOs\Users\Requests\" />
+      <Folder Include="DTOs\Users\Responses\" />
+      <Folder Include="DTOs\Workspaces\Requests\" />
+      <Folder Include="DTOs\Workspaces\Responses\" />
+      <Folder Include="Repository\Auth\interfaces\" />
       <Folder Include="Tests\" />
     </ItemGroup>
 

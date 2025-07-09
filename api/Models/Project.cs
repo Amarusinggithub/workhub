@@ -26,9 +26,9 @@ public class Project
 
     [Required]
     public int WorkSpaceId { get; set; }
-    public WorkSpace WorkSpace { get; set; }
+    public Workspace Workspace { get; set; }
 
-    public ICollection<UserProjectRole> UserProjectRoles { get; set; } = new List<UserProjectRole>();
+    public ICollection<UserWorkspaceRole> UserProjectRoles { get; set; } = new List<UserWorkspaceRole>();
 
 
     public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();

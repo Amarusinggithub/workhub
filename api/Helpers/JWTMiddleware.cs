@@ -29,10 +29,14 @@ namespace api.Helpers
         {
             try
             {
-                var secretKey = configuration.GetValue<string>("AppSettings:Secret");
+                var secretKey = _configuration.GetValue<string>("AppSettings:Secret");
+                if (string.IsNullOrEmpty(secretKey))
+                {
+                    throw new InvalidOperationException("JWT Secret key is not configured in AppSettings:Secret");
+                }
 
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(secretKey!);
+                var key = Encoding.ASCII.GetBytes(secretKey);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,

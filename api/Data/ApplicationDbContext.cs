@@ -1,7 +1,6 @@
 using api.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Task=api.Models;
 
 namespace api.Data;
 
@@ -13,15 +12,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<UserGroupType> UserGroupTypes { get; set; }
     public DbSet<UserGroupMember> UserGroupMembers { get; set; }
-    public DbSet<WorkSpace> WorkSpaces { get; set; }
+    public DbSet<Workspace> WorkSpaces { get; set; }
     public DbSet<WorkSpaceMember> WorkSpaceMembers { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ProjectCategory> ProjectCategories { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<UserProjectRole> UserProjectRoles { get; set; }
-    public DbSet<Task.Task> Tasks { get; set; }
-    public DbSet<TaskResource> TaskResources { get; set; }
+    public DbSet<UserWorkspaceRole> UserProjectRoles { get; set; }
+    public DbSet<TaskItem> Tasks { get; set; }
+    public DbSet<TaskAttachment> TaskAttachments { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationMember> NotificationMembers { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
@@ -33,6 +32,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<OptionIncluded> OptionIncludes { get; set; }
     public DbSet<Offer> Offers { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<TaskAssignment> TaskAssignments { get; set; }
+
     public DbSet<Label> Labels { get; set; }
     public DbSet<TaskLabel> TaskLabels { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
@@ -54,7 +55,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Comment>()
-                .HasOne(issue => issue.Task)
+                .HasOne(issue => issue.TaskItem)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(inc => inc.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -66,7 +67,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<TaskLabel>()
-                .HasOne(issue => issue.Task)
+                .HasOne(issue => issue.TaskItem)
                 .WithMany(p => p.Labels)
                 .HasForeignKey(inc => inc.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -83,15 +84,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(ugr => ugr.UserGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<TaskResource>()
+            builder.Entity<TaskAttachment>()
                 .HasOne(ts => ts.Resource)
                 .WithMany(r => r.TaskResources)
                 .HasForeignKey(ugr => ugr.ResourceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<TaskResource>()
-                .HasOne(ugr => ugr.Task)
-                .WithMany(u => u.resources)
+            builder.Entity<TaskAttachment>()
+                .HasOne(ugr => ugr.TaskItem)
+                .WithMany(u => u.Attactments)
                 .HasForeignKey(ugr => ugr.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -108,7 +109,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<WorkSpaceMember>()
-                .HasOne(iws => iws.WorkSpace)
+                .HasOne(iws => iws.Workspace)
                 .WithMany(ws => ws.UserWorkSpaces)
                 .HasForeignKey(iws => iws.WorkSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -143,16 +144,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     .HasForeignKey(pc => pc.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-                builder.Entity<UserProjectRole>()
-                    .HasOne(upr => upr.User)
-                    .WithMany(u => u.UserProjectRoles)
-                    .HasForeignKey(upr => upr.UserId)
+                builder.Entity<UserWorkspaceRole>()
+                    .HasOne(uwr => uwr.User)
+                    .WithMany(u => u.UserWorkspaceRoles)
+                    .HasForeignKey(uwr => uwr.UserId)
                .OnDelete(DeleteBehavior.Cascade);
 
-               builder.Entity<UserProjectRole>()
-                   .HasOne(upr => upr.Project)
-                   .WithMany(p => p.UserProjectRoles)
-                   .HasForeignKey(upr => upr.ProjectId)
+               builder.Entity<UserWorkspaceRole>()
+                   .HasOne(uwr => uwr.Workspace)
+                   .WithMany(w => w.UserWorkspaceRoles)
+                   .HasForeignKey(uwr => uwr.WorkspaceId)
                .OnDelete(DeleteBehavior.Cascade);
 
                builder.Entity<NotificationMember>()
@@ -233,5 +234,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(inv => inv.PlanHistoryId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
-    
+
     }

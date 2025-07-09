@@ -1,5 +1,8 @@
 using api.Repositories.interfaces;
 using api.Repository.interfaces;
+using api.Repository.Projects.interfaces;
+using api.Repository.Users.interfaces;
+using api.Repository.Workspaces.interfaces;
 
 namespace api.Data.interfaces;
 

@@ -22,9 +22,9 @@ public class WorkspaceService : IWorkspaceService
 
     public async Task<bool> CreateWorkspace(string workSpaceName)
     {
-        WorkSpace workSpace = new WorkSpace { WorkSpaceName = workSpaceName };
+        Workspace workspace = new Workspace { WorkSpaceName = workSpaceName };
 
-    return  await _unitOfWork.WorkSpaces.Add(workSpace);
+    return  await _unitOfWork.WorkSpaces.Add(workspace);
 
 
 

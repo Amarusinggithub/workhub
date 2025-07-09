@@ -9,7 +9,7 @@ public class UserResource
 
     [Required]
     public int TaskResourceId { get; set; }
-    public TaskResource TaskResource { get; set; }
+    public TaskAttachment TaskAttachment { get; set; }
 
     [Required]
     public int UserId { get; set; }

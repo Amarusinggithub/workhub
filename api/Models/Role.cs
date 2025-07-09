@@ -14,5 +14,5 @@ public class Role: IdentityRole<int>
 
     public ICollection<WorkSpaceMember> WorkSpaceRoles { get; set; } = new List<WorkSpaceMember>();
     //public ICollection<UserGroupResource> ResourceRoles { get; set; } = new List<UserGroupResource>();
-    public ICollection<UserProjectRole> ProjectRoles { get; set; } = new List<UserProjectRole>();
+    public ICollection<UserWorkspaceRole> ProjectRoles { get; set; } = new List<UserWorkspaceRole>();
 }

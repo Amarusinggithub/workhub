@@ -1,4 +1,5 @@
 using api.DTOs.Auth;
+using api.DTOs.Users.Responses;
 using api.Models;
 
 namespace api.Services.Users.interfaces;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using api.Models;
+using api.DTOs.Auth;
 
-namespace api.DTOs.Auth;
+namespace api.DTOs.Users.Responses;
 
 public class UserResponseDto
 {
@@ -25,6 +25,6 @@ public class UserResponseDto
     public bool? isActive { get; set; }
 
     [Required]
-   public TokenResponseDto tokens { get; set; }
+   public AuthTokenResponse AuthTokens { get; set; }
 
 }

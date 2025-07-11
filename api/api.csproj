@@ -41,20 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DTOs\Analytics\Requests\" />
-      <Folder Include="DTOs\Analytics\Responses\" />
-      <Folder Include="DTOs\Boards\Requests\" />
-      <Folder Include="DTOs\Boards\Responses\" />
-      <Folder Include="DTOs\Notifications\Requests\" />
       <Folder Include="DTOs\Notifications\Responses\" />
-      <Folder Include="DTOs\Projects\Requests\" />
-      <Folder Include="DTOs\Projects\Responses\" />
-      <Folder Include="DTOs\Tasks\Requests\" />
-      <Folder Include="DTOs\Tasks\Responses\" />
-      <Folder Include="DTOs\Users\Requests\" />
-      <Folder Include="DTOs\Users\Responses\" />
-      <Folder Include="DTOs\Workspaces\Requests\" />
-      <Folder Include="DTOs\Workspaces\Responses\" />
       <Folder Include="Repository\Auth\interfaces\" />
       <Folder Include="Tests\" />
     </ItemGroup>

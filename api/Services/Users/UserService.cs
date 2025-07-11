@@ -1,5 +1,6 @@
 using api.Data.interfaces;
 using api.DTOs.Auth;
+using api.DTOs.Users.Responses;
 using api.Models;
 using api.Services.Auth.interfaces;
 using api.Services.Users.interfaces;
@@ -32,7 +33,7 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
                 user.LastLoggedIn = DateTime.UtcNow;
                 await unitOfWork.CompleteAsync();
 
-                TokenResponseDto tokens = new TokenResponseDto
+                AuthTokenResponse authTokens = new AuthTokenResponse
                 {
                     AccessToken = await tokenService.GenerateToken(user),
                     RefreshToken = await tokenService.GenerateAndSaveRefreshTokenAsync(user),
@@ -51,7 +52,7 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
                     profilePicture = user.ProfilePicture,
                     lastLoggedIn = user.LastLoggedIn,
                     createdAt = user.CreatedAt,
-                    tokens = tokens
+                    AuthTokens = authTokens
                 };
             }
             else

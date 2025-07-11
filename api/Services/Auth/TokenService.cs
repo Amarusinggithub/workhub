@@ -225,7 +225,7 @@ public class TokenService(
         }
     }
 
-    public async Task<TokenResponseDto?> RefreshTokenAsync(string refreshToken, int userId)
+    public async Task<AuthTokenResponse?> RefreshTokenAsync(string refreshToken, int userId)
     {
         _logger.LogInformation("Refreshing access token for user with ID: {UserId}", userId);
 
@@ -244,7 +244,7 @@ public class TokenService(
 
             _logger.LogInformation("Tokens refreshed successfully for user: {UserId}", userId);
 
-            return new TokenResponseDto
+            return new AuthTokenResponse
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken

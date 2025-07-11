@@ -41,10 +41,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Analytics\v1\" />
-      <Folder Include="Controllers\Boards\v1\" />
-      <Folder Include="Controllers\Notifications\v1\" />
-      <Folder Include="Controllers\Tasks\v1\" />
       <Folder Include="DTOs\Analytics\Requests\" />
       <Folder Include="DTOs\Analytics\Responses\" />
       <Folder Include="DTOs\Boards\Requests\" />

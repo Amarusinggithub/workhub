@@ -5,7 +5,11 @@ namespace api.Controllers.Projects.v1;
 [ApiController]
 [Route("api/[controller]")]
 [ApiVersion("1")]
-public class ProjectController:ControllerBase
+public class ProjectMembersController : ControllerBase
 {
-
+    // GET
+    public IActionResult Index()
+    {
+        return Ok();
+    }
 }

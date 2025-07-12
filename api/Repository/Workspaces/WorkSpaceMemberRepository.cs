@@ -1,8 +1,9 @@
+using api.Data;
 using api.Repository.Workspaces.interfaces;
 
 namespace api.Repository.Workspaces;
 
-public class WorkSpaceMemberRepository:IWorkSpaceMemberRepository
+public class WorkSpaceMemberRepository(ApplicationDbContext context, ILogger logger) :IWorkSpaceMemberRepository
 {
 
 }

@@ -17,6 +17,7 @@ using api.Services.Projects;
 using api.Services.Tasks;
 using api.Services.Users;
 using api.Services.Users.interfaces;
+using api.Services.Workspaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

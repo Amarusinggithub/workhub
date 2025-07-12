@@ -1,10 +1,9 @@
 using api.Data.interfaces;
 using api.Models;
-using api.Repository.interfaces;
 using api.Services.interfaces;
 using api.Services.Users;
 
-namespace api.Services;
+namespace api.Services.Workspaces;
 
 public class WorkspaceService : IWorkspaceService
 
@@ -24,7 +23,7 @@ public class WorkspaceService : IWorkspaceService
     {
         Workspace workspace = new Workspace { WorkSpaceName = workSpaceName };
 
-    return  await _unitOfWork.WorkSpaces.Add(workspace);
+    return  await _unitOfWork.Workspaces.Add(workspace);
 
 
 

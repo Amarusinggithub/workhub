@@ -37,7 +37,7 @@ public interface IUnitOfWork
     IBoardFilterRepository BoardFilters { get;  }
 
     IBoardViewRepository BoardViews { get;  }
-    ICacheRepository Cache { get;  }
+    ICacheRepository Caches { get;  }
     ISettingRepository Settings { get;  }
     IStorageRepository Storages { get;  }
     IWebhookRepository Webhooks { get;  }

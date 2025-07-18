@@ -1,44 +1,42 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
-import useAuth from '../hooks/use-auth';
-import AppLayout from '../layouts/app-layout';
+import { useAuth } from '../hooks/use-auth';
+import Welcome from '../pages//welcome';
+import ForgotPassword from '../pages/auth/forgot-password';
 import Login from '../pages/auth/login';
 import Register from '../pages/auth/register';
-import Welcome from '../pages/welcome';
+import ResetPassword from '../pages/auth/reset-password';
 import Dashboard from '../pages/dashboard';
+import Settings from '../pages/settings/settings';
+import VerifyEmail from '../pages/auth/verify-email';
 
-/*const AppLayout = lazy(() => import('../layouts/AppLayout.tsx'));
-const Login = lazy(() => import('../pages/auth/Login.tsx'));
-const Register = lazy(() => import('../pages/auth/Register.tsx'));*/
-const AppRoutes = () => {
-	const { isAuthenticated, isCheckingAuth } = useAuth();
-	if (isCheckingAuth) return null;
+function AppRoutes() {
+	const { isAuthenticated, checkingAuth } = useAuth();
+	if (checkingAuth) return null;
 
-	return <RouterProvider router={createBrowserRouter(isAuthenticated ? privateRoutes : publicRoutes)} key={isAuthenticated ? 'isAuth' : 'notAuth'} />;
-};
+	const publicRoutes = [
+		{ index: true, Component: Welcome },
+		{ path: 'login', Component: Login },
+		{ path: 'forgot-password', Component: ForgotPassword },
+		{ path: 'reset-password', Component: ResetPassword },
+		{ path: 'verify-email', Component: VerifyEmail },
+		{ path: 'register', Component: Register },
+		{ path: '*', Component: () => <Navigate to="/" replace /> },
+	];
+
+	const privateRoutes = [
+		{ index: true, Component: Dashboard },
+
+		{ path: 'settings', Component: Settings },
+		{ path: 'verify-email', Component: VerifyEmail },
+		{ path: 'forgot-password', Component: ForgotPassword },
+		{ path: 'reset-password/:token', Component: ResetPassword },
+
+		{ path: '*', Component: () => <Navigate to="/" replace /> },
+	];
+
+	const router = createBrowserRouter(isAuthenticated ? privateRoutes : publicRoutes);
+
+	return <RouterProvider router={router} key={isAuthenticated ? 'auth' : 'guest'} />;
+}
 
 export default AppRoutes;
-
-const publicRoutes = [
-	{
-		path: '/',
-		Component: Welcome,
-	},
-	{ path: '/login', Component: Login },
-	{ path: '/register', Component: Register },
-	{ path: '*', Component: () => <Navigate to="/" replace /> },
-];
-
-const privateRoutes = [
-	{
-		path: '/',
-		Component: AppLayout,
-		children: [
-			{
-				index: true,
-				Component: Dashboard,
-			},
-
-			{ path: '*', Component: () => <Navigate to="/" replace /> },
-		],
-	},
-];

@@ -1,6 +1,7 @@
 import { type LucideIcon } from 'lucide-react';
 
 export type AuthField = 'firstName' | 'lastName' | 'email' | 'password' | 'confirmPassword' | 'auth';
+export const USERDATA_STORAGE_KEY = 'userData';
 
 export type AuthErrorType =
 	| 'This field cannot be empty'

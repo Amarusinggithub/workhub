@@ -30,14 +30,16 @@ const Login = ({ status, canResetPassword }: LoginProps) => {
 
 
 
-	const { isLoading, errors } = useAuth();
+	const { isLoading, errors ,Login} = useAuth();
 
     function change(e: React.ChangeEvent<HTMLInputElement>) {
 			setForm({ ...form, [e.target.name]: e.target.value.trim() });
 		}
 
-	function submit(e: React.FormEvent<HTMLFormElement>) {
+	 async function submit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+        		await Login(form.email,form.password);
+
 
 	}
 

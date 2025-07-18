@@ -1,54 +1,65 @@
-import axiosInstance from '../lib/axios';
-import React, { createContext, useContext, useState, type PropsWithChildren } from 'react';
-import type { AuthErrorCode, SharedData } from '../types';
-
-type AuthContextType = {
-	errors: AuthErrorCode[] | null;
-
-	sharedData: SharedData | undefined;
-	isAuthenticated: boolean;
-	isCheckingAuth: boolean;
-	isLoading: boolean;
-	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	setError: React.Dispatch<React.SetStateAction<AuthErrorCode[] | null>>;
-	setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-	setIsCheckingAuth: React.Dispatch<React.SetStateAction<boolean>>;
-	setSharedData: React.Dispatch<React.SetStateAction<SharedData | undefined>>;
-	SignUp: (firstName: string, lastName: string, email: string, password: string, confirmPassword: string) => void;
-	Login: (email: string, password: string) => void;
-	Logout: () => void;
-};
+import React, { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import axiosInstance from '../lib/axios.ts';
+import { type SharedData, type User, USERDATA_STORAGE_KEY } from './../types';
 
 type AuthProviderProps = PropsWithChildren;
+interface AuthContextType {
+	SignUp: (firstName: string, lastName: string, email: string, password: string) => void;
+	Login: (email: string, password: string) => void;
+	Logout: () => void;
+	PasswordReset: (token: string | undefined, password: string) => void;
+	ForgotPassword: (email: string) => void;
+	VerifyEmail: (email: string) => void;
+	ConfirmPassword: (password: string) => void;
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+	setErrors: React.Dispatch<React.SetStateAction<any | null>>;
+	setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+	setSharedData: React.Dispatch<React.SetStateAction<SharedData | null>>;
+	sharedData: SharedData | null;
+	errors: any | null;
+	isLoading: boolean;
+	isAuthenticated: boolean;
+	checkingAuth: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: AuthProviderProps) {
-	const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
-	const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(false);
-	const [sharedData, setSharedData] = useState<SharedData | undefined>();
+const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [isLoading, setLoading] = useState<boolean>(false);
-	const [errors, setError] = useState<AuthErrorCode[] | null>(null);
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+	const [checkingAuth, setCheckingAuth] = useState<boolean>(true);
+	const [errors, setErrors] = useState<any | null>(null);
+	const [sharedData, setSharedData] = useState<SharedData | null>(null);
 
-	async function SignUp(firstName: string, lastName: string, email: string, password: string, confirmPassword: string) {
+	const setAuth = (apiResponse: any) => {
+		const user: User = {
+			id: apiResponse.id,
+			firstName: apiResponse.firstName,
+			lastName: apiResponse.lastName,
+			email: apiResponse.email,
+			isActive: apiResponse.isActive,
+		};
+		const shared: SharedData = {
+			auth: { user },
+			name: `${user.firstName} ${user.lastName}`,
+			quote: { message: '', author: '' },
+			sidebarOpen: false,
+		};
+		setIsAuthenticated(true);
+		setSharedData(shared);
+
+		localStorage.setItem(USERDATA_STORAGE_KEY, JSON.stringify(shared));
+	};
+
+	const setNotAuth = () => {
+		setIsAuthenticated(false);
+		localStorage.removeItem(USERDATA_STORAGE_KEY);
+	};
+
+	async function SignUp(firstName: string, lastName: string, email: string, password: string) {
 		try {
 			setLoading(true);
-			setError(null);
-			const tempErrors: AuthErrorCode[] = [];
-
-			if (!firstName.trim()) tempErrors.push('firstName:This field cannot be empty');
-			if (!lastName.trim()) tempErrors.push('lastName:This field cannot be empty');
-			if (!email.trim()) tempErrors.push('email:This field cannot be empty');
-			if (!password.trim()) tempErrors.push('password:This field cannot be empty');
-			if (!confirmPassword.trim()) tempErrors.push('confirmPassword:This field cannot be empty');
-			if (password && confirmPassword && password !== confirmPassword) {
-				tempErrors.push('confirmPassword:password and confirm password must match');
-			}
-
-			if (tempErrors.length > 0) {
-				setError(tempErrors);
-				return;
-			}
+			setErrors(null);
 
 			const response = await axiosInstance.post('register/', {
 				firstName: firstName,
@@ -58,13 +69,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			});
 
 			if (response.status >= 200 && response.status < 300) {
-				//setAuth(response.data);
+				setAuth(response.data);
 			} else {
 				console.error('Signup failed');
 			}
 		} catch (error: any) {
-			console.error('Signup error:', error.response ? error.response.data : error.message);
-			throw error;
+			console.error('Sign Up error:', error);
+			setErrors(['auth:unknown']);
 		} finally {
 			setLoading(false);
 		}
@@ -73,16 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	async function Login(email: string, password: string) {
 		try {
 			setLoading(true);
-			setError(null);
-			const tempErrors: AuthErrorCode[] = [];
-
-			if (!email.trim()) tempErrors.push('email:This field cannot be empty');
-			if (!password.trim()) tempErrors.push('password:This field cannot be empty');
-
-			if (tempErrors.length > 0) {
-				setError(tempErrors);
-				return;
-			}
+			setErrors(null);
 
 			const response = await axiosInstance.post('login/', {
 				email: email,
@@ -90,13 +92,82 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			});
 
 			if (response.status >= 200 && response.status < 300) {
-				//setAuth(response.data);
+				console.log(response.data);
+				setAuth(response.data);
 			} else {
 				console.error('Login failed');
 			}
 		} catch (error: any) {
-			console.error('Login error:', error.response ? error.response.data : error.message);
-			throw error;
+			console.error('Login error:', error);
+			setErrors(['auth:unknown']);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function ConfirmPassword(password: string) {
+		try {
+			setLoading(true);
+			setErrors(null);
+
+			const response = await axiosInstance.post('confirm-password/', {
+				password: password,
+			});
+		} catch (error: any) {
+			console.error('ConfirmPassword error:', error);
+			setErrors(['auth:unknown']);
+		} finally {
+			setLoading(false);
+		}
+	}
+	async function PasswordReset(token: string | undefined, password: string) {
+		try {
+			setLoading(true);
+			setErrors(null);
+
+			const response = await axiosInstance.post('password-reset/confirm/', {
+				password: password,
+				token: token,
+			});
+		} catch (error: any) {
+			console.error('PasswordReset error:', error);
+			setErrors(['auth:unknown']);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function ForgotPassword(email: string) {
+		try {
+			setLoading(true);
+			setErrors(null);
+
+			const response = await axiosInstance.post('password-reset/', {
+				email: email,
+			});
+
+			return response.data.token;
+		} catch (error: any) {
+			console.error('ForgotPassword error:', error);
+			setErrors(['auth:unknown']);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function VerifyEmail(email: string) {
+		try {
+			setLoading(true);
+			setErrors(null);
+
+			const response = await axiosInstance.post('verify-email/', {
+				email: email,
+			});
+
+			return response.data.token;
+		} catch (error: any) {
+			console.error('VerifyEmail error:', error);
+			setErrors(['auth:unknown']);
 		} finally {
 			setLoading(false);
 		}
@@ -104,41 +175,78 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	async function Logout() {
 		try {
+			setLoading(true);
+			setErrors(null);
 			const response = await axiosInstance.post('logout/');
 			return response;
 		} catch (error: any) {
 			console.error('Logout error:', error.response ? error.response.data : error.message);
 			throw error;
+		} finally {
+			setNotAuth();
+			setLoading(false);
 		}
 	}
+
+	const confirmAuth = useCallback(async () => {
+		try {
+			const response = await axiosInstance.get('auth/me/');
+			if (response.status >= 200 && response.status < 300) {
+				setAuth(response.data);
+			} else {
+				setNotAuth();
+			}
+		} catch (e: any) {
+			setErrors(e);
+			console.error(e);
+			setNotAuth();
+		} finally {
+			setCheckingAuth(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		const cached = localStorage.getItem(USERDATA_STORAGE_KEY);
+
+		if (cached) {
+			setSharedData(JSON.parse(cached) as SharedData);
+			setIsAuthenticated(true);
+		}
+		confirmAuth();
+	}, [confirmAuth]);
 
 	return (
 		<AuthContext.Provider
 			value={{
-				errors,
 				SignUp,
-				setError,
-				isLoading,
-				setLoading,
-				isAuthenticated,
-				setAuthenticated,
-				isCheckingAuth,
-				setIsCheckingAuth,
-				sharedData,
-				setSharedData,
 				Login,
 				Logout,
+				setErrors: setErrors,
+				setIsAuthenticated,
+				setLoading,
+				ForgotPassword,
+				VerifyEmail,
+				ConfirmPassword,
+				PasswordReset,
+				setSharedData,
+				sharedData,
+				checkingAuth,
+				errors,
+				isLoading,
+				isAuthenticated,
 			}}
 		>
 			{children}
 		</AuthContext.Provider>
 	);
-}
+};
 
-export default function useAuth() {
+export default AuthProvider;
+
+export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {
-		throw new Error('useAuth must be used within the context of AuthProvider');
+		throw new Error('useAuth must be used within AuthProvider');
 	}
 	return context;
-}
+};

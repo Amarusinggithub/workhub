@@ -5,14 +5,12 @@ namespace api.Services.Auth.interfaces;
 
 public interface ITokenService
 {
-    public Task<string> GenerateToken(User user);
+    public Task<(string jwtToken, DateTime expiresAtUtc)>  GenerateToken(User user);
     string GenerateRefreshToken();
-    public Task<string> GenerateAndSaveRefreshTokenAsync(User user);
-    public Task<AuthTokenResponse?> RefreshTokenAsync(string refreshToken, int userId);
-    public Task<bool> ValidateRefreshTokenAsync(string refreshToken, int userId);
-    public int? GetUserIdFromToken(string token);
-    public Task<bool> RevokeRefreshTokenAsync(int userId);
+    public Task<(string refreshToken, DateTime expiresAtUtc)>  GenerateAndSaveRefreshTokenAsync(User user);
 
 
+    public void WriteAuthTokenAsHttpOnlyCookie(string cookieName, string token,
+        DateTime expiration);
 
 }

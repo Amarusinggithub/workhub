@@ -9,6 +9,8 @@ namespace api.Controllers.Auth.v1;
 public class EmailVerificationController : ControllerBase
 {
     // GET
+    [HttpGet("very-email")]
+
     public IActionResult Index()
     {
         return Ok();

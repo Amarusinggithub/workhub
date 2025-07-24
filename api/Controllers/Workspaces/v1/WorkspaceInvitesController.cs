@@ -8,9 +8,5 @@ namespace api.Controllers.Workspaces.v1;
 [ApiVersion("1")]
 public class WorkspaceInvitesController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

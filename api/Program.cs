@@ -19,9 +19,12 @@ using api.Services.Users;
 using api.Services.Users.interfaces;
 using api.Services.Workspaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+
 
 
 
@@ -35,21 +38,92 @@ builder.Services.AddLogging(config =>
     config.AddDebug();
 });
 
+
 // Add services to the container.
 builder.Services.AddOpenApi();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+ builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "DualScheme";
+                options.DefaultChallengeScheme = "DualScheme";
+            })
+            .AddPolicyScheme("DualScheme", "JWT or Cookie", options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    // If we have Authorization header - use JWT, fallback to Cookies
+                    string authorizationHeader = context.Request.Headers["Authorization"]!;
+                    return !string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer ")
+                        ? JwtBearerDefaults.AuthenticationScheme
+                        : CookieAuthenticationDefaults.AuthenticationScheme;
+                };
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "api/auth/login";
+                options.Cookie.Name = "AuthenticationCookie";
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.SlidingExpiration = true;
+                // Consider security to prevent XSS
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]!)),
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // this Read token from "jwtToken" cookie
+                        var token = context.Request.Cookies["ACCESS_TOKEN"];
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+
+
+
 builder.Services.AddAuthorizationBuilder();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddIdentityCore<User>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
-        options.SignIn.RequireConfirmedEmail = true;
         options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(4);
         options.Lockout.AllowedForNewUsers = true;
         options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredUniqueChars = 1;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.SignIn.RequireConfirmedPhoneNumber = false;
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
 
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -59,15 +133,8 @@ builder.Services.AddIdentityCore<User>(options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 12;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireDigit = true;
-    options.User.RequireUniqueEmail = true;
-});
+
+builder.Services.AddControllers();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -104,20 +171,7 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat="'v'VVV";
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt=>
-    opt.TokenValidationParameters=new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["AppSettings:Audience"],
-        ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]!)),
-        ValidateIssuerSigningKey = true,
 
-
-    });
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -206,13 +260,14 @@ if (app.Environment.IsDevelopment())
 app.MapIdentityApi<User>();
 //app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
-app.UseMiddleware<JwtMiddleware>();
+//app.UseMiddleware<JwtMiddleware>();
 // app.UseCookiePolicy();
 app.UseRouting();
 // app.UseRateLimiter();
 // app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
+
 // app.UseSession();
 // app.UseResponseCompression();
 // app.UseResponseCaching();

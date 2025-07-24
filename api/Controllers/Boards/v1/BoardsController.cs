@@ -9,6 +9,8 @@ namespace api.Controllers.Boards.v1;
 public class BoardsController : ControllerBase
 {
     // GET
+    [HttpGet("create-board")]
+
     public IActionResult Index()
     {
         return Ok();

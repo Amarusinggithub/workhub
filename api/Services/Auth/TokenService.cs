@@ -15,13 +15,14 @@ public class TokenService(
     ILogger<TokenService> logger,
     IUnitOfWork unitOfWork,
     IConfiguration configuration,
-    UserManager<User> userManager) : ITokenService
+    UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : ITokenService
 {
     private readonly ILogger<TokenService> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
+    private readonly IHttpContextAccessor _httpContextAccessor=httpContextAccessor;
 
 
-    public async Task<string> GenerateToken(User user)
+    public async Task<(string jwtToken, DateTime expiresAtUtc)>  GenerateToken(User user)
     {
         _logger.LogInformation("Generating JWT token for user with ID: {UserId}", user.Id);
 
@@ -83,12 +84,12 @@ public class TokenService(
                 signingCredentials: creds
             );
 
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            var jwtToken = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
 
             _logger.LogInformation("JWT token generated successfully for user with ID: {UserId}, Expires: {ExpiryDate}",
                 user.Id, expiryDate);
 
-            return token;
+            return (jwtToken, expiryDate);
         }
         catch (Exception ex)
         {
@@ -119,7 +120,7 @@ public class TokenService(
         }
     }
 
-    public async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+    public async Task<(string refreshToken, DateTime expiresAtUtc)>  GenerateAndSaveRefreshTokenAsync(User user)
     {
         _logger.LogInformation("Generating and saving refresh token for user with ID: {UserId}", user.Id);
 
@@ -138,7 +139,7 @@ public class TokenService(
 
             _logger.LogInformation("Refresh token saved successfully for user with ID: {UserId}", user.Id);
 
-            return refreshToken;
+            return (refreshToken,expiryDate);
         }
         catch (Exception ex)
         {
@@ -149,112 +150,19 @@ public class TokenService(
     }
 
 
-    public async Task<bool> RevokeRefreshTokenAsync(int userId)
+
+
+    public void WriteAuthTokenAsHttpOnlyCookie(string cookieName, string token,
+        DateTime expiration)
     {
-        _logger.LogInformation("Revoking refresh token for user with ID: {UserId}", userId);
-
-        try
-        {
-            var user = await unitOfWork.Users.GetById(userId);
-
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryDate = null;
-            await unitOfWork.CompleteAsync();
-
-            _logger.LogInformation("Refresh token revoked successfully for user: {UserId}", userId);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while revoking refresh token for user: {UserId}", userId);
-            return false;
-        }
-    }
-
-
-    public int? GetUserIdFromToken(string token)
-    {
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jsonToken = tokenHandler.ReadJwtToken(token);
-
-            var userIdClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "userId");
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+        _httpContextAccessor!.HttpContext.Response.Cookies.Append(cookieName,
+            token, new CookieOptions
             {
-                return userId;
-            }
-
-            return null;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while extracting user ID from token");
-            return null;
-        }
-    }
-
-
-    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken, int userId)
-    {
-        _logger.LogInformation("Validating refresh token for user with ID: {UserId}", userId);
-
-        try
-        {
-            var user = await unitOfWork.Users.GetById(userId);
-
-            if (user.RefreshToken != refreshToken)
-            {
-                _logger.LogWarning("Refresh token validation failed - token mismatch for user: {UserId}", userId);
-                return false;
-            }
-
-            if (user.RefreshTokenExpiryDate <= DateTime.UtcNow)
-            {
-                _logger.LogWarning("Refresh token validation failed - token expired for user: {UserId}", userId);
-                return false;
-            }
-
-            _logger.LogInformation("Refresh token validated successfully for user: {UserId}", userId);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while validating refresh token for user: {UserId}", userId);
-            return false;
-        }
-    }
-
-    public async Task<AuthTokenResponse?> RefreshTokenAsync(string refreshToken, int userId)
-    {
-        _logger.LogInformation("Refreshing access token for user with ID: {UserId}", userId);
-
-        try
-        {
-            if (!await ValidateRefreshTokenAsync(refreshToken, userId))
-            {
-                _logger.LogWarning("Token refresh failed - invalid refresh token for user: {UserId}", userId);
-                return null;
-            }
-
-            var user = await unitOfWork.Users.GetById(userId);
-
-            var newAccessToken =await GenerateToken(user);
-            var newRefreshToken = await GenerateAndSaveRefreshTokenAsync(user);
-
-            _logger.LogInformation("Tokens refreshed successfully for user: {UserId}", userId);
-
-            return new AuthTokenResponse
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while refreshing tokens for user: {UserId}", userId);
-            throw;
-        }
-
+                HttpOnly = true,
+                Expires = expiration,
+                IsEssential = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+            });
     }
 }

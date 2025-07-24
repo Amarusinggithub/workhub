@@ -1,13 +1,13 @@
 import { LoaderCircle } from 'lucide-react';
-import { type FormEventHandler, useState } from 'react';
+import { useState } from 'react';
 import InputError from '../../components/input-error';
 import TextLink from '../../components/text-link';
-import { Button } from '../../components/ui/button';
+import { Button } from '../../components/ui/button.tsx';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import useAuth from '../../hooks/use-auth';
+import { useAuth } from '../../hooks/use-auth.tsx';
 import AuthLayout from '../../layouts/auth-layout';
-import type { AuthField } from 'types';
+import { forgatPasswordSchema } from '../../utils/validators.ts';
 
 type ForgotPasswordProps = {
 	status?: string;
@@ -22,21 +22,25 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 		email: '',
 	});
 
-	const { isLoading, errors } = useAuth();
+	const { isLoading, errors, setErrors, ForgotPassword } = useAuth();
 
-	function change(e: React.ChangeEvent<HTMLInputElement>) {
+	const change = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value.trim() });
-	}
-
-	const submit: FormEventHandler = (e) => {
-		e.preventDefault();
 	};
 
-    function getFieldError(field: AuthField): string | undefined {
-                if (!errors) return undefined;
-                const error = errors.find((err) => err.startsWith(`${field}:`));
-                return error ? error.split(':')[1] : undefined;
-            }
+	const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setErrors(null);
+
+		const validationResult = forgatPasswordSchema.safeParse(form);
+
+		if (!validationResult.success) {
+			const formattedErrors = validationResult.error.flatten().fieldErrors;
+			setErrors(formattedErrors);
+			return;
+		}
+		await ForgotPassword(form.email);
+	};
 
 	return (
 		<AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
@@ -58,8 +62,7 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 							onChange={(e) => change(e)}
 							placeholder="email@example.com"
 						/>
-
-                        {getFieldError('email') && <InputError message={getFieldError('email')} className="mt-2" />}
+						{errors?.email && <InputError message={errors.email[0]} className="mt-2" />}
 					</div>
 
 					<div className="my-6 flex items-center justify-start">

@@ -8,9 +8,5 @@ namespace api.Controllers.Tasks.v1;
 [ApiVersion("1")]
 public class TaskStatusController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

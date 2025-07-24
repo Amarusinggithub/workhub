@@ -176,7 +176,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Category", b =>
@@ -202,7 +202,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Comment", b =>
@@ -240,7 +240,7 @@ namespace api.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.EntityPropertyChange", b =>
@@ -268,7 +268,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EntityPropertyChanges");
+                    b.ToTable("EntityPropertyChanges", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Include", b =>
@@ -291,7 +291,7 @@ namespace api.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("Includes");
+                    b.ToTable("Includes", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Invoice", b =>
@@ -345,7 +345,7 @@ namespace api.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("Invoices");
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Label", b =>
@@ -371,7 +371,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Labels");
+                    b.ToTable("Labels", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Notification", b =>
@@ -396,7 +396,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.NotificationMember", b =>
@@ -419,7 +419,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NotificationMembers");
+                    b.ToTable("NotificationMembers", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.OAuthAccount", b =>
@@ -460,7 +460,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OAuthAccounts");
+                    b.ToTable("OAuthAccounts", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Offer", b =>
@@ -495,7 +495,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Offers");
+                    b.ToTable("Offers", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Option", b =>
@@ -512,7 +512,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Options");
+                    b.ToTable("Options", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.OptionIncluded", b =>
@@ -541,7 +541,7 @@ namespace api.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("OptionIncludes");
+                    b.ToTable("OptionIncludes", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Plan", b =>
@@ -580,7 +580,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserGroupTypeId");
 
-                    b.ToTable("Plans");
+                    b.ToTable("Plans", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.PlanHistory", b =>
@@ -603,7 +603,7 @@ namespace api.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("PlanHistories");
+                    b.ToTable("PlanHistories", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Prerequisite", b =>
@@ -626,7 +626,7 @@ namespace api.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("Prerequisites");
+                    b.ToTable("Prerequisites", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Project", b =>
@@ -678,7 +678,7 @@ namespace api.Migrations
 
                     b.HasIndex("WorkSpaceId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.ProjectCategory", b =>
@@ -701,7 +701,7 @@ namespace api.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("ProjectCategories", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.ProjectMember", b =>
@@ -730,7 +730,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectMembers");
+                    b.ToTable("ProjectMembers", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.ProjectResource", b =>
@@ -769,7 +769,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserGroupResources");
+                    b.ToTable("UserGroupResources", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Resource", b =>
@@ -815,7 +815,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserGroupId");
 
-                    b.ToTable("Resources");
+                    b.ToTable("Resources", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Role", b =>
@@ -876,7 +876,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Softwares");
+                    b.ToTable("Softwares", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Subscription", b =>
@@ -928,7 +928,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserGroupId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.Task", b =>
@@ -984,7 +984,7 @@ namespace api.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.TaskLabel", b =>
@@ -1010,7 +1010,7 @@ namespace api.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskLabels");
+                    b.ToTable("TaskLabels", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.TaskResource", b =>
@@ -1042,7 +1042,7 @@ namespace api.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskResources");
+                    b.ToTable("TaskResources", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
@@ -1178,7 +1178,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserGroupTypeId");
 
-                    b.ToTable("UserGroups");
+                    b.ToTable("UserGroups", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.UserGroupMember", b =>
@@ -1210,7 +1210,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserGroupMembers");
+                    b.ToTable("UserGroupMembers", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.UserGroupType", b =>
@@ -1233,7 +1233,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserGroupTypes");
+                    b.ToTable("UserGroupTypes", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.UserProjectRole", b =>
@@ -1267,7 +1267,7 @@ namespace api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserProjectRoles");
+                    b.ToTable("UserProjectRoles", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.WorkSpace", b =>
@@ -1293,7 +1293,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkSpaces");
+                    b.ToTable("WorkSpaces", (string)null);
                 });
 
             modelBuilder.Entity("api.Models.WorkSpaceMember", b =>
@@ -1327,7 +1327,7 @@ namespace api.Migrations
 
                     b.HasIndex("WorkSpaceId");
 
-                    b.ToTable("WorkSpaceMembers");
+                    b.ToTable("WorkSpaceMembers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

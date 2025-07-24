@@ -10,6 +10,7 @@ public interface IUserRepository: IGenericRepository<User>
 
     Task<User?> GetByEmail(string email);
 
+    public Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
 
 
 

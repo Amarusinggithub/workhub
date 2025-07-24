@@ -9,12 +9,13 @@ public class User: IdentityUser<int>
 
    public string FirstName { get; set; }
    public string LastName { get; set; }
-    public string? ProfilePicture { get; set; }
+    public string? AvatarUrl { get; set; }
     public string? HeaderImage { get; set; }
-    public string? JobTItle { get; set; }
+    public string? JobTitle { get; set; }
     public string?  Organization { get; set; }
     public  string? Location { get; set; }
     public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public DateTime? RefreshTokenExpiryDate { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -45,4 +46,9 @@ public class User: IdentityUser<int>
     public ICollection<ProjectResource> UserResources { get; set; } = new List<ProjectResource>();
     public ICollection<OAuthAccount> OAuthAccounts { get; set; } = new List<OAuthAccount>();
     public ICollection<WorkSpaceMember> UserWorkSpaces { get; set; } = new List<WorkSpaceMember>();
+
+    public override string ToString()
+    {
+        return FirstName + " " + LastName;
+    }
 }

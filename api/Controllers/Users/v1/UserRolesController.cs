@@ -9,8 +9,5 @@ namespace api.Controllers.Users.v1;
 public class UserRolesController : ControllerBase
 {
     // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

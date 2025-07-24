@@ -11,6 +11,8 @@ namespace api.Controllers.Auth.v1;
 public class PasswordController : ControllerBase
 {
     // GET
+    [HttpGet("reset-password")]
+
     public IActionResult Index()
     {
         return Ok();

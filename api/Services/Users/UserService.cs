@@ -1,18 +1,23 @@
+using System.IdentityModel.Tokens.Jwt;
 using api.Data.interfaces;
-using api.DTOs.Auth;
-using api.DTOs.Users.Responses;
+using api.DTOs.Users;
 using api.Models;
 using api.Services.Auth.interfaces;
 using api.Services.Users.interfaces;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.Services.Users;
 
-public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IPasswordHashService hashService, ITokenService tokenService)
+public class UserService(ILogger<UserService> logger, UserManager<User> userManager,  IMapper mapper,IUnitOfWork unitOfWork, IPasswordHashService hashService, ITokenService tokenService)
     : IUserService
 {
     private readonly ILogger<UserService> _logger = logger;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly IMapper _mapper = mapper;
 
-    public async Task<UserResponseDto?> Authenticate(string email, string password)
+
+    public async Task<UserDto?> Authenticate(string email, string password)
     {
         _logger.LogInformation("Starting authentication process");
 
@@ -33,26 +38,37 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
                 user.LastLoggedIn = DateTime.UtcNow;
                 await unitOfWork.CompleteAsync();
 
-                AuthTokenResponse authTokens = new AuthTokenResponse
-                {
-                    AccessToken = await tokenService.GenerateToken(user),
-                    RefreshToken = await tokenService.GenerateAndSaveRefreshTokenAsync(user),
-                };
 
-                return new UserResponseDto
+
+
+                    var (jwtToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
+                    var (refreshTokenValue, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
+
+                    //var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
+
+                    user.RefreshToken = refreshTokenValue;
+                    user.RefreshTokenExpiresAtUtc = refreshTokenExpirationDateInUtc;
+
+                    await _userManager.UpdateAsync(user);
+
+                    tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
+                    tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+
+
+                return new UserDto
                 {
+                    id=user.Id,
                     email = user.Email,
                     firstName = user.FirstName,
                     lastName = user.LastName,
-                    headerImage = user.HeaderImage,
-                    jobTItle = user.JobTItle,
+                    headerImageUrl = user.HeaderImage,
+                    jobTitle = user.JobTitle,
                     organization = user.Organization,
                     isActive = user.IsActive,
                     location = user.Location,
-                    profilePicture = user.ProfilePicture,
+                    avatarUrl = user.AvatarUrl,
                     lastLoggedIn = user.LastLoggedIn,
                     createdAt = user.CreatedAt,
-                    AuthTokens = authTokens
                 };
             }
             else
@@ -113,7 +129,7 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
         }
     }
 
-    public async Task<UserResponseDto?> AddUser(string lastName, string firstName, string password, string email)
+    public async Task<UserDto?> AddUser(string lastName, string firstName, string password, string email)
     {
         _logger.LogInformation("Creating new user account");
 
@@ -150,7 +166,7 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
         }
     }
 
-    public async Task<User?> AddAndUpdateUser(User? userObj)
+    public async Task<UserDto?> AddAndUpdateUser(User? userObj)
     {
         if (userObj == null)
         {
@@ -173,7 +189,23 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
                 _logger.LogWarning("User add/update returned null for user with ID: {UserId}", userObj.Id);
             }
 
-            return result;
+
+
+            return new UserDto
+            {
+                id=result!.Id,
+                email = result.Email,
+                firstName = result.FirstName,
+                lastName = result.LastName,
+                headerImageUrl = result.HeaderImage,
+                jobTitle = result.JobTitle,
+                organization = result.Organization,
+                isActive = result.IsActive,
+                location = result.Location,
+                avatarUrl = result.AvatarUrl,
+                lastLoggedIn = result.LastLoggedIn,
+                createdAt = result.CreatedAt,
+            };
         }
         catch (Exception ex)
         {
@@ -182,18 +214,22 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
         }
     }
 
-    public async Task<IEnumerable<User>> GetAll()
+    public async Task<IEnumerable<UserDto>> GetAll()
     {
         _logger.LogInformation("Retrieving all users");
 
         try
         {
+
+
             var users = await unitOfWork.Users.GetAll();
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+
             var userCount = users.Count();
 
             _logger.LogInformation("Retrieved {UserCount} users", userCount);
 
-            return users;
+            return userDtos;
         }
         catch (Exception ex)
         {
@@ -219,5 +255,125 @@ public class UserService(ILogger<UserService> logger, IUnitOfWork unitOfWork, IP
             _logger.LogError(ex, "Error occurred while retrieving user by ID: {UserId}", id);
             throw;
         }
+    }
+
+
+     public async Task<bool> RevokeRefreshTokenAsync(int userId)
+    {
+        _logger.LogInformation("Revoking refresh token for user with ID: {UserId}", userId);
+
+        try
+        {
+            var user = await unitOfWork.Users.GetById(userId);
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryDate = null;
+            await unitOfWork.CompleteAsync();
+
+            _logger.LogInformation("Refresh token revoked successfully for user: {UserId}", userId);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while revoking refresh token for user: {UserId}", userId);
+            return false;
+        }
+    }
+
+
+    public int? GetUserIdFromToken(string token)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jsonToken = tokenHandler.ReadJwtToken(token);
+
+            var userIdClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "userId");
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while extracting user ID from token");
+            return null;
+        }
+    }
+
+
+    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken, int userId)
+    {
+        _logger.LogInformation("Validating refresh token for user with ID: {UserId}", userId);
+
+        try
+        {
+            var user = await unitOfWork.Users.GetById(userId);
+
+            if (user.RefreshToken != refreshToken)
+            {
+                _logger.LogWarning("Refresh token validation failed - token mismatch for user: {UserId}", userId);
+                return false;
+            }
+
+            if (user.RefreshTokenExpiryDate <= DateTime.UtcNow)
+            {
+                _logger.LogWarning("Refresh token validation failed - token expired for user: {UserId}", userId);
+                return false;
+            }
+
+            _logger.LogInformation("Refresh token validated successfully for user: {UserId}", userId);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while validating refresh token for user: {UserId}", userId);
+            return false;
+        }
+    }
+
+    public async Task RefreshTokenAsync(string? refreshToken, int userId)
+    {
+        _logger.LogInformation("Refreshing access token for user with ID: {UserId}", userId);
+
+        try
+        {
+            if(string.IsNullOrEmpty(refreshToken))
+            {
+               // throw new RefreshTokenException("Refresh token is missing.");
+            }
+
+            if (!await ValidateRefreshTokenAsync(refreshToken, userId))
+            {
+                _logger.LogWarning("Token refresh failed - invalid refresh token for user: {UserId}", userId);
+            }
+           // var user = await unitOfWork.Users.GetUserByRefreshTokenAsync(refreshToken);
+            var user = await unitOfWork.Users.GetById(userId);
+
+            if (user == null)
+            {
+                //throw new RefreshTokenException("Unable to retrieve user for refresh token");
+            }
+            var (newAccessToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
+            var (newRefreshToken, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
+
+
+            await _userManager.UpdateAsync(user);
+
+            tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", newAccessToken, expirationDateInUtc);
+             tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+
+            _logger.LogInformation("Tokens refreshed successfully for user: {UserId}", userId);
+
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while refreshing tokens for user: {UserId}", userId);
+            throw;
+        }
+
     }
 }

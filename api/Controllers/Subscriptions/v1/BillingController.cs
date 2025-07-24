@@ -8,9 +8,5 @@ namespace api.Controllers.Subscriptions.v1;
 [ApiVersion("1")]
 public class BillingController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

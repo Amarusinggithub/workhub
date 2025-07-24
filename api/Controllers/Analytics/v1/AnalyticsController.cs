@@ -9,7 +9,9 @@ namespace api.Controllers.Analytics.v1;
 public class AnalyticsController : ControllerBase
 {
     // GET
-    public IActionResult Index()
+    [HttpGet("analytics")]
+
+    public IActionResult GetAnalytics()
     {
         return Ok();
     }

@@ -1,9 +1,9 @@
-using api.DTOs.Auth;
+using System.Security.Claims;
 using api.DTOs.Auth.Requests;
-using api.Models;
-using api.Services.Auth.interfaces;
+
 using api.Services.Users.interfaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers.Auth.v1;
@@ -15,6 +15,13 @@ public class AuthController(IUserService service) : ControllerBase
 {
     private readonly IUserService _service = service ?? throw new ArgumentNullException(nameof(service));
 
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMe()
+    {
+        return Ok();
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto)
@@ -35,6 +42,7 @@ public class AuthController(IUserService service) : ControllerBase
         {
             return StatusCode(500, "Something went wrong while creating the user");
         }
+
 
         return Ok(response);
     }
@@ -57,5 +65,14 @@ public class AuthController(IUserService service) : ControllerBase
 
         return Ok(response);
     }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("ACCESS_TOKEN");
+        return Ok();
+    }
+
 
 }

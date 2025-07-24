@@ -31,7 +31,12 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
 
     }
 
+    public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
+    {
+        var user = await dbSet.FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
 
+        return user;
+    }
 
 
     public override async Task<bool> Upsert(User entity)

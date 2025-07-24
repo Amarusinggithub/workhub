@@ -61,7 +61,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 			setLoading(true);
 			setErrors(null);
 
-			const response = await axiosInstance.post('register/', {
+			const response = await axiosInstance.post('Auth/register/', {
 				firstName: firstName,
 				lastName: lastName,
 				email: email,
@@ -86,7 +86,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 			setLoading(true);
 			setErrors(null);
 
-			const response = await axiosInstance.post('login/', {
+			const response = await axiosInstance.post('Auth/login/', {
 				email: email,
 				password: password,
 			});

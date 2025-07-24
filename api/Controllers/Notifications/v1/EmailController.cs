@@ -9,6 +9,8 @@ namespace api.Controllers.Notifications.v1;
 public class EmailController : ControllerBase
 {
     // GET
+    [HttpGet("email-notifications")]
+
     public IActionResult Index()
     {
         return Ok();

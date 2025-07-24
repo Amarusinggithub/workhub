@@ -9,6 +9,8 @@ namespace api.Controllers.Boards.v1;
 public class BoardColumnsController : ControllerBase
 {
     // GET
+    [HttpGet("create-board-column")]
+
     public IActionResult Index()
     {
         return Ok();

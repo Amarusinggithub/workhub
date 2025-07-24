@@ -8,9 +8,5 @@ namespace api.Controllers.System.v1;
 [ApiVersion("1")]
 public class WebhooksController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

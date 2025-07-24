@@ -9,6 +9,8 @@ namespace api.Controllers.Boards.v1;
 public class BoardSettingsController : ControllerBase
 {
     // GET
+    [HttpGet("board-settings")]
+
     public IActionResult Index()
     {
         return Ok();

@@ -8,9 +8,5 @@ namespace api.Controllers.Workspaces.v1;
 [ApiVersion("1")]
 public class WorkspaceSettingsController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

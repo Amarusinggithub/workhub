@@ -8,8 +8,5 @@ namespace api.Controllers.Projects.v1;
 public class ProjectMembersController : ControllerBase
 {
     // GET
-    public IActionResult Index()
-    {
-        return Ok();
-    }
+
 }

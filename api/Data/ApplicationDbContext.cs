@@ -1,30 +1,49 @@
 using api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<User, Role, int>(options)
+    : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>(options)
 {
     public DbSet<Resource> Resources { get; set; }
-    public DbSet<ProjectResource> UserGroupResources { get; set; }
+    public DbSet<UserResource> UserResources { get; set; }
+    public DbSet<WorkspaceRole> WorkspaceRoles { get; set; }
+
+    public DbSet<ProjectResource> ProjectResources { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
+    public DbSet<UserGroupInvitation> UserGroupInvitations { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<UserPermission> UserPermissions { get; set; }
+
     public DbSet<UserGroupType> UserGroupTypes { get; set; }
     public DbSet<UserGroupMember> UserGroupMembers { get; set; }
     public DbSet<Workspace> WorkSpaces { get; set; }
+    public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; }
+
     public DbSet<WorkSpaceMember> WorkSpaceMembers { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ProjectCategory> ProjectCategories { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<UserWorkspaceRole> UserProjectRoles { get; set; }
+    public DbSet<WorkspaceRole> UserWorkspaeRoles { get; set; }
     public DbSet<TaskItem> Tasks { get; set; }
     public DbSet<TaskAttachment> TaskAttachments { get; set; }
+    public DbSet<TaskAssignment> TaskAssignments { get; set; }
+
+
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationMember> NotificationMembers { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
     public DbSet<Software> Softwares { get; set; }
+    public DbSet<SoftwareFeature> SoftwareFeatures { get; set; }
+    public DbSet<SoftwareReview> SoftwareReviews { get; set; }
+    public DbSet<Board> Boards { get; set; }
+    public DbSet<BoardColumn> BoardColumns { get; set; }
+
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Include> Includes { get; set; }
     public DbSet<Prerequisite> Prerequisites { get; set; }
@@ -32,7 +51,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<OptionIncluded> OptionIncludes { get; set; }
     public DbSet<Offer> Offers { get; set; }
     public DbSet<Comment> Comments { get; set; }
-    public DbSet<TaskAssignment> TaskAssignments { get; set; }
 
     public DbSet<Label> Labels { get; set; }
     public DbSet<TaskLabel> TaskLabels { get; set; }
@@ -79,9 +97,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<ProjectResource>()
-                .HasOne(ugr => ugr.UserGroup)
-                .WithMany(u => u.Resources)
-                .HasForeignKey(ugr => ugr.UserGroupId)
+                .HasOne(pr => pr.Workspace)
+                .WithMany(w => w.ProjectResources)
+                .HasForeignKey(ugr => ugr.WorkspaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<TaskAttachment>()
@@ -102,6 +120,29 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(iug => iug.UserGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<UserGroupInvitation>()
+                .HasOne(iug => iug.UserGroup)
+                .WithMany(ug => ug.Invitations)
+                .HasForeignKey(iug => iug.UserGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserGroupInvitation>()
+                .HasOne(iug => iug.InvitedBy)
+                .WithMany(ug => ug.UserGroupInvitations)
+                .HasForeignKey(iug => iug.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<WorkspaceInvitation>()
+                .HasOne(iug => iug.InvitedBy)
+                .WithMany(ug => ug.WorkspaceInvitations)
+                .HasForeignKey(iug => iug.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<WorkspaceInvitation>()
+                .HasOne(iug => iug.Workspace)
+                .WithMany(ug => ug.Invitations)
+                .HasForeignKey(iug => iug.WorkspaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<UserGroupMember>()
                 .HasOne(iug => iug.User)
                 .WithMany(u => u.UserGroups)
@@ -110,19 +151,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             builder.Entity<WorkSpaceMember>()
                 .HasOne(iws => iws.Workspace)
-                .WithMany(ws => ws.UserWorkSpaces)
+                .WithMany(ws => ws.WorkSpaceMembers)
                 .HasForeignKey(iws => iws.WorkSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<WorkSpaceMember>()
                 .HasOne(iws => iws.User)
-                .WithMany(u => u.UserWorkSpaces)
+                .WithMany(u => u.WorkspaceMemberships)
                 .HasForeignKey(iws => iws.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<ProjectMember>()
                 .HasOne(inp => inp.Project)
-                .WithMany(p => p.UserProjects)
+                .WithMany(p => p.ProjectMembers)
                 .HasForeignKey(inp => inp.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -144,15 +185,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     .HasForeignKey(pc => pc.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-                builder.Entity<UserWorkspaceRole>()
+                builder.Entity<WorkspaceRole>()
                     .HasOne(uwr => uwr.User)
                     .WithMany(u => u.UserWorkspaceRoles)
                     .HasForeignKey(uwr => uwr.UserId)
                .OnDelete(DeleteBehavior.Cascade);
 
-               builder.Entity<UserWorkspaceRole>()
+               builder.Entity<WorkspaceRole>()
                    .HasOne(uwr => uwr.Workspace)
-                   .WithMany(w => w.UserWorkspaceRoles)
+                   .WithMany(w => w.WorkspaceRoles)
                    .HasForeignKey(uwr => uwr.WorkspaceId)
                .OnDelete(DeleteBehavior.Cascade);
 
@@ -178,6 +219,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasOne(inc => inc.Plan)
                 .WithMany(p => p.Includes)
                 .HasForeignKey(inc => inc.PlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TaskAssignment>()
+                .HasOne(pre => pre.TaskItem)
+                .WithMany(o => o.Assignments)
+                .HasForeignKey(pre => pre.TaskItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TaskAssignment>()
+                .HasOne(pre => pre.AssignedByUser)
+                .WithMany(o => o.CreatedTasks)
+                .HasForeignKey(pre => pre.AssignedByUserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Prerequisite>()
@@ -233,6 +286,36 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(ph => ph.Invoices)
                 .HasForeignKey(inv => inv.PlanHistoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<SoftwareFeature>()
+                .HasOne(iug => iug.Software)
+                .WithMany(ug => ug.SoftwareFeatures)
+                .HasForeignKey(iug => iug.SoftwareId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<SoftwareReview>()
+                .HasOne(iug => iug.Software)
+                .WithMany(ug => ug.Reviews)
+                .HasForeignKey(iug => iug.SoftwareId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserRole>()
+                .HasOne(iug => iug.User)
+                .WithMany(ug => ug.CustomRoles)
+                .HasForeignKey(iug => iug.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserPermission>()
+                .HasOne(iug => iug.User)
+                .WithMany(ug => ug.CustomPermissions)
+                .HasForeignKey(iug => iug.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserSession>()
+                .HasOne(iug => iug.User)
+                .WithMany(ug => ug.Sessions)
+                .HasForeignKey(iug => iug.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

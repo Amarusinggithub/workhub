@@ -11,19 +11,19 @@ public class ProjectResource
     public int Id { get; set; }
 
     [Required]
-    public int ResourceId { get; set; }
+    public Guid  ResourceId { get; set; }
     public Resource Resource { get; set; }
 
     [Required]
-    public int UserGroupId { get; set; }
-    public UserGroup UserGroup { get; set; }
+    public Guid  WorkspaceId { get; set; }
+    public Workspace Workspace { get; set; }
 
 
     [Required]
-    public int ProjectId { get; set; }
+    public Guid  ProjectId { get; set; }
     public Project Project { get; set; }
 
-    public ResorceLocation ResourceLocation { get; set; }
+    public UserResourceLocation ResourceLocation { get; set; }
     public DateTime LastDownloadAt { get; set; }
 
 

@@ -48,7 +48,7 @@ namespace api.Helpers
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 //Attach user to context on successful JWT validation
                 context.Items["User"] = await authService.GetById(userId);

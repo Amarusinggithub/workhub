@@ -4,7 +4,6 @@ import { Button } from './ui/button';
 import InfiniteSlider from './ui/infinite-slider';
 import { ProgressiveBlur } from './ui/progressive-bur';
 
-
 export default function HeroSection() {
 	return (
 		<>
@@ -14,12 +13,9 @@ export default function HeroSection() {
 					<div className="pt-12 pb-24 md:pb-32 lg:pt-44 lg:pb-56">
 						<div className="relative mx-auto flex max-w-6xl flex-col px-6 lg:block">
 							<div className="mx-auto max-w-lg text-center lg:ml-0 lg:w-1/2 lg:text-left">
-								<h1 className="mt-8 max-w-2xl text-5xl font-medium text-balance md:text-6xl lg:mt-16 xl:text-7xl">
-									Ship 10x Faster with NS
-								</h1>
+								<h1 className="mt-8 max-w-2xl text-5xl font-medium text-balance md:text-6xl lg:mt-16 xl:text-7xl">Ship 10x Faster with NS</h1>
 								<p className="mt-8 max-w-2xl text-lg text-pretty">
-									Highly customizable components for building modern websites
-									and applications that look and feel the way you mean it.
+									Highly customizable components for building modern websites and applications that look and feel the way you mean it.
 								</p>
 
 								<div className="mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start">
@@ -28,13 +24,7 @@ export default function HeroSection() {
 											<span className="text-nowrap">Start Building</span>
 										</Link>
 									</Button>
-									<Button
-										key={2}
-										asChild
-										size="lg"
-										variant="ghost"
-										className="px-5 text-base"
-									>
+									<Button key={2} asChild size="lg" variant="ghost" className="px-5 text-base">
 										<Link to="#link">
 											<span className="text-nowrap">Request a demo</span>
 										</Link>
@@ -137,16 +127,8 @@ export default function HeroSection() {
 
 								<div className="from-background absolute inset-y-0 left-0 w-20 bg-linear-to-r"></div>
 								<div className="from-background absolute inset-y-0 right-0 w-20 bg-linear-to-l"></div>
-								<ProgressiveBlur
-									className="pointer-events-none absolute top-0 left-0 h-full w-20"
-									direction="left"
-									blurIntensity={1}
-								/>
-								<ProgressiveBlur
-									className="pointer-events-none absolute top-0 right-0 h-full w-20"
-									direction="right"
-									blurIntensity={1}
-								/>
+								<ProgressiveBlur className="pointer-events-none absolute top-0 left-0 h-full w-20" direction="left" blurIntensity={1} />
+								<ProgressiveBlur className="pointer-events-none absolute top-0 right-0 h-full w-20" direction="right" blurIntensity={1} />
 							</div>
 						</div>
 					</div>

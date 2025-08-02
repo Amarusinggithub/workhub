@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository.Projects;
 
-public class ProjectRepository: GenericRepository<Project>,IProjectRepository
+public class ProjectRepository: GenericRepository<Project,Guid>,IProjectRepository
 {
     public ProjectRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
@@ -46,7 +46,7 @@ public class ProjectRepository: GenericRepository<Project>,IProjectRepository
 
     }
 
-    public override async Task<bool> Delete(int id)
+    public override async Task<bool> Delete(Guid id)
     {
         try
         {

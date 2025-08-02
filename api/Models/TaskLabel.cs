@@ -8,7 +8,7 @@ public class TaskLabel
     public int Id { get; set; }
 
     [Required]
-    public int TaskId { get; set; }
+    public Guid  TaskId { get; set; }
     public TaskItem TaskItem { get; set; }
 
 

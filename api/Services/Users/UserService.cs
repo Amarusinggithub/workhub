@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using api.Data.interfaces;
 using api.DTOs.Users;
+using api.Exceptions;
 using api.Models;
 using api.Services.Auth.interfaces;
 using api.Services.Users.interfaces;
@@ -61,7 +62,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
                     email = user.Email,
                     firstName = user.FirstName,
                     lastName = user.LastName,
-                    headerImageUrl = user.HeaderImage,
+                    headerImageUrl = user.HeaderImageUrl,
                     jobTitle = user.JobTitle,
                     organization = user.Organization,
                     isActive = user.IsActive,
@@ -84,7 +85,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
         }
     }
 
-    public async Task<User> GetUserById(int id)
+    public async Task<User> GetUserById(Guid id)
     {
         _logger.LogInformation("Retrieving user by ID: {UserId}", id);
 
@@ -197,7 +198,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
                 email = result.Email,
                 firstName = result.FirstName,
                 lastName = result.LastName,
-                headerImageUrl = result.HeaderImage,
+                headerImageUrl = result.HeaderImageUrl,
                 jobTitle = result.JobTitle,
                 organization = result.Organization,
                 isActive = result.IsActive,
@@ -238,7 +239,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
         }
     }
 
-    public async Task<User?> GetById(int id)
+    public async Task<User?> GetById(Guid id)
     {
         _logger.LogInformation("Retrieving user by ID: {UserId}", id);
 
@@ -258,7 +259,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
     }
 
 
-     public async Task<bool> RevokeRefreshTokenAsync(int userId)
+     public async Task<bool> RevokeRefreshTokenAsync(Guid userId)
     {
         _logger.LogInformation("Revoking refresh token for user with ID: {UserId}", userId);
 
@@ -267,7 +268,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
             var user = await unitOfWork.Users.GetById(userId);
 
             user.RefreshToken = null;
-            user.RefreshTokenExpiryDate = null;
+            user.RefreshTokenExpiresAtUtc = null;
             await unitOfWork.CompleteAsync();
 
             _logger.LogInformation("Refresh token revoked successfully for user: {UserId}", userId);
@@ -304,7 +305,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
     }
 
 
-    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken, int userId)
+    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken, Guid userId)
     {
         _logger.LogInformation("Validating refresh token for user with ID: {UserId}", userId);
 
@@ -318,7 +319,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
                 return false;
             }
 
-            if (user.RefreshTokenExpiryDate <= DateTime.UtcNow)
+            if (user.RefreshTokenExpiresAtUtc <= DateTime.UtcNow)
             {
                 _logger.LogWarning("Refresh token validation failed - token expired for user: {UserId}", userId);
                 return false;
@@ -334,7 +335,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
         }
     }
 
-    public async Task RefreshTokenAsync(string? refreshToken, int userId)
+    public async Task RefreshTokenAsync(string? refreshToken, Guid userId)
     {
         _logger.LogInformation("Refreshing access token for user with ID: {UserId}", userId);
 
@@ -342,7 +343,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
         {
             if(string.IsNullOrEmpty(refreshToken))
             {
-               // throw new RefreshTokenException("Refresh token is missing.");
+                throw new RefreshTokenException("Refresh token is missing.");
             }
 
             if (!await ValidateRefreshTokenAsync(refreshToken, userId))
@@ -354,7 +355,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
 
             if (user == null)
             {
-                //throw new RefreshTokenException("Unable to retrieve user for refresh token");
+                throw new RefreshTokenException("Unable to retrieve user for refresh token");
             }
             var (newAccessToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
             var (newRefreshToken, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
@@ -363,7 +364,7 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
             await _userManager.UpdateAsync(user);
 
             tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", newAccessToken, expirationDateInUtc);
-             tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+             tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", newRefreshToken, refreshTokenExpirationDateInUtc);
 
             _logger.LogInformation("Tokens refreshed successfully for user: {UserId}", userId);
 

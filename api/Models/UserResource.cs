@@ -8,14 +8,14 @@ public class UserResource
     public int Id { get; set; }
 
     [Required]
-    public int TaskResourceId { get; set; }
+    public int TaskAttachmentId { get; set; }
     public TaskAttachment TaskAttachment { get; set; }
 
     [Required]
-    public int UserId { get; set; }
+    public Guid  UserId { get; set; }
     public User User { get; set; }
 
-    public ResorceLocation ResourceLocation { get; set; }
+    public UserResourceLocation ResourceLocation { get; set; }
 
     public bool IsTrashed { get; set; } = false;
     public bool IsFavorite { get; set; } = false;

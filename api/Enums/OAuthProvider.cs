@@ -2,6 +2,6 @@ namespace api.Enums;
 
 public enum OAuthProvider
 {
-GOOGLE,FACEBOOK,GITHUB
+GOOGLE=1,FACEBOOK=2,GITHUB=3
 
 }

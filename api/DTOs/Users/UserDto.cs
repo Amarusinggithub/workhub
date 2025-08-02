@@ -4,7 +4,7 @@ namespace api.DTOs.Users
 {
     public class UserDto
     {
-        public int id { get; set; }
+        public Guid id { get; set; }
 
         [Required]
         [EmailAddress]

@@ -7,10 +7,10 @@ public class OAuthAccount
 {
 
     [Key]
-    public int Id { get; set; }
+    public Guid  Id { get; set; }
 
     [Required]
-    public int UserId { get; set; }
+    public Guid  UserId { get; set; }
     public User User { get; set; }
 
     public OAuthProvider OAuthProvider { get; set; }
@@ -22,7 +22,11 @@ public class OAuthAccount
     public string? RefreshToken { get; set; }
     public DateTime? ExpiresAt { get; set; }
 
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? LastSyncAt { get; set; }
 
 
 }

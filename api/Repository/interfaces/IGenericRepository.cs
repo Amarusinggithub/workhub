@@ -1,10 +1,10 @@
 namespace api.Repository.interfaces;
 
-public interface IGenericRepository <T> where T : class
+public interface IGenericRepository <T, TId> where T : class
 {
-    Task<T> GetById(int id);
+    Task<T> GetById(TId id);
    Task<IEnumerable<T>>  GetAll();
     Task<bool> Add(T entity);
     Task<bool> Update(T entity);
-    Task<bool> Delete(int id);
+    Task<bool> Delete(TId id);
 }

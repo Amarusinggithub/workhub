@@ -4,7 +4,7 @@ using api.Repository.Boards.interfaces;
 
 namespace api.Repository.Boards;
 
-public class BoardRepository:GenericRepository<Board>,IBoardRepository
+public class BoardRepository:GenericRepository<Board,Guid>,IBoardRepository
 {
     public BoardRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {

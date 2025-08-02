@@ -8,7 +8,7 @@ public class TaskItem
 {
 
     [Key]
-    public int Id { get; set; }
+    public Guid  Id { get; set; }
 
     [Required]
     public string TaskName { get; set; } = string.Empty;
@@ -19,15 +19,15 @@ public class TaskItem
     public TaskPriority TaskPriority { get; set; }
 
     [Required]
-    public int WorkspaceId { get; set; }
+    public Guid  WorkspaceId { get; set; }
     public Workspace Workspace { get; set; }
 
     [Required]
-    public int  ProjectId { get; set; }
+    public Guid   ProjectId { get; set; }
     public Project Project { get; set; }
 
 
-    public int ParentId { get; set; }
+    public Guid  ParentId { get; set; }
     public ICollection<TaskItem>? Issues { get; set; } = new List<TaskItem>();
 
     public ICollection<Comment>? Comments { get; set; } = new List<Comment>();

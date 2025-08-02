@@ -1,19 +1,14 @@
-import { Card, CardContent, CardHeader } from './ui/card';
 import { Settings2, Sparkles, Zap } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { Card, CardContent, CardHeader } from './ui/card';
 
 export default function Features() {
 	return (
 		<section className="bg-zinc-50 py-16 md:py-32 dark:bg-transparent">
 			<div className="@container mx-auto max-w-5xl px-6">
 				<div className="text-center">
-					<h2 className="text-4xl font-semibold text-balance lg:text-5xl">
-						Built to cover your needs
-					</h2>
-					<p className="mt-4">
-						Libero sapiente aliquam quibusdam aspernatur, praesentium iusto
-						repellendus.
-					</p>
+					<h2 className="text-4xl font-semibold text-balance lg:text-5xl">Built to cover your needs</h2>
+					<p className="mt-4">Libero sapiente aliquam quibusdam aspernatur, praesentium iusto repellendus.</p>
 				</div>
 				<div className="mx-auto mt-8 grid max-w-sm gap-6 *:text-center md:mt-16 @min-4xl:max-w-full @min-4xl:grid-cols-3">
 					<Card className="group shadow-zinc-950/5">
@@ -26,10 +21,7 @@ export default function Features() {
 						</CardHeader>
 
 						<CardContent>
-							<p className="text-sm">
-								Extensive customization options, allowing you to tailor every
-								aspect to meet your specific needs.
-							</p>
+							<p className="text-sm">Extensive customization options, allowing you to tailor every aspect to meet your specific needs.</p>
 						</CardContent>
 					</Card>
 
@@ -44,8 +36,7 @@ export default function Features() {
 
 						<CardContent>
 							<p className="mt-3 text-sm">
-								From design elements to functionality, you have complete control
-								to create a unique and personalized experience.
+								From design elements to functionality, you have complete control to create a unique and personalized experience.
 							</p>
 						</CardContent>
 					</Card>
@@ -60,10 +51,7 @@ export default function Features() {
 						</CardHeader>
 
 						<CardContent>
-							<p className="mt-3 text-sm">
-								Elements to functionality, you have complete control to create a
-								unique experience.
-							</p>
+							<p className="mt-3 text-sm">Elements to functionality, you have complete control to create a unique experience.</p>
 						</CardContent>
 					</Card>
 				</div>
@@ -78,12 +66,7 @@ const CardDecorator = ({ children }: { children: ReactNode }) => (
 			aria-hidden
 			className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-[size:24px_24px]"
 		/>
-		<div
-			aria-hidden
-			className="to-background absolute inset-0 bg-radial from-transparent to-75%"
-		/>
-		<div className="bg-background absolute inset-0 m-auto flex size-12 items-center justify-center border-t border-l">
-			{children}
-		</div>
+		<div aria-hidden className="to-background absolute inset-0 bg-radial from-transparent to-75%" />
+		<div className="bg-background absolute inset-0 m-auto flex size-12 items-center justify-center border-t border-l">{children}</div>
 	</div>
 );

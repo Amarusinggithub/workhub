@@ -130,7 +130,7 @@ public class TokenService(
             var expiryDate = DateTime.UtcNow.AddDays(7);
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryDate = expiryDate;
+            user.RefreshTokenExpiresAtUtc = expiryDate;
 
             _logger.LogInformation("Saving refresh token to database for user with ID: {UserId}, Expires: {ExpiryDate}",
                 user.Id, expiryDate);

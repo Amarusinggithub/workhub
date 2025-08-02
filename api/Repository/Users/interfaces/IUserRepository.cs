@@ -3,7 +3,7 @@ using api.Repository.interfaces;
 
 namespace api.Repository.Users.interfaces;
 
-public interface IUserRepository: IGenericRepository<User>
+public interface IUserRepository: IGenericRepository<User,Guid>
 {
     Task<User?> AddAndUpdateUser(User? userObj);
 

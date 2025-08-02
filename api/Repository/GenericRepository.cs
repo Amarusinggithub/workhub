@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository;
 
-public class GenericRepository<T>: IGenericRepository<T> where T:class
+public class GenericRepository<T,TId>: IGenericRepository<T,TId> where T:class
 {
     protected ApplicationDbContext _context;
     protected DbSet<T> dbSet;
@@ -17,7 +17,7 @@ public class GenericRepository<T>: IGenericRepository<T> where T:class
         _logger = logger;
         dbSet = context.Set<T>();
     }
-    public virtual async Task<T> GetById(int id)
+    public virtual async Task<T> GetById(TId id)
     {
         return await dbSet.FindAsync(id);
     }
@@ -38,7 +38,7 @@ public class GenericRepository<T>: IGenericRepository<T> where T:class
         throw new NotImplementedException();
     }
 
-    public virtual Task<bool> Delete(int id)
+    public virtual Task<bool> Delete(TId id)
     {
         throw new NotImplementedException();
     }

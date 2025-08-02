@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Repository.Users;
 
 public class UserRepository(ApplicationDbContext context, ILogger logger)
-    : GenericRepository<User>(context, logger), IUserRepository
+    : GenericRepository<User,Guid>(context, logger), IUserRepository
 {
     public override async Task<IEnumerable<User>> GetAll()
     {
@@ -64,7 +64,7 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
     public async Task<User?> AddAndUpdateUser(User? userObj)
     {
         bool isSuccess = false;
-        if (userObj != null && userObj.Id > 0)
+        if (userObj != null )
         {
             var obj = await _context.Users.FirstOrDefaultAsync(c => c.Id == userObj.Id);
             if (obj != null)
@@ -85,14 +85,14 @@ public class UserRepository(ApplicationDbContext context, ILogger logger)
         return isSuccess ? userObj: null;
     }
 
-    public override async Task<User?> GetById(int id)
+    public override async Task<User?> GetById(Guid id)
     {
         return await _context.Users.FirstOrDefaultAsync(x => x != null && x.Id == id);
     }
 
 
 
-    public override async Task<bool> Delete(int id)
+    public override async Task<bool> Delete(Guid id)
     {
         try
         {

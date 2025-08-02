@@ -6,7 +6,7 @@ namespace api.Services.Users.interfaces;
 public interface IUserService
 {
 
-    public Task<User> GetUserById(int id);
+    public Task<User> GetUserById(Guid id);
 
     Task<User?> GetByEmail(string email);
 
@@ -16,13 +16,13 @@ public interface IUserService
 
     Task<UserDto?> Authenticate(string email, string password);
     Task<IEnumerable<UserDto>> GetAll();
-    Task<User?> GetById(int id);
+    Task<User?> GetById(Guid id);
 
     Task<UserDto?> AddAndUpdateUser(User? userObj);
 
-    public Task RefreshTokenAsync(string refreshToken, int userId);
-    public Task<bool> ValidateRefreshTokenAsync(string refreshToken, int userId);
+    public Task RefreshTokenAsync(string refreshToken, Guid userId);
+    public Task<bool> ValidateRefreshTokenAsync(string refreshToken, Guid userId);
     public int? GetUserIdFromToken(string token);
-    public Task<bool> RevokeRefreshTokenAsync(int userId);
+    public Task<bool> RevokeRefreshTokenAsync(Guid userId);
 
 }

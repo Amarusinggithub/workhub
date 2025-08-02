@@ -14,7 +14,7 @@ public class UserController(IUserService service) : ControllerBase
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserWithRolesDto>> GetUserWithRoles(int id)
+    public async Task<ActionResult<UserWithRolesDto>> GetUserWithRoles(Guid id)
     {
         var user = await _service.GetById(id);
 

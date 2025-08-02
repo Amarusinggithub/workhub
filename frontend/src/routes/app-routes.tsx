@@ -30,9 +30,7 @@ function AppRoutes() {
 		{
 			path: '/',
 			Component: AppLayout,
-			children: [
-				{ index: true, Component: Home },
-			],
+			children: [{ index: true, Component: Home }],
 		},
 		{
 			path: 'settings',

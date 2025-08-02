@@ -39,7 +39,6 @@ builder.Services.AddLogging(config =>
 });
 
 
-// Add services to the container.
 builder.Services.AddOpenApi();
  builder.Services.AddAuthentication(options =>
             {
@@ -59,11 +58,12 @@ builder.Services.AddOpenApi();
             })
             .AddCookie(options =>
             {
-                options.LoginPath = "api/auth/login";
+                options.LoginPath = "/api/auth/login";
+                options.LogoutPath = "/api/auth/logout";
+
                 options.Cookie.Name = "AuthenticationCookie";
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
-                // Consider security to prevent XSS
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             })
@@ -100,7 +100,11 @@ builder.Services.AddOpenApi();
 
 
 
-
+ builder.Services.Configure<RouteOptions>(options =>
+ {
+     options.LowercaseUrls = true;
+     options.LowercaseQueryStrings = true;
+ });
 builder.Services.AddAuthorizationBuilder();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -263,6 +267,7 @@ app.UseCors(myAllowSpecificOrigins);
 //app.UseMiddleware<JwtMiddleware>();
 // app.UseCookiePolicy();
 app.UseRouting();
+app.MapControllers();
 // app.UseRateLimiter();
 // app.UseRequestLocalization();
 app.UseAuthentication();

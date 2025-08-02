@@ -1,22 +1,81 @@
 using System.ComponentModel.DataAnnotations;
-
-namespace api.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using api.Enums;
+using api.Models;
 
 public class Workspace
 {
-
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
+    [MaxLength(100)]
     public string WorkSpaceName { get; set; } = string.Empty;
 
-    public DateTime CreatedAt { get; set; }
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    [MaxLength(50)]
+    public string? WorkspaceCode { get; set; }
+
+    [Required]
+    public Guid OwnerId { get; set; }
+    public User Owner { get; set; }
+
+    public int? UserGroupId { get; set; }
+    public UserGroup? UserGroup { get; set; }
+
+    public WorkspaceVisibility Visibility { get; set; } = WorkspaceVisibility.Private;
+
+    public WorkspaceStatus Status { get; set; } = WorkspaceStatus.Active;
+
+    public bool IsPersonal { get; set; } = false;
+
+    public int MaxMembers { get; set; } = 10;
+
+    public int MaxProjects { get; set; } = 5;
+
+    [Column(TypeName = "bigint")]
+    public long MaxStorageBytes { get; set; } = 1_000_000_000; // 1GB default
+
+    [Column(TypeName = "bigint")]
+    public long CurrentStorageBytes { get; set; } = 0;
+
+    public bool AllowExternalInvites { get; set; } = true;
+
+    public bool RequireApprovalForJoining { get; set; } = false;
+
+    [MaxLength(100)]
+    public string? TimeZone { get; set; }
+
+    [MaxLength(10)]
+    public string? Language { get; set; } = "en";
+
+    [Column(TypeName = "jsonb")]
+    public string? Settings { get; set; }
+
+    public DateTime? LastActivityAt { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
     public DateTime? ModifiedAt { get; set; }
+
+
     public DateTime? DeletedAt { get; set; }
 
-    public ICollection<Project> Projects { get; set; } = new List<Project>();
-    public ICollection<UserWorkspaceRole> UserWorkspaceRoles { get; set; } = new List<UserWorkspaceRole>();
+    public Guid? ModifiedByUserId { get; set; }
 
-    public ICollection<WorkSpaceMember> UserWorkSpaces { get; set; } = new List<WorkSpaceMember>();
+    public int ProjectCount => Projects?.Count(p => p.DeletedAt == null) ?? 0;
+
+    public int MemberCount => WorkSpaceMembers?.Count(m => m.RemovedAt == null) ?? 0;
+
+    public bool IsDeleted => DeletedAt.HasValue;
+
+    public bool IsActive => Status == WorkspaceStatus.Active && !IsDeleted;
+
+    public ICollection<Project> Projects { get; set; } = new List<Project>();
+    public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
+    public ICollection<WorkSpaceMember> WorkSpaceMembers { get; set; } = new List<WorkSpaceMember>();
+    public ICollection<ProjectResource> ProjectResources { get; set; } = new List<ProjectResource>();
+    public ICollection<WorkspaceInvitation> Invitations { get; set; } = new List<WorkspaceInvitation>();
 }

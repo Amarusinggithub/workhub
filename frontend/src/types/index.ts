@@ -15,21 +15,20 @@ export type AuthErrorCode = `${AuthField}:${AuthErrorType}`;
 export interface User {
 	id: number;
 	email: string;
-	name: string;
-	FirstName: string;
-	LastName: string;
-	ProfilePicture?: string;
-	HeaderImage?: string;
-	JobTItle?: string;
-	Email: string;
+	name?: string;
+	firstName: string;
+	lastName: string;
+	avatarUrl?: string;
+	headerImageUrl?: string;
+	jobTItle?: string;
 	password?: string;
-	Organization?: string;
-	Location?: string;
-	UpdatedAt: Date;
-	CreatedAt: Date;
-	LastLoggedIn: Date;
-	IsActive: boolean;
-	EmailVerifiedAt: Date | null;
+	organization?: string;
+	location?: string;
+	updatedAt?: Date;
+	createdAt?: Date;
+	lastLoggedIn?: Date;
+	isActive?: boolean;
+	emailVerifiedAt?: Date | null;
 	[key: string]: unknown;
 }
 
@@ -83,5 +82,3 @@ type Resource = {};
 type Role = {};
 
 type Offer = {};
-
-type UserGroUp = {};

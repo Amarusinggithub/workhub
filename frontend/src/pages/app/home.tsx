@@ -1,4 +1,3 @@
-
 //import { type BreadcrumbItem } from '../../types';
 
 /*const breadcrumbs: BreadcrumbItem[] = [
@@ -8,12 +7,6 @@
 	},
 ];*/
 
-;
-
 export default function Home() {
-	return (
-		<>
-
-		</>
-	);
+	return <></>;
 }

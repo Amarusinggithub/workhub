@@ -2,5 +2,5 @@ namespace api.Enums;
 
 public enum ResourceType
 {
-    Documents,Videos,Folders,Images,PDFs,
+    Documents=1,Videos=2,Folders=3,Images=4,PDFs=5,
 }

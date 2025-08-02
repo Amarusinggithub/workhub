@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository.Notifications;
 
-public class NotificationRepository:GenericRepository<Notification>,INotificationRepository
+public class NotificationRepository:GenericRepository<Notification,Guid>,INotificationRepository
 {
     public NotificationRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
@@ -46,7 +46,7 @@ public class NotificationRepository:GenericRepository<Notification>,INotificatio
 
     }
 
-    public override async Task<bool> Delete(int id)
+    public override async Task<bool> Delete(Guid id)
     {
         try
         {

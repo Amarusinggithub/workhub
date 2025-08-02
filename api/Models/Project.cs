@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.Enums;
 
 namespace api.Models;
 
@@ -6,7 +7,7 @@ public class Project
 {
 
     [Key]
-    public int Id { get; set; }
+    public Guid  Id { get; set; }
 
     [Required]
     public string ProjectName { get; set; } = string.Empty;
@@ -21,19 +22,29 @@ public class Project
 
     public bool IsArchived { get; set; } = false;
     public bool IsTrashed { get; set; } = false;
+    public bool IsDeleted => DeletedAt.HasValue;
+    public ProjectStatus Status { get; set; } = ProjectStatus.Active;
+
     public DateTime? TrashedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public DateTime? LastActivityAt { get; set; }
+    public Guid? ModifiedByUserId { get; set; }
+    public int MemberCount => ProjectMembers?.Count(m => m.RemovedAt == null) ?? 0;
+
+    public bool IsActive => Status == ProjectStatus.Active && !IsDeleted;
 
 
     [Required]
-    public int WorkSpaceId { get; set; }
+    public Guid  WorkSpaceId { get; set; }
     public Workspace Workspace { get; set; }
 
-    public ICollection<UserWorkspaceRole> UserProjectRoles { get; set; } = new List<UserWorkspaceRole>();
+    public ICollection<WorkspaceRole> UserProjectRoles { get; set; } = new List<WorkspaceRole>();
 
 
-    public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();
+    public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
+    public ICollection<TaskItem> ProjectTasks { get; set; } = new List<TaskItem>();
 
     public ICollection<ProjectResource> ProjectResources { get; set; } = new List<ProjectResource>();
 

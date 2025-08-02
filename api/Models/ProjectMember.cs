@@ -11,11 +11,11 @@ public class ProjectMember
     public int Id { get; set; }
 
     [Required]
-    public int UserId { get; set; }
+    public Guid  UserId { get; set; }
     public User User { get; set; }
 
     [Required]
-    public int ProjectId { get; set; }
+    public Guid  ProjectId { get; set; }
     public Project Project { get; set; }
 
     public DateTime AddedAt { get; set; }

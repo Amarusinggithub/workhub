@@ -9,7 +9,7 @@ public class Invoice
 
 
     [Key]
-    public int Id { get; set; }
+    public Guid  Id { get; set; }
 
     [Required]
     public string CustomerDataInvoiceText { get; set; } = string.Empty;
@@ -27,7 +27,7 @@ public class Invoice
     public DateTime? InvoicePaidAt { get; set; }
 
     [Required]
-    public int SubscriptionId { get; set; }
+    public Guid  SubscriptionId { get; set; }
     public Subscription Subscription { get; set; }
 
     [Required]

@@ -10,5 +10,5 @@ public class EntityPropertyChange
     public string? OriginalValue { get; set; }
     public string? PropertyName { get; set; }
     public string? PropertyTypeFullName { get; set; }
-    public Guid AuditLogId { get; set; }
+    public int AuditLogId { get; set; }
 }

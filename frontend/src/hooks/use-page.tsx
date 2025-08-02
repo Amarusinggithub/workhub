@@ -16,9 +16,7 @@ export function PageProvider({ children }: PageProviderProps) {
 	const [url, setUrl] = useState<string>('');
 	const [sharedData, setSharedData] = useState<SharedData | undefined>();
 
-	return (
-		<PageContext.Provider value={{ url, setUrl, sharedData, setSharedData }}>{children}</PageContext.Provider>
-	);
+	return <PageContext.Provider value={{ url, setUrl, sharedData, setSharedData }}>{children}</PageContext.Provider>;
 }
 
 export default function usePage() {
@@ -28,5 +26,3 @@ export default function usePage() {
 	}
 	return context;
 }
-
-

@@ -8,7 +8,7 @@ public class ProjectCategory
     public int Id { get; set; }
 
     [Required]
-    public int ProjectId { get; set; }
+    public Guid  ProjectId { get; set; }
     public Project Project { get; set; }
 
     [Required]

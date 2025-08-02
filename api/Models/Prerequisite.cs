@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.Enums;
 
 namespace api.Models;
 
@@ -14,4 +15,9 @@ public class Prerequisite
     [Required]
     public int PlanId { get; set; }
     public Plan Plan { get; set; }
+
+    public PrerequisiteType Type { get; set; } = PrerequisiteType.Required;
+    public int MinimumMonths { get; set; } = 0;
+    public bool IsActive { get; set; } = true;
 }
+

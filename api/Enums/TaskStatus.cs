@@ -3,8 +3,9 @@ namespace api.Enums;
 
 public enum TaskStatus
 {
-    ToDo,
-    InProgress,
-    InReview,
-    Done
+    ToDo=1,
+    InProgress=2,
+    InReview=3,
+    Done=4,
+    InBacklog=5
 }

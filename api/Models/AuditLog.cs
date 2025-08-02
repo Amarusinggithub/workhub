@@ -1,34 +1,94 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace api.Models;
 
 public class AuditLog
 {
-    [Key]
-    public int Id { get; set; }
+    [Key] public int Id { get; set; }
 
-    public string Action { get; set; } = null!;
-    public string? BrowserInfo { get; set; }
-    public string? HttpMethod { get; set; }
-    public string? Url { get; set; }
+    [Required] [StringLength(100)] public string Action { get; set; } = string.Empty;
+
+    [StringLength(500)] public string? BrowserInfo { get; set; }
+
+    [StringLength(10)] public string? HttpMethod { get; set; }
+
+    [StringLength(2000)] public string? Url { get; set; }
+
+    [StringLength(45)] // IPv6 max length
     public string? IpAddress { get; set; }
 
-    public string? ServiceName { get; set; }
-    public string? MethodName { get; set; }
-    public string? Parameters { get; set; }
+    [StringLength(100)] public string? ServiceName { get; set; }
 
-    [Column(TypeName = "jsonb")]
-    public string? MetadataJson { get; set; }
+    [StringLength(100)] public string? MethodName { get; set; }
 
-    public int? EntityId { get; set; }
-    public string? EntityName { get; set; }
-    public string EntityType { get; set; } = null!;
+    [Column(TypeName = "text")] public string? Parameters { get; set; }
 
-    public int? PerformedById { get; set; }
-    public User? PerformedBy { get; set; }
+    [Column(TypeName = "jsonb")] public string? MetadataJson { get; set; }
 
-    public string? CorrelationId { get; set; }
+    [StringLength(50)] public string? EntityId { get; set; }
+
+    [StringLength(100)] public string? EntityName { get; set; }
+
+    [Required] [StringLength(100)] public string EntityType { get; set; } = string.Empty;
+
+    public Guid? PerformedById { get; set; }
+
+    [ForeignKey(nameof(PerformedById))] public User? PerformedBy { get; set; }
+
+    [StringLength(36)] public string? CorrelationId { get; set; }
 
     public DateTime PerformedAt { get; set; } = DateTime.UtcNow;
+
+    [StringLength(50)] public string? Severity { get; set; } = "Info";
+
+    [StringLength(20)] public string? Source { get; set; } = "Application";
+
+    public bool IsSuccess { get; set; } = true;
+
+    [StringLength(1000)] public string? ErrorMessage { get; set; }
+
+    [StringLength(4000)] public string? StackTrace { get; set; }
+
+    public long? ExecutionTimeMs { get; set; }
+
+    [StringLength(100)] public string? UserAgent { get; set; }
+
+    [StringLength(50)] public string? SessionId { get; set; }
+
+    [StringLength(100)] public string? RequestId { get; set; }
+
+    // Helper methods for metadata handling
+    public T? GetMetadata<T>() where T : class
+    {
+        if (string.IsNullOrEmpty(MetadataJson)) return null;
+
+        try
+        {
+            return JsonSerializer.Deserialize<T>(MetadataJson);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public void SetMetadata<T>(T metadata) where T : class
+    {
+        if (metadata == null)
+        {
+            MetadataJson = null;
+            return;
+        }
+
+        try
+        {
+            MetadataJson = JsonSerializer.Serialize(metadata);
+        }
+        catch
+        {
+            MetadataJson = null;
+        }
+    }
 }

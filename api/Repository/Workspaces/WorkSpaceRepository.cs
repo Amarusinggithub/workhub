@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository.Workspaces;
 
-public class WorkSpaceRepository : GenericRepository<Workspace>,IWorkSpaceRepository
+public class WorkSpaceRepository : GenericRepository<Workspace,Guid>,IWorkSpaceRepository
 {
     public WorkSpaceRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
@@ -48,7 +48,7 @@ public class WorkSpaceRepository : GenericRepository<Workspace>,IWorkSpaceReposi
     }
 
 
-    public override async Task<bool> Delete(int id)
+    public override async Task<bool> Delete(Guid id)
     {
         try
         {

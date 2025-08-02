@@ -2,16 +2,10 @@ import { z } from 'zod';
 
 export const registerSchema = z
 	.object({
-		firstName: z
-			.string()
-			.min(3, { message: 'First Name must be at least 3 characters long.' }),
-		lastName: z
-			.string()
-			.min(3, { message: 'Last Name must be at least 3 characters long.' }),
+		firstName: z.string().min(3, { message: 'First Name must be at least 3 characters long.' }),
+		lastName: z.string().min(3, { message: 'Last Name must be at least 3 characters long.' }),
 		email: z.email({ message: 'Please enter a valid email address.' }),
-		password: z
-			.string()
-			.min(8, { message: 'Password must be at least 8 characters long.' }),
+		password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
 		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -21,9 +15,7 @@ export const registerSchema = z
 
 export const loginSchema = z.object({
 	email: z.email({ message: 'Please enter a valid email address.' }),
-	password: z
-		.string()
-		.min(8, { message: 'Password must be at least 8 characters long.' }),
+	password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
 });
 
 export const forgatPasswordSchema = z.object({
@@ -32,9 +24,7 @@ export const forgatPasswordSchema = z.object({
 
 export const resetPasswordSchema = z
 	.object({
-		password: z
-			.string()
-			.min(8, { message: 'Password must be at least 8 characters long.' }),
+		password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
 		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -47,7 +37,5 @@ export const verifyEmailSchema = z.object({
 });
 
 export const confirmPasswordSchema = z.object({
-	password: z
-		.string()
-		.min(8, { message: 'Password must be at least 8 characters long.' }),
+	password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
 });

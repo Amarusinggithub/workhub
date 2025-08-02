@@ -3,7 +3,7 @@ using api.Repository.interfaces;
 
 namespace api.Repository.Infrastructure.interfaces;
 
-public interface IStorageRepository: IGenericRepository<Resource>
+public interface IStorageRepository: IGenericRepository<Resource,Guid>
 {
 
 }

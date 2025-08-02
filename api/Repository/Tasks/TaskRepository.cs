@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository;
 
-public class TaskRepository: GenericRepository<TaskItem>,ITaskRepository
+public class TaskRepository: GenericRepository<TaskItem,Guid>,ITaskRepository
 {
     public TaskRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
@@ -45,7 +45,7 @@ public class TaskRepository: GenericRepository<TaskItem>,ITaskRepository
         }    }
 
 
-    public override async Task<bool> Delete(int id)
+    public override async Task<bool> Delete(Guid id)
     {
         try
         {

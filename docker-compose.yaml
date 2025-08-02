@@ -1,9 +1,9 @@
 ﻿services:
-  
-  
+
+
   backend:
     networks:
-      - notetify-net
+      - workhub-net
     image: backend
     build:
       context: ./backend
@@ -11,17 +11,17 @@
     depends_on:
       db:
         condition: service_healthy
-      
-  
-  frontend: 
-      
+
+
+  frontend:
+
       networks:
-        - driver-hub-net
+        - workhub-net
       build:
         context: ./frontend
         dockerfile: Dockerfile
       environment:
-        NODE_ENV: production
+        NODE_ENV: development
       ports:
         - 3000:3000
 
@@ -29,7 +29,7 @@
 
   db:
       networks:
-        - driver-hub-net
+        - workhub-net
       image: postgres
       restart: always
       user: postgres
@@ -46,11 +46,11 @@
         timeout: 5s
         retries: 5
       env_file:
-        - env         
-        
-        
+        - env
+
+
 networks:
-  driver-hub-net:
+  workhub-net:
     driver: bridge
 
 volumes:

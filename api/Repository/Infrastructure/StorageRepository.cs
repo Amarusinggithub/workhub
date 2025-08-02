@@ -4,13 +4,13 @@ using api.Repository.Infrastructure.interfaces;
 
 namespace api.Repository.Software;
 
-public class StorageRepository:GenericRepository<Resource>,IStorageRepository
+public class StorageRepository:GenericRepository<Resource,Guid>,IStorageRepository
 {
     public StorageRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
     }
 
-    public Task<Resource> GetById(int id)
+    public Task<Resource> GetById(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -30,7 +30,7 @@ public class StorageRepository:GenericRepository<Resource>,IStorageRepository
         throw new NotImplementedException();
     }
 
-    public Task<bool> Delete(int id)
+    public Task<bool> Delete(Guid id)
     {
         throw new NotImplementedException();
     }

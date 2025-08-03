@@ -9,7 +9,7 @@ public class Invoice
 
 
     [Key]
-    public Guid  Id { get; set; }
+    public Guid Id { get; set; } =  Guid.NewGuid();
 
     [Required]
     public string CustomerDataInvoiceText { get; set; } = string.Empty;

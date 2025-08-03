@@ -5,8 +5,7 @@ using api.Models;
 
 public class Workspace
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; } =  Guid.NewGuid();
 
     [Required]
     [MaxLength(100)]

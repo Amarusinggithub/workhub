@@ -11,5 +11,6 @@ public class Option
     public string OptionName { get; set; } = string.Empty;
     public ICollection<OptionIncluded> OptionIncludes { get; set; } = new List<OptionIncluded>();
 
-
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 }

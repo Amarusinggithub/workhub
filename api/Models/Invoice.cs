@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 using api.Enums;
@@ -28,9 +30,33 @@ public class Invoice
 
     [Required]
     public Guid  SubscriptionId { get; set; }
+
+    [ForeignKey(nameof(SubscriptionId))]
+
     public Subscription Subscription { get; set; }
 
     [Required]
     public int PlanHistoryId { get; set; }
+    [ForeignKey(nameof(PlanHistoryId))]
+
     public PlanHistory PlanHistory { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Invoice>()
+            .HasOne(inv => inv.Subscription)
+            .WithMany(s => s.Invoices)
+            .HasForeignKey(inv => inv.SubscriptionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Invoice>()
+            .HasOne(inv => inv.PlanHistory)
+            .WithMany(ph => ph.Invoices)
+            .HasForeignKey(inv => inv.PlanHistoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }

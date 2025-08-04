@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -11,13 +12,19 @@ public class Subscription
 
     [Required]
     public int UserGroupId { get; set; }
+    [ForeignKey(nameof(UserGroupId))]
+
     public UserGroup UserGroup { get; set; }
 
     [Required]
     public int CurrentPlanId { get; set; }
+    [ForeignKey(nameof(CurrentPlanId))]
+
     public Plan CurrentPlan { get; set; }
 
     public int? OfferId { get; set; }
+    [ForeignKey(nameof(OfferId))]
+
     public Offer? Offer { get; set; }
 
     public bool SubscribeAfterTrial { get; set; } = false;
@@ -28,7 +35,8 @@ public class Subscription
     public DateTime? ValidTo { get; set; }
 
     public DateTime? UnSubscribedAt { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
     public DateTime StartDate { get; set; } = DateTime.UtcNow;
     public DateTime? EndDate { get; set; }
 
@@ -63,4 +71,11 @@ public class Subscription
 
     public ICollection<PlanHistory> PlanHistories { get; set; } = new List<PlanHistory>();
     public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+
+
+    }
 }

@@ -40,12 +40,12 @@ public class Comment
     public Comment? Parent { get; set; }
 
     [Range(0, 15, ErrorMessage = "Thread depth cannot exceed 15 levels")]
-    public int ThreadDepth { get; set; } = 0;
+    public int ThreadDepth { get; set; }
     public ICollection<CommentAttachment> Attachments { get; set; } = new List<CommentAttachment>();
     public ICollection<CommentMention> Mentions { get; set; } = new List<CommentMention>();
 
 
-    public bool IsPinned { get; set; } = false;
+    public bool IsPinned { get; set; }
     public DateTime? PinnedAt { get; set; }
     public Guid? PinnedById { get; set; }
 
@@ -56,19 +56,18 @@ public class Comment
     public Guid TaskId { get; set; }
 
     [ForeignKey(nameof(TaskId))]
-    public TaskItem TaskItem { get; set; } = null!;
+    public TaskItem TaskItem { get; set; }
 
 
-    public bool IsInternal { get; set; } = false;
-    public bool RequiresApproval { get; set; } = false;
+    public bool IsInternal { get; set; }
+    public bool RequiresApproval { get; set; }
     public bool IsApproved { get; set; } = true;
     public DateTime? ApprovedAt { get; set; }
     public Guid? ApprovedById { get; set; }
-
     [ForeignKey(nameof(ApprovedById))]
     public User? ApprovedBy { get; set; }
 
-    public int LikeCount { get; set; } = 0;
+    public int LikeCount { get; set; }
     public ICollection<CommentReaction> Reactions { get; set; } = new List<CommentReaction>();
 
     [StringLength(20)]
@@ -77,8 +76,8 @@ public class Comment
     [StringLength(50)]
     public string? CommentType { get; set; } = "General";
 
-    public DateTime UpdatedAt { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
 
     [NotMapped]
@@ -98,7 +97,7 @@ public class Comment
 
     private int GetTotalReplyCount()
     {
-        if (Replies == null || !Replies.Any()) return 0;
+        if (!Replies.Any()) return 0;
 
         return Replies.Count + Replies.Sum(r => r.GetTotalReplyCount());
     }
@@ -172,7 +171,7 @@ public class Comment
         // Commenter relationship
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.Commenter)
-            .WithMany()
+            .WithMany(o => o.CreatedComments)
             .HasForeignKey(c => c.CommenterId)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -182,5 +181,11 @@ public class Comment
             .WithMany(t => t.Comments)
             .HasForeignKey(c => c.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Comment>()
+            .HasOne(iug => iug.PinnedBy)
+            .WithMany(p=> p.PinnedComments)
+            .HasForeignKey(iug => iug.PinnedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

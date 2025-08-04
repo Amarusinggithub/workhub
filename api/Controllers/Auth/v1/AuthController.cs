@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using api.DTOs.Auth.Requests;
-
+using api.Services.Auth.interfaces;
 using api.Services.Users.interfaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,15 +12,19 @@ namespace api.Controllers.Auth.v1;
 [ApiController]
 [Route("api/auth")]
 [ApiVersion("1")]
-public class AuthController(IUserService service) : ControllerBase
+public class AuthController(IAuthService service,IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
-    private readonly IUserService _service = service ?? throw new ArgumentNullException(nameof(service));
+    private readonly IAuthService _service = service ?? throw new ArgumentNullException(nameof(service));
+    private readonly IHttpContextAccessor _httpContextAccessor=httpContextAccessor;
 
 
     [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> GetMe()
     {
+
+       // _httpContextAccessor!.HttpContext.GetTokenAsync();
+
         return Ok();
     }
 
@@ -37,7 +42,7 @@ public class AuthController(IUserService service) : ControllerBase
             return BadRequest("User with this email already exists");
         }
 
-        var response = await _service.AddUser(requestDto.lastName, requestDto.firstName, requestDto.password, requestDto.email);
+        var response = await _service.Register(requestDto.lastName, requestDto.firstName, requestDto.password, requestDto.email);
         if (response==null)
         {
             return StatusCode(500, "Something went wrong while creating the user");

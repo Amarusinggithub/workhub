@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -54,4 +55,14 @@ public class Offer
     public ICollection<Include> Includes { get; set; } = new List<Include>();
     public ICollection<Prerequisite> Prerequisites { get; set; } = new List<Prerequisite>();
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Offer>()
+            .HasMany(o => o.Subscriptions)
+            .WithOne(s => s.Offer)
+            .HasForeignKey(s => s.OfferId)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
 }

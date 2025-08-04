@@ -29,8 +29,8 @@ public class Notification
 
 
 
-    public DateTime CreatedAt { get; set; }
-
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
     public DateTime? ScheduledAt { get; set; }
 
     public DateTime? SentAt { get; set; }
@@ -96,5 +96,5 @@ public UserGroup? Group { get; set; }
 
     [MaxLength(50)]
     public string? Platform { get; set; }
-    public ICollection<NotificationMember> UserNotifications { get; set; } = new List<NotificationMember>();
+    public ICollection<NotificationMembership> NotificationMemberships { get; set; } = new List<NotificationMembership>();
 }

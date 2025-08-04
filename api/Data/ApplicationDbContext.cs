@@ -10,33 +10,32 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Resource> Resources { get; set; }
     public DbSet<UserResource> UserResources { get; set; }
-    public DbSet<WorkspaceRole> WorkspaceRoles { get; set; }
 
-    public DbSet<ProjectResource> ProjectResources { get; set; }
+    public DbSet<ProjectAttachment> ProjectAttachments { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
-    public DbSet<UserGroupInvitation> UserGroupInvitations { get; set; }
+    public DbSet<GroupInvitation> UserGroupInvitations { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
 
     public DbSet<UserGroupType> UserGroupTypes { get; set; }
-    public DbSet<UserGroupMember> UserGroupMembers { get; set; }
+    public DbSet<GroupMembership> GroupMemberships { get; set; }
     public DbSet<Workspace> WorkSpaces { get; set; }
     public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; }
 
-    public DbSet<WorkSpaceMember> WorkSpaceMembers { get; set; }
+    public DbSet<WorkspaceMembership> WorkSpaceMemberships { get; set; }
     public DbSet<Project> Projects { get; set; }
-    public DbSet<ProjectMember> ProjectMembers { get; set; }
+    public DbSet<ProjectMembership> ProjectMemberships { get; set; }
     public DbSet<ProjectCategory> ProjectCategories { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<WorkspaceRole> UserWorkspaeRoles { get; set; }
+    public DbSet<WorkspaceRole> WorkspaceRoles { get; set; }
     public DbSet<TaskItem> Tasks { get; set; }
     public DbSet<TaskAttachment> TaskAttachments { get; set; }
     public DbSet<TaskAssignment> TaskAssignments { get; set; }
 
 
     public DbSet<Notification> Notifications { get; set; }
-    public DbSet<NotificationMember> NotificationMembers { get; set; }
+    public DbSet<NotificationMembership> NotificationMembers { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
     public DbSet<Software> Softwares { get; set; }
     public DbSet<SoftwareFeature> SoftwareFeatures { get; set; }
@@ -66,298 +65,142 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<EntityPropertyChange> EntityPropertyChanges { get; set; }
 
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-            base.OnModelCreating(builder);
-            builder.Entity<User>().ToTable("AspNetUsers");
+        base.OnModelCreating(modelBuilder);
+       // Comment
+        Comment.ConfigureRelations(modelBuilder);
+        Comment.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Comment>()
-                .HasOne(co => co.Commenter)
-                .WithMany(o => o.Comments)
-                .HasForeignKey(inc => inc.CommenterId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // TaskItem
+        TaskItem.ConfigureRelations(modelBuilder);
+        //TaskItem.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Comment>()
-                .HasOne(issue => issue.TaskItem)
-                .WithMany(p => p.Comments)
-                .HasForeignKey(inc => inc.TaskId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // TaskAssignment
+        TaskAssignment.ConfigureRelations(modelBuilder);
+        //TaskAssignment.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskLabel>()
-                .HasOne(isl => isl.Label)
-                .WithMany(l => l.Issues)
-                .HasForeignKey(il => il.LabelId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // TaskAttachment
+        TaskAttachment.ConfigureRelations(modelBuilder);
+        //TaskAttachment.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskLabel>()
-                .HasOne(issue => issue.TaskItem)
-                .WithMany(p => p.Labels)
-                .HasForeignKey(inc => inc.TaskId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // TaskLabel
+        TaskLabel.ConfigureRelations(modelBuilder);
+        //TaskLabel.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<ProjectResource>()
-                .HasOne(ugr => ugr.Resource)
-                .WithMany(r => r.UserResources)
-                .HasForeignKey(ugr => ugr.ResourceId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Project
+        Project.ConfigureRelations(modelBuilder);
+        //Project.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<ProjectResource>()
-                .HasOne(pr => pr.Workspace)
-                .WithMany(w => w.ProjectResources)
-                .HasForeignKey(ugr => ugr.WorkspaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // ProjectAttachment
+        ProjectAttachment.ConfigureRelations(modelBuilder);
+        //ProjectAttachment.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskAttachment>()
-                .HasOne(ts => ts.Resource)
-                .WithMany(r => r.TaskResources)
-                .HasForeignKey(ugr => ugr.ResourceId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // ProjectMembership
+        ProjectMembership.ConfigureRelations(modelBuilder);
+        //ProjectMembership.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskAttachment>()
-                .HasOne(ugr => ugr.TaskItem)
-                .WithMany(u => u.Attactments)
-                .HasForeignKey(ugr => ugr.TaskId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Workspace
+        Workspace.ConfigureRelations(modelBuilder);
+        //Workspace.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<UserGroupMember>()
-                .HasOne(iug => iug.UserGroup)
-                .WithMany(ug => ug.Users)
-                .HasForeignKey(iug => iug.UserGroupId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // WorkspaceMembership
+        WorkspaceMembership.ConfigureRelations(modelBuilder);
+        //WorkspaceMembership.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<UserGroupInvitation>()
-                .HasOne(iug => iug.UserGroup)
-                .WithMany(ug => ug.Invitations)
-                .HasForeignKey(iug => iug.UserGroupId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // WorkspaceRole
+        WorkspaceRole.ConfigureRelations(modelBuilder);
+        //WorkspaceRole.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<UserGroupInvitation>()
-                .HasOne(iug => iug.InvitedBy)
-                .WithMany(ug => ug.UserGroupInvitations)
-                .HasForeignKey(iug => iug.InvitedByUserId)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<WorkspaceInvitation>()
-                .HasOne(iug => iug.InvitedBy)
-                .WithMany(ug => ug.WorkspaceInvitations)
-                .HasForeignKey(iug => iug.InvitedByUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // WorkspaceInvitation
+        WorkspaceInvitation.ConfigureRelations(modelBuilder);
+        //WorkspaceInvitation.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<WorkspaceInvitation>()
-                .HasOne(iug => iug.Workspace)
-                .WithMany(ug => ug.Invitations)
-                .HasForeignKey(iug => iug.WorkspaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // GroupMembership
+        GroupMembership.ConfigureRelations(modelBuilder);
+        //GroupMembership.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<UserGroupMember>()
-                .HasOne(iug => iug.User)
-                .WithMany(u => u.UserGroups)
-                .HasForeignKey(iug => iug.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // GroupInvitation
+        GroupInvitation.ConfigureRelations(modelBuilder);
+        //GroupInvitation.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<WorkSpaceMember>()
-                .HasOne(iws => iws.Workspace)
-                .WithMany(ws => ws.WorkSpaceMembers)
-                .HasForeignKey(iws => iws.WorkSpaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Resource
+        Resource.ConfigureRelations(modelBuilder);
+        //Resource.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<WorkSpaceMember>()
-                .HasOne(iws => iws.User)
-                .WithMany(u => u.WorkspaceMemberships)
-                .HasForeignKey(iws => iws.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // NotificationMembership
+        NotificationMembership.ConfigureRelations(modelBuilder);
+       // NotificationMembership.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<ProjectMember>()
-                .HasOne(inp => inp.Project)
-                .WithMany(p => p.ProjectMembers)
-                .HasForeignKey(inp => inp.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Include
+        Include.ConfigureRelations(modelBuilder);
+        //Include.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<ProjectMember>()
-                .HasOne(inp => inp.User)
-                .WithMany(u => u.UserProjects)
-                .HasForeignKey(inp => inp.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Prerequisite
+        Prerequisite.ConfigureRelations(modelBuilder);
+        //Prerequisite.ConfigureIndexes(modelBuilder);
 
-                builder.Entity<ProjectCategory>()
-                    .HasOne(pc => pc.Project)
-                    .WithMany(p => p.ProjectCategories)
-                    .HasForeignKey(pc => pc.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // OptionIncluded
+        OptionIncluded.ConfigureRelations(modelBuilder);
+        //OptionIncluded.ConfigureIndexes(modelBuilder);
 
-                builder.Entity<ProjectCategory>()
-                    .HasOne(pc => pc.Category)
-                    .WithMany(c => c.ProjectCategories)
-                    .HasForeignKey(pc => pc.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Offer
+        Offer.ConfigureRelations(modelBuilder);
+        //Offer.ConfigureIndexes(modelBuilder);
 
-                builder.Entity<WorkspaceRole>()
-                    .HasOne(uwr => uwr.User)
-                    .WithMany(u => u.UserWorkspaceRoles)
-                    .HasForeignKey(uwr => uwr.UserId)
-               .OnDelete(DeleteBehavior.Cascade);
+        // PlanHistory
+        PlanHistory.ConfigureRelations(modelBuilder);
+        //PlanHistory.ConfigureIndexes(modelBuilder);
 
-               builder.Entity<WorkspaceRole>()
-                   .HasOne(uwr => uwr.Workspace)
-                   .WithMany(w => w.WorkspaceRoles)
-                   .HasForeignKey(uwr => uwr.WorkspaceId)
-               .OnDelete(DeleteBehavior.Cascade);
+        // Invoice
+        Invoice.ConfigureRelations(modelBuilder);
+        //Invoice.ConfigureIndexes(modelBuilder);
 
-               builder.Entity<NotificationMember>()
-                   .HasOne(u => u.User)
-                   .WithMany(u => u.UserNotifications)
-                   .HasForeignKey(u=> u.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+        // SoftwareFeature
+        SoftwareFeature.ConfigureRelations(modelBuilder);
+        //SoftwareFeature.ConfigureIndexes(modelBuilder);
 
-               builder.Entity<NotificationMember>()
-                   .HasOne(n => n.Notification)
-                   .WithMany(u => u.UserNotifications)
-                   .HasForeignKey(n=> n.NotificationId)
-                   .OnDelete(DeleteBehavior.Cascade);
+        // SoftwareReview
+        SoftwareReview.ConfigureRelations(modelBuilder);
+        //SoftwareReview.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Include>()
-                .HasOne(inc => inc.Offer)
-                .WithMany(o => o.Includes)
-                .HasForeignKey(inc => inc.OfferId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // UserRole
+        UserRole.ConfigureRelations(modelBuilder);
+        //UserRole.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Include>()
-                .HasOne(inc => inc.Plan)
-                .WithMany(p => p.Includes)
-                .HasForeignKey(inc => inc.PlanId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // UserPermission
+        UserPermission.ConfigureRelations(modelBuilder);
+        //UserPermission.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskAssignment>()
-                .HasOne(pre => pre.TaskItem)
-                .WithMany(o => o.Assignments)
-                .HasForeignKey(pre => pre.TaskItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // UserSession
+        UserSession.ConfigureRelations(modelBuilder);
+        //UserSession.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<TaskAssignment>()
-                .HasOne(pre => pre.AssignedByUser)
-                .WithMany(o => o.CreatedTasks)
-                .HasForeignKey(pre => pre.AssignedByUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // CommentAttachment
+        CommentAttachment.ConfigureRelations(modelBuilder);
+        //CommentAttachment.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Prerequisite>()
-                .HasOne(pre => pre.Offer)
-                .WithMany(o => o.Prerequisites)
-                .HasForeignKey(pre => pre.OfferId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // CommentReaction
+        CommentReaction.ConfigureRelations(modelBuilder);
+        //CommentReaction.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Prerequisite>()
-                .HasOne(pre => pre.Plan)
-                .WithMany(p => p.Prerequisites)
-                .HasForeignKey(pre => pre.PlanId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // CommentMention
+        CommentMention.ConfigureRelations(modelBuilder);
+        //CommentMention.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<OptionIncluded>()
-                .HasOne(oi => oi.Plan)
-                .WithMany(p => p.OptionIncludes)
-                .HasForeignKey(oi => oi.PlanId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // ProjectCategory
+        ProjectCategory.ConfigureRelations(modelBuilder);
+        //ProjectCategory.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<OptionIncluded>()
-                .HasOne(oi => oi.Option)
-                .WithMany(o => o.OptionIncludes)
-                .HasForeignKey(oi => oi.OptionId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Subscription
+        Subscription.ConfigureRelations(modelBuilder);
+        //Subscription.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<Offer>()
-                .HasMany(o => o.Subscriptions)
-                .WithOne(s => s.Offer)
-                .HasForeignKey(s => s.OfferId)
-                .OnDelete(DeleteBehavior.SetNull);
+        // Board
+        Board.ConfigureRelations(modelBuilder);
+        //Board.ConfigureIndexes(modelBuilder);
 
-            builder.Entity<PlanHistory>()
-                .HasOne(ph => ph.Subscription)
-                .WithMany(s => s.PlanHistories)
-                .HasForeignKey(ph => ph.SubscriptionId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<PlanHistory>()
-                .HasOne(ph => ph.Plan)
-                .WithMany(p => p.PlanHistories)
-                .HasForeignKey(ph => ph.PlanId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Invoice>()
-                .HasOne(inv => inv.Subscription)
-                .WithMany(s => s.Invoices)
-                .HasForeignKey(inv => inv.SubscriptionId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Invoice>()
-                .HasOne(inv => inv.PlanHistory)
-                .WithMany(ph => ph.Invoices)
-                .HasForeignKey(inv => inv.PlanHistoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<SoftwareFeature>()
-                .HasOne(iug => iug.Software)
-                .WithMany(ug => ug.SoftwareFeatures)
-                .HasForeignKey(iug => iug.SoftwareId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<SoftwareReview>()
-                .HasOne(iug => iug.Software)
-                .WithMany(ug => ug.Reviews)
-                .HasForeignKey(iug => iug.SoftwareId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<UserRole>()
-                .HasOne(iug => iug.User)
-                .WithMany(ug => ug.CustomRoles)
-                .HasForeignKey(iug => iug.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<UserPermission>()
-                .HasOne(iug => iug.User)
-                .WithMany(ug => ug.CustomPermissions)
-                .HasForeignKey(iug => iug.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<UserSession>()
-                .HasOne(iug => iug.User)
-                .WithMany(ug => ug.Sessions)
-                .HasForeignKey(iug => iug.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CommentAttachment>()
-                .HasOne(iug => iug.Comment)
-                .WithMany(ug => ug.Attachments)
-                .HasForeignKey(iug => iug.CommentId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CommentAttachment>()
-                .HasOne(iug => iug.Attactment)
-                .WithMany(ug => ug.CommentAttachments)
-                .HasForeignKey(iug => iug.CommentId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CommentReaction>()
-                .HasOne(iug => iug.Comment)
-                .WithMany(ug => ug.Reactions)
-                .HasForeignKey(iug => iug.CommentId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CommentReaction>()
-                .HasOne(iug => iug.User)
-                .WithMany()
-                .HasForeignKey(iug => iug.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-            builder.Entity<CommentMention>()
-                .HasOne(iug => iug.Comment)
-                .WithMany(ug => ug.Mentions)
-                .HasForeignKey(iug => iug.CommentId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<CommentMention>()
-                .HasOne(iug => iug.MentionedUser)
-                .WithMany()
-                .HasForeignKey(iug => iug.MentionedUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<User>().ToTable("AspNetUsers");
         }
 
     }

@@ -7,14 +7,14 @@ public class Role: IdentityRole<Guid>
 {
 
 
-    public DateTime CreatedOn { get; set; }
-    public DateTime ModifiedOn { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
     public bool IsDeleted { get; set; }
+    public DateTime DeletedAt { get; set; }
+
 
     [Required]
 
-    public ICollection<WorkSpaceMember> WorkSpaceMembers { get; set; } = new List<WorkSpaceMember>();
-    //public ICollection<UserGroupResource> ResourceRoles { get; set; } = new List<UserGroupResource>();
-    public ICollection<WorkspaceRole> UserWorkspaceRoles { get; set; } = new List<WorkspaceRole>();
+    public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
 }

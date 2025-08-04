@@ -18,10 +18,14 @@ public class UserGroup
 
     [Required]
     public int UserGroupTypeId { get; set; }
+    [ForeignKey(nameof(UserGroupTypeId))]
+
     public UserGroupType UserGroupType { get; set; }
 
     [Required]
     public Guid OwnerId { get; set; }
+    [ForeignKey(nameof(OwnerId))]
+
     public User Owner { get; set; }
 
     public UserGroupStatus Status { get; set; } = UserGroupStatus.Active;
@@ -80,7 +84,7 @@ public class UserGroup
         (double)CurrentStorageBytes / MaxStorageBytes * 100 : 0;
 
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-    public ICollection<UserGroupMember> Users { get; set; } = new List<UserGroupMember>();
+    public ICollection<GroupMembership> Users { get; set; } = new List<GroupMembership>();
     public ICollection<Workspace> Workspaces { get; set; } = new List<Workspace>();
-    public ICollection<UserGroupInvitation> Invitations { get; set; } = new List<UserGroupInvitation>();
+    public ICollection<GroupInvitation> Invitations { get; set; } = new List<GroupInvitation>();
 }

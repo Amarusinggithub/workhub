@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
 using api.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class Workspace
 {
@@ -19,9 +20,14 @@ public class Workspace
 
     [Required]
     public Guid OwnerId { get; set; }
+    [ForeignKey(nameof(OwnerId))]
+
     public User Owner { get; set; }
 
     public int? UserGroupId { get; set; }
+    [ForeignKey(nameof(UserGroupId))]
+
+
     public UserGroup? UserGroup { get; set; }
 
     public WorkspaceVisibility Visibility { get; set; } = WorkspaceVisibility.Private;
@@ -55,9 +61,8 @@ public class Workspace
 
     public DateTime? LastActivityAt { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? ModifiedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+       public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
 
     public DateTime? DeletedAt { get; set; }
@@ -66,7 +71,7 @@ public class Workspace
 
     public int ProjectCount => Projects?.Count(p => p.DeletedAt == null) ?? 0;
 
-    public int MemberCount => WorkSpaceMembers?.Count(m => m.RemovedAt == null) ?? 0;
+    public int MemberCount => WorkspaceMemberships?.Count(m => m.RemovedAt == null) ?? 0;
 
     public bool IsDeleted => DeletedAt.HasValue;
 
@@ -74,7 +79,17 @@ public class Workspace
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
-    public ICollection<WorkSpaceMember> WorkSpaceMembers { get; set; } = new List<WorkSpaceMember>();
-    public ICollection<ProjectResource> ProjectResources { get; set; } = new List<ProjectResource>();
+    public ICollection<WorkspaceMembership> WorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
+    public ICollection<ProjectAttachment> ProjectResources { get; set; } = new List<ProjectAttachment>();
     public ICollection<WorkspaceInvitation> Invitations { get; set; } = new List<WorkspaceInvitation>();
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Workspace>()
+            .HasOne(ugr => ugr.Owner)
+            .WithMany(u => u.CreatedWorkspaces)
+            .HasForeignKey(ugr => ugr.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }

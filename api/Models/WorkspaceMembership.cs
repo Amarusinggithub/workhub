@@ -1,26 +1,37 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
+
 namespace api.Models;
 
-public class WorkSpaceMember
+public class WorkspaceMembership
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
     public Guid WorkSpaceId { get; set; }
+    [ForeignKey(nameof(WorkSpaceId))]
+
     public Workspace Workspace { get; set; }
 
     [Required]
     public Guid UserId { get; set; }
+    [ForeignKey(nameof(UserId))]
+
+
     public User User { get; set; }
 
     [Required]
-    public Guid RoleId { get; set; }
+    public Guid WorkspaceRoleId { get; set; }
+    [ForeignKey(nameof(WorkspaceRoleId))]
+
     public WorkspaceRole WorkspaceRole { get; set; }
 
     public WorkspaceMemberStatus Status { get; set; } = WorkspaceMemberStatus.Active;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
@@ -28,7 +39,7 @@ public class WorkSpaceMember
 
     public Guid? AddedByUserId { get; set; }
 
-    [ForeignKey("AddedByUserId")]
+    [ForeignKey(nameof(AddedByUserId))]
 
     public User? AddedBy { get; set; }
 
@@ -36,7 +47,7 @@ public class WorkSpaceMember
 
     public Guid? RemovedByUserId { get; set; }
 
-    [ForeignKey("RemovedByUserId")]
+    [ForeignKey(nameof(RemovedByUserId))]
 
     public User? RemovedBy { get; set; }
 
@@ -58,4 +69,26 @@ public class WorkSpaceMember
     public bool IsOwner => WorkspaceRole.Role?.Name.ToLower() == "owner";
 
     public bool IsAdmin => WorkspaceRole.Role?.Name.ToLower() == "admin" || IsOwner;
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<WorkspaceMembership>()
+            .HasOne(iws => iws.Workspace)
+            .WithMany(ws => ws.WorkspaceMemberships)
+            .HasForeignKey(iws => iws.WorkSpaceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<WorkspaceMembership>()
+            .HasOne(iws => iws.User)
+            .WithMany(u => u.WorkspaceMemberships)
+            .HasForeignKey(iws => iws.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<WorkspaceMembership>()
+            .HasOne(iws => iws.AddedBy)
+            .WithMany(u => u.CreatedWorkspaceMemberships)
+            .HasForeignKey(iws => iws.AddedByUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

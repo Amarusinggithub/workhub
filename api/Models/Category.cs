@@ -11,8 +11,8 @@ public class Category
     public string CategoryName { get; set; } = string.Empty;
     public string? CategoryDescription { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 

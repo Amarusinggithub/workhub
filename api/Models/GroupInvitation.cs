@@ -1,16 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
-public class UserGroupInvitation
+public class GroupInvitation
 {
     [Key]
     public Guid Id { get; set; }
 
     [Required]
     public int UserGroupId { get; set; }
+    [ForeignKey(nameof(UserGroupId))]
+
     public UserGroup UserGroup { get; set; }
 
     [Required]
@@ -22,13 +25,13 @@ public class UserGroupInvitation
     [Required]
     public Guid InvitedByUserId { get; set; }
 
-    [ForeignKey("InvitedByUserId")]
+    [ForeignKey(nameof(InvitedByUserId))]
 
     public User InvitedBy { get; set; }
 
     public Guid? InvitedUserId { get; set; }
 
-    [ForeignKey("InvitedUserId")]
+    [ForeignKey(nameof(InvitedUserId))]
 
     public User? InvitedUser { get; set; }
 
@@ -37,8 +40,8 @@ public class UserGroupInvitation
     [MaxLength(500)]
     public string? Message { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
     public DateTime ExpiresAt { get; set; }
 
     public DateTime? AcceptedAt { get; set; }
@@ -51,5 +54,26 @@ public class UserGroupInvitation
     public bool IsExpired => DateTime.UtcNow > ExpiresAt;
 
     public bool IsValid => Status == InvitationStatus.Pending && !IsExpired;
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+
+
+
+        modelBuilder.Entity<GroupInvitation>()
+            .HasOne(iug => iug.UserGroup)
+            .WithMany(ug => ug.Invitations)
+            .HasForeignKey(iug => iug.UserGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
+        modelBuilder.Entity<GroupInvitation>()
+            .HasOne(iug => iug.InvitedUser)
+            .WithMany(ug => ug.GroupInvitationsReceived)
+            .HasForeignKey(iug => iug.InvitedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models;
 
@@ -9,6 +10,8 @@ public class CommentHistory
 
     [Required]
     public Guid CommentId { get; set; }
+    [ForeignKey(nameof(CommentId))]
+
     public Comment Comment { get; set; } = null!;
 
     [Required]
@@ -23,7 +26,11 @@ public class CommentHistory
 
     [Required]
     public Guid PerformedById { get; set; }
+    [ForeignKey(nameof(PerformedById))]
+
     public User PerformedBy { get; set; } = null!;
 
     public DateTime PerformedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 }

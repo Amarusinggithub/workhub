@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
 
 
-    public class NotificationMember
+    public class NotificationMembership
     {
         [Key]
         public int Id { get; set; }
@@ -16,6 +17,7 @@ namespace api.Models;
         public Guid UserId { get; set; }
 
         [Required]
+        [ForeignKey(nameof(NotificationId))]
         public Notification Notification { get; set; }
         public Guid NotificationId { get; set; }
 
@@ -35,8 +37,8 @@ namespace api.Models;
 
         public DateTime? DeliveredAt { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
         public int ViewCount { get; set; } = 0;
         public DateTime? LastViewedAt { get; set; }
 
@@ -72,6 +74,23 @@ namespace api.Models;
 
         [MaxLength(10)]
         public string? TimeZone { get; set; }
+
+
+        public static void ConfigureRelations(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<NotificationMembership>()
+                .HasOne(u => u.User)
+                .WithMany(u => u.NotificationMemberships)
+                .HasForeignKey(u=> u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<NotificationMembership>()
+                .HasOne(n => n.Notification)
+                .WithMany(u => u.NotificationMemberships)
+                .HasForeignKey(n=> n.NotificationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 
 

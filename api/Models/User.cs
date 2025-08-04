@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using api.Enums;
 using Microsoft.AspNetCore.Identity;
 namespace api.Models;
 
@@ -108,15 +109,15 @@ public class User: IdentityUser<Guid >
 
     public DateTime? PasswordLastChanged { get; set; }
 
-    public bool RequirePasswordChange { get; set; } = false;
+    public bool RequirePasswordChange { get; set; }
 
-    public int FailedLoginAttempts { get; set; } = 0;
+    public int FailedLoginAttempts { get; set; }
 
     public DateTime? LastFailedLoginAttempt { get; set; }
 
     public DateTime? AccountLockedUntil { get; set; }
 
-    public bool IsTwoFactorEnabled { get; set; } = false;
+    public bool IsTwoFactorEnabled { get; set; }
 
     [StringLength(100)]
     public string? TwoFactorBackupCodes { get; set; }
@@ -125,7 +126,7 @@ public class User: IdentityUser<Guid >
 
     public bool IsActive { get; set; } = true;
 
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDeleted { get; set; }
 
     public DateTime? DeletedAt { get; set; }
 
@@ -137,9 +138,9 @@ public class User: IdentityUser<Guid >
     [StringLength(500)]
     public string? DeactivationReason { get; set; }
 
-    public bool IsSystemUser { get; set; } = false;
+    public bool IsSystemUser { get; set; }
 
-    public bool IsBot { get; set; } = false;
+    public bool IsBot { get; set; }
 
     [StringLength(50)]
     public string Status { get; set; } = "Active";
@@ -147,14 +148,13 @@ public class User: IdentityUser<Guid >
     [StringLength(10)]
     public string PreferredLanguage { get; set; } = "en";
 
-    [StringLength(20)]
-    public string Theme { get; set; } = "System";
+    public Theme Theme { get; set; } = Theme.System;
 
     public bool EmailNotificationsEnabled { get; set; } = true;
 
     public bool PushNotificationsEnabled { get; set; } = true;
 
-    public bool MarketingEmailsEnabled { get; set; } = false;
+    public bool MarketingEmailsEnabled { get; set; }
 
     [Column(TypeName = "jsonb")]
     public string? NotificationPreferences { get; set; }
@@ -173,7 +173,7 @@ public class User: IdentityUser<Guid >
     [StringLength(500)]
     public string? LastLoginUserAgent { get; set; }
 
-    public int LoginCount { get; set; } = 0;
+    public int LoginCount { get; set; }
 
     public DateTime? LastSeenAt { get; set; }
 
@@ -202,41 +202,63 @@ public class User: IdentityUser<Guid >
     public ICollection<TaskItem> Issues { get; set; } = new List<TaskItem>();
 
 
+    public ICollection<WorkspaceMembership> CreatedWorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
+    public ICollection<WorkspaceMembership> WorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
 
-    public ICollection<ProjectMember> UserProjects { get; set; } = new List<ProjectMember>();
+
+    public ICollection<UserResource> UserResources { get; set; } = new List<UserResource>();
+
+    public ICollection<ProjectMembership> CreatedProjectMemberships { get; set; } = new List<ProjectMembership>();
 
     [Required]
     public ICollection<WorkspaceRole> UserWorkspaceRoles { get; set; } = new List<WorkspaceRole>();
 
-    public ICollection<NotificationMember> UserNotifications { get; set; } = new List<NotificationMember>();
-    public ICollection<ProjectResource> UserResources { get; set; } = new List<ProjectResource>();
-    public ICollection<UserGroupInvitation> UserGroupInvitations { get; set; } = new List<UserGroupInvitation>();
 
-    public ICollection<TaskAssignment> AssignedTasks { get; set; } = new List<TaskAssignment>();
 
-    public ICollection<TaskAssignment> CreatedTasks { get; set; } = new List<TaskAssignment>();
+    public ICollection<TaskAssignment> AssignedToTasks { get; set; } = new List<TaskAssignment>();
+    public ICollection<TaskAssignment> CreatedAssignedTasks { get; set; } = new List<TaskAssignment>();
 
-    public ICollection<UserGroupMember> UserGroups { get; set; } = new List<UserGroupMember>();
+    public ICollection<TaskItem> CreatedTasks { get; set; } = new List<TaskItem>();
 
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<TaskAttachment> CreatedTaskAttachments { get; set; } = new List<TaskAttachment>();
+    public ICollection<ProjectAttachment> CreatedProjectAttachments { get; set; } = new List<ProjectAttachment>();
 
-    public ICollection<ProjectMember> ProjectMemberships { get; set; } = new List<ProjectMember>();
+
+    public ICollection<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>();
+    public ICollection<CommentAttachment> CreatedCommentAttachments { get; set; } = new List<CommentAttachment>();
+
+
+    public ICollection<Board> CreatedBoards { get; set; } = new List<Board>();
+
+    public ICollection<Comment> CreatedComments { get; set; } = new List<Comment>();
+    public ICollection<Comment> PinnedComments { get; set; } = new List<Comment>();
+
+    public ICollection<Comment> ApprovedComments { get; set; } = new List<Comment>();
+
+
+    public ICollection<ProjectMembership> ProjectMemberships { get; set; } = new List<ProjectMembership>();
 
     public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
 
-    public ICollection<NotificationMember> Notifications { get; set; } = new List<NotificationMember>();
+    public ICollection<NotificationMembership> NotificationMemberships { get; set; } = new List<NotificationMembership>();
 
-    public ICollection<ProjectResource> Resources { get; set; } = new List<ProjectResource>();
 
     public ICollection<OAuthAccount> OAuthAccounts { get; set; } = new List<OAuthAccount>();
+    public ICollection<Workspace> CreatedWorkspaces { get; set; } = new List<Workspace>();
+    public ICollection<Project> CreatedProjects { get; set; } = new List<Project>();
+    public ICollection<Resource> UploadedResources { get; set; } = new List<Resource>();
+    public ICollection<Resource> DeletedResources { get; set; } = new List<Resource>();
 
-    public ICollection<WorkSpaceMember> WorkspaceMemberships { get; set; } = new List<WorkSpaceMember>();
+    public ICollection<GroupInvitation> GroupInvitationsSent { get; set; } = new List<GroupInvitation>();
 
-    public ICollection<UserGroupInvitation> GroupInvitations { get; set; } = new List<UserGroupInvitation>();
+    public ICollection<GroupInvitation> GroupInvitationsReceived { get; set; } = new List<GroupInvitation>();
 
-    public ICollection<WorkspaceInvitation> WorkspaceInvitations { get; set; } = new List<WorkspaceInvitation>();
+    public ICollection<WorkspaceInvitation> WorkspaceInvitationsReceived { get; set; } = new List<WorkspaceInvitation>();
+
+    public ICollection<WorkspaceInvitation> WorkspaceInvitationsSent { get; set; } = new List<WorkspaceInvitation>();
 
     public ICollection<AuditLog> PerformedAudits { get; set; } = new List<AuditLog>();
+
 
     public ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
 
@@ -306,10 +328,10 @@ public class User: IdentityUser<Guid >
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void SetRefreshToken(string token, TimeSpan validity)
+    public void SetRefreshToken(string token, DateTime validity)
     {
         RefreshToken = token;
-        RefreshTokenExpiresAtUtc = DateTime.UtcNow.Add(validity);
+        RefreshTokenExpiresAtUtc = validity;
         UpdatedAt = DateTime.UtcNow;
     }
 

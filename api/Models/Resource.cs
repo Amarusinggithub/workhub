@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -24,9 +25,9 @@ public class Resource
 
     public DateTime DeletedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
-    public DateTime UploadedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;    public DateTime UploadedAt { get; set; }=DateTime.UtcNow;
+    public bool IsDeleted { get; set; }
 
     public long ResourceSize { get; set; }
 
@@ -36,21 +37,22 @@ public class Resource
 
     [Required]
     public Guid UploaderId { get; set; }
-    [ForeignKey("UploaderId")]
+    [ForeignKey(nameof(UploaderId))]
 
     public User Uploader { get; set; }
 
 
     [Required]
     public Guid DeletedById  { get; set; }
-    [ForeignKey("DeletedById ")]
+    [ForeignKey(nameof(DeletedById))]
 
     public User DeletedBy { get; set; }
 
 
-    public ICollection<ProjectResource> UserResources { get; set; } = new List<ProjectResource>();
-    public ICollection<TaskAttachment> TaskResources { get; set; } = new List<TaskAttachment>();
+    public ICollection<ProjectAttachment> ProjectAttachments { get; set; } = new List<ProjectAttachment>();
+    public ICollection<TaskAttachment> TaskAttachments { get; set; } = new List<TaskAttachment>();
     public ICollection<CommentAttachment> CommentAttachments { get; set; } = new List<CommentAttachment>();
+
 
 
     public void SoftDelete(Guid deleterId)
@@ -59,5 +61,20 @@ public class Resource
         DeletedAt = DateTime.UtcNow;
         DeletedById = deleterId;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Resource>()
+            .HasOne(r => r.Uploader)
+            .WithMany(u => u.UploadedResources)
+            .HasForeignKey(r => r.UploaderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Resource>()
+            .HasOne(r => r.DeletedBy)
+            .WithMany(u => u.DeletedResources)
+            .HasForeignKey(r => r.DeletedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

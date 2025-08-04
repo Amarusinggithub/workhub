@@ -12,8 +12,8 @@ public class Label
     public ICollection<TaskLabel> Issues { get; set; } = new List<TaskLabel>();
 
 
-    public DateTime UpdatedAt { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
 
 

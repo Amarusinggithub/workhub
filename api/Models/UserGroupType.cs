@@ -26,13 +26,13 @@ public class UserGroupType
     [Column(TypeName = "bigint")]
     public long MaxStorageBytes { get; set; } = 1_000_000_000; // 1GB
 
-    public bool AllowCustomBranding { get; set; } = false;
+    public bool AllowCustomBranding { get; set; }
 
-    public bool AllowAdvancedFeatures { get; set; } = false;
+    public bool AllowAdvancedFeatures { get; set; }
 
     public bool IsActive { get; set; } = true;
 
-    public int SortOrder { get; set; } = 0;
+    public int SortOrder { get; set; }
 
     [Column(TypeName = "jsonb")]
     public string? Features { get; set; }

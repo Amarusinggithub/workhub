@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -13,8 +15,8 @@ public class Project
     public string ProjectName { get; set; } = string.Empty;
 
     public string? ProjectDescription { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ModifiedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
     public DateTime? ScheduledFinishAt { get; set; }
     public DateTime? FinishedAt { get; set; }
     public DateTime? ArchivedAt { get; set; }
@@ -29,23 +31,43 @@ public class Project
     public DateTime? DeletedAt { get; set; }
     public DateTime? LastActivityAt { get; set; }
     public Guid? ModifiedByUserId { get; set; }
-    public int MemberCount => ProjectMembers?.Count(m => m.RemovedAt == null) ?? 0;
+    public int MemberCount => ProjectMembers?.Count(m => m.DeletedAt == null) ?? 0;
 
     public bool IsActive => Status == ProjectStatus.Active && !IsDeleted;
 
 
     [Required]
     public Guid  WorkSpaceId { get; set; }
+    [ForeignKey(nameof(WorkSpaceId))]
+
     public Workspace Workspace { get; set; }
+
+
+    [Required]
+    public Guid? CreatedByUserId { get; set; }
+    [ForeignKey(nameof(CreatedByUserId))]
+
+    public User? CreatedBy { get; set; }
 
     public ICollection<WorkspaceRole> UserProjectRoles { get; set; } = new List<WorkspaceRole>();
 
 
-    public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
+    public ICollection<ProjectMembership> ProjectMembers { get; set; } = new List<ProjectMembership>();
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
     public ICollection<TaskItem> ProjectTasks { get; set; } = new List<TaskItem>();
 
-    public ICollection<ProjectResource> ProjectResources { get; set; } = new List<ProjectResource>();
+    public ICollection<ProjectAttachment> ProjectAttachments { get; set; } = new List<ProjectAttachment>();
+
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Project>()
+            .HasOne(ugr => ugr.CreatedBy)
+            .WithMany(u => u.CreatedProjects)
+            .HasForeignKey(ugr => ugr.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 
 }

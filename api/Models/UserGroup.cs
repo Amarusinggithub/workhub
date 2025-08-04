@@ -84,7 +84,7 @@ public class UserGroup
         (double)CurrentStorageBytes / MaxStorageBytes * 100 : 0;
 
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-    public ICollection<GroupMembership> Users { get; set; } = new List<GroupMembership>();
+    public ICollection<GroupMemberShip> Users { get; set; } = new List<GroupMemberShip>();
     public ICollection<Workspace> Workspaces { get; set; } = new List<Workspace>();
     public ICollection<GroupInvitation> Invitations { get; set; } = new List<GroupInvitation>();
 }

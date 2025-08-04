@@ -202,18 +202,13 @@ public class User: IdentityUser<Guid >
     public ICollection<TaskItem> Issues { get; set; } = new List<TaskItem>();
 
 
-    public ICollection<WorkspaceMembership> CreatedWorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
-    public ICollection<WorkspaceMembership> WorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
+    public ICollection<WorkspaceMemberShip> CreatedWorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
+    public ICollection<WorkspaceMemberShip> WorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
 
 
     public ICollection<UserResource> UserResources { get; set; } = new List<UserResource>();
 
-    public ICollection<ProjectMembership> CreatedProjectMemberships { get; set; } = new List<ProjectMembership>();
-
-    [Required]
-    public ICollection<WorkspaceRole> UserWorkspaceRoles { get; set; } = new List<WorkspaceRole>();
-
-
+    public ICollection<ProjectMemberShip> CreatedProjectMemberships { get; set; } = new List<ProjectMemberShip>();
 
     public ICollection<TaskAssignment> AssignedToTasks { get; set; } = new List<TaskAssignment>();
     public ICollection<TaskAssignment> CreatedAssignedTasks { get; set; } = new List<TaskAssignment>();
@@ -225,9 +220,9 @@ public class User: IdentityUser<Guid >
 
 
 
-    public ICollection<GroupMembership> CreatedGroupMemberships { get; set; } = new List<GroupMembership>();
+    public ICollection<GroupMemberShip> CreatedGroupMemberships { get; set; } = new List<GroupMemberShip>();
 
-    public ICollection<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>();
+    public ICollection<GroupMemberShip> GroupMemberships { get; set; } = new List<GroupMemberShip>();
     public ICollection<CommentAttachment> CreatedCommentAttachments { get; set; } = new List<CommentAttachment>();
 
 
@@ -239,11 +234,11 @@ public class User: IdentityUser<Guid >
     public ICollection<Comment> ApprovedComments { get; set; } = new List<Comment>();
 
 
-    public ICollection<ProjectMembership> ProjectMemberships { get; set; } = new List<ProjectMembership>();
+    public ICollection<ProjectMemberShip> ProjectMemberShips { get; set; } = new List<ProjectMemberShip>();
 
     public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
 
-    public ICollection<NotificationMembership> NotificationMemberships { get; set; } = new List<NotificationMembership>();
+    public ICollection<NotificationMemberShip> NotificationMemberships { get; set; } = new List<NotificationMemberShip>();
 
 
     public ICollection<OAuthAccount> OAuthAccounts { get; set; } = new List<OAuthAccount>();

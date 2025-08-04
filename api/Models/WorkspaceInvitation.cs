@@ -21,7 +21,7 @@ public class WorkspaceInvitation
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    public Guid WorkspaceRoleId { get; set; }
+    public int WorkspaceRoleId { get; set; }
     [ForeignKey(nameof(WorkspaceRoleId))]
 
     public WorkspaceRole WorkspaceRole { get; set; }

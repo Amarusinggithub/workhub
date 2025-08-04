@@ -19,13 +19,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserPermission> UserPermissions { get; set; }
 
     public DbSet<UserGroupType> UserGroupTypes { get; set; }
-    public DbSet<GroupMembership> GroupMemberships { get; set; }
+    public DbSet<GroupMemberShip> GroupMemberShips { get; set; }
     public DbSet<Workspace> WorkSpaces { get; set; }
     public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; }
 
-    public DbSet<WorkspaceMembership> WorkSpaceMemberships { get; set; }
+    public DbSet<WorkspaceMemberShip> WorkSpaceMemberShips { get; set; }
     public DbSet<Project> Projects { get; set; }
-    public DbSet<ProjectMembership> ProjectMemberships { get; set; }
+    public DbSet<ProjectMemberShip> ProjectMemberShips { get; set; }
     public DbSet<ProjectCategory> ProjectCategories { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<WorkspaceRole> WorkspaceRoles { get; set; }
@@ -35,7 +35,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 
     public DbSet<Notification> Notifications { get; set; }
-    public DbSet<NotificationMembership> NotificationMemberships { get; set; }
+    public DbSet<NotificationMemberShip> NotificationMemberShips { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
     public DbSet<Software> Softwares { get; set; }
     public DbSet<SoftwareFeature> SoftwareFeatures { get; set; }
@@ -102,7 +102,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         //ProjectAttachment.ConfigureIndexes(modelBuilder);
 
         // ProjectMembership
-        ProjectMembership.ConfigureRelations(modelBuilder);
+        ProjectMemberShip.ConfigureRelations(modelBuilder);
         //ProjectMembership.ConfigureIndexes(modelBuilder);
 
         // Workspace
@@ -110,7 +110,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         //Workspace.ConfigureIndexes(modelBuilder);
 
         // WorkspaceMembership
-        WorkspaceMembership.ConfigureRelations(modelBuilder);
+        WorkspaceMemberShip.ConfigureRelations(modelBuilder);
         //WorkspaceMembership.ConfigureIndexes(modelBuilder);
 
         // WorkspaceRole
@@ -122,7 +122,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         //WorkspaceInvitation.ConfigureIndexes(modelBuilder);
 
         // GroupMembership
-        GroupMembership.ConfigureRelations(modelBuilder);
+        GroupMemberShip.ConfigureRelations(modelBuilder);
         //GroupMembership.ConfigureIndexes(modelBuilder);
 
         // GroupInvitation
@@ -134,7 +134,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         //Resource.ConfigureIndexes(modelBuilder);
 
         // NotificationMembership
-        NotificationMembership.ConfigureRelations(modelBuilder);
+        NotificationMemberShip.ConfigureRelations(modelBuilder);
        // NotificationMembership.ConfigureIndexes(modelBuilder);
 
         // Include
@@ -188,6 +188,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // CommentReaction
         CommentReaction.ConfigureRelations(modelBuilder);
         //CommentReaction.ConfigureIndexes(modelBuilder);
+
+        // Notification
+        Notification.ConfigureRelations(modelBuilder);
+        //Notification.ConfigureIndexes(modelBuilder);
 
         // CommentMention
         CommentMention.ConfigureRelations(modelBuilder);

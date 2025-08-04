@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
-public class ProjectMembership
+public class ProjectMemberShip
 {
 
 
@@ -15,7 +15,6 @@ public class ProjectMembership
     [Required]
     public Guid  UserId { get; set; }
     [ForeignKey(nameof(UserId))]
-
     public User User { get; set; }
 
     [Required]
@@ -36,19 +35,19 @@ public class ProjectMembership
 
     public static void ConfigureRelations(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ProjectMembership>()
+        modelBuilder.Entity<ProjectMemberShip>()
             .HasOne(inp => inp.Project)
-            .WithMany(p => p.ProjectMembers)
+            .WithMany(p => p.ProjectMemberShips)
             .HasForeignKey(inp => inp.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<ProjectMembership>()
+        modelBuilder.Entity<ProjectMemberShip>()
             .HasOne(inp => inp.User)
-            .WithMany(u => u.ProjectMemberships)
+            .WithMany(u => u.ProjectMemberShips)
             .HasForeignKey(inp => inp.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<ProjectMembership>()
+        modelBuilder.Entity<ProjectMemberShip>()
             .HasOne(inp => inp.AddedBy)
             .WithMany()
             .HasForeignKey(inp => inp.AddedByUserId)

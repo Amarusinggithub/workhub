@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -77,8 +78,11 @@ public class Notification
     public string? SenderType { get; set; }
 
 
-public UserGroup? Group { get; set; }
     public Guid? GroupId { get; set; }
+
+[ForeignKey(nameof(GroupId))]
+public UserGroup? Group { get; set; }
+
 
     public Guid? ParentNotificationId { get; set; }
 
@@ -96,5 +100,17 @@ public UserGroup? Group { get; set; }
 
     [MaxLength(50)]
     public string? Platform { get; set; }
-    public ICollection<NotificationMembership> NotificationMemberships { get; set; } = new List<NotificationMembership>();
+    public ICollection<NotificationMemberShip> NotificationMemberships { get; set; } = new List<NotificationMemberShip>();
+
+
+
+    public static void ConfigureRelations(ModelBuilder modelBuilder)
+    {
+
+    }
+
+    public static void ConfigureIndexes(ModelBuilder modelBuilder)
+    {
+
+    }
 }

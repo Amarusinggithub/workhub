@@ -7,7 +7,7 @@ namespace api.Models;
 
 
 
-    public class NotificationMembership
+    public class NotificationMemberShip
     {
         [Key]
         public int Id { get; set; }
@@ -79,13 +79,13 @@ namespace api.Models;
         public static void ConfigureRelations(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<NotificationMembership>()
+            modelBuilder.Entity<NotificationMemberShip>()
                 .HasOne(u => u.User)
                 .WithMany(u => u.NotificationMemberships)
                 .HasForeignKey(u=> u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<NotificationMembership>()
+            modelBuilder.Entity<NotificationMemberShip>()
                 .HasOne(n => n.Notification)
                 .WithMany(u => u.NotificationMemberships)
                 .HasForeignKey(n=> n.NotificationId)

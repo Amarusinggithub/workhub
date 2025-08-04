@@ -79,7 +79,7 @@ public class Workspace
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
-    public ICollection<WorkspaceMembership> WorkspaceMemberships { get; set; } = new List<WorkspaceMembership>();
+    public ICollection<WorkspaceMemberShip> WorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
     public ICollection<ProjectAttachment> ProjectResources { get; set; } = new List<ProjectAttachment>();
     public ICollection<WorkspaceInvitation> Invitations { get; set; } = new List<WorkspaceInvitation>();
 

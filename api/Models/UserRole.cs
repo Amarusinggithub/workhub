@@ -17,7 +17,7 @@ public class UserRole
     public User User { get; set; } = null!;
 
     [Required]
-    public int? RoleId { get; set; }
+    public Guid RoleId { get; set; }
     [ForeignKey(nameof(RoleId))]
 
     public Role Role { get; set; }

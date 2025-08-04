@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
-public class WorkspaceMembership
+public class WorkspaceMemberShip
 {
     [Key]
     public int Id { get; set; }
@@ -24,7 +24,7 @@ public class WorkspaceMembership
     public User User { get; set; }
 
     [Required]
-    public Guid WorkspaceRoleId { get; set; }
+    public int WorkspaceRoleId { get; set; }
     [ForeignKey(nameof(WorkspaceRoleId))]
 
     public WorkspaceRole WorkspaceRole { get; set; }
@@ -73,19 +73,19 @@ public class WorkspaceMembership
 
     public static void ConfigureRelations(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<WorkspaceMembership>()
+        modelBuilder.Entity<WorkspaceMemberShip>()
             .HasOne(iws => iws.Workspace)
             .WithMany(ws => ws.WorkspaceMemberships)
             .HasForeignKey(iws => iws.WorkSpaceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<WorkspaceMembership>()
+        modelBuilder.Entity<WorkspaceMemberShip>()
             .HasOne(iws => iws.User)
             .WithMany(u => u.WorkspaceMemberships)
             .HasForeignKey(iws => iws.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<WorkspaceMembership>()
+        modelBuilder.Entity<WorkspaceMemberShip>()
             .HasOne(iws => iws.AddedBy)
             .WithMany(u => u.CreatedWorkspaceMemberships)
             .HasForeignKey(iws => iws.AddedByUserId)

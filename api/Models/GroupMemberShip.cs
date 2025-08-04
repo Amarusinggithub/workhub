@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
-public class GroupMembership
+public class GroupMemberShip
 {
     [Key]
     public int Id { get; set; }
@@ -69,27 +69,27 @@ public class GroupMembership
 
     public static void ConfigureRelations(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<GroupMembership>()
+        modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.UserGroup)
             .WithMany(ug => ug.Users)
             .HasForeignKey(iug => iug.UserGroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
 
-        modelBuilder.Entity<GroupMembership>()
+        modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.UserGroup)
             .WithMany(ug => ug.Users)
             .HasForeignKey(iug => iug.UserGroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
 
-        modelBuilder.Entity<GroupMembership>()
+        modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.AddedBy)
             .WithMany(ug => ug.CreatedGroupMemberships)
             .HasForeignKey(iug => iug.AddedByUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<GroupMembership>()
+        modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.User)
             .WithMany(u => u.GroupMemberships)
             .HasForeignKey(iug => iug.UserId)

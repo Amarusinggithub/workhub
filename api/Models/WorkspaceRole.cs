@@ -29,7 +29,7 @@ public class WorkspaceRole
 
     public DateTime? UpdatedAt { get; set; }
     public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
-    public ICollection<WorkspaceMembership> WorkSpaceMembers { get; set; } = new List<WorkspaceMembership>();
+    public ICollection<WorkspaceMemberShip> WorkSpaceMembers { get; set; } = new List<WorkspaceMemberShip>();
 
      public static void ConfigureRelations(ModelBuilder modelBuilder)
         {

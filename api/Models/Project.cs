@@ -31,7 +31,10 @@ public class Project
     public DateTime? DeletedAt { get; set; }
     public DateTime? LastActivityAt { get; set; }
     public Guid? ModifiedByUserId { get; set; }
-    public int MemberCount => ProjectMembers?.Count(m => m.DeletedAt == null) ?? 0;
+
+    public ICollection<ProjectMemberShip> ProjectMemberShips { get; set; } = new List<ProjectMemberShip>();
+
+    public int MemberCount => ProjectMemberShips?.Count(m => m.DeletedAt == null) ?? 0;
 
     public bool IsActive => Status == ProjectStatus.Active && !IsDeleted;
 
@@ -49,10 +52,8 @@ public class Project
 
     public User? CreatedBy { get; set; }
 
-    public ICollection<WorkspaceRole> UserProjectRoles { get; set; } = new List<WorkspaceRole>();
 
 
-    public ICollection<ProjectMembership> ProjectMembers { get; set; } = new List<ProjectMembership>();
     public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
     public ICollection<TaskItem> ProjectTasks { get; set; } = new List<TaskItem>();

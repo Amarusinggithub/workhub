@@ -84,9 +84,9 @@ public class GroupMembership
 
 
         modelBuilder.Entity<GroupMembership>()
-            .HasOne(iug => iug.UserGroup)
-            .WithMany(ug => ug.Users)
-            .HasForeignKey(iug => iug.UserGroupId)
+            .HasOne(iug => iug.AddedBy)
+            .WithMany(ug => ug.CreatedGroupMemberships)
+            .HasForeignKey(iug => iug.AddedByUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GroupMembership>()

@@ -35,7 +35,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 
     public DbSet<Notification> Notifications { get; set; }
-    public DbSet<NotificationMembership> NotificationMembers { get; set; }
+    public DbSet<NotificationMembership> NotificationMemberships { get; set; }
     public DbSet<OAuthAccount> OAuthAccounts { get; set; }
     public DbSet<Software> Softwares { get; set; }
     public DbSet<SoftwareFeature> SoftwareFeatures { get; set; }
@@ -71,6 +71,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
        // Comment
         Comment.ConfigureRelations(modelBuilder);
         Comment.ConfigureIndexes(modelBuilder);
+
+        // OAuthAccount
+        OAuthAccount.ConfigureRelations(modelBuilder);
+        OAuthAccount.ConfigureIndexes(modelBuilder);
+
 
         // TaskItem
         TaskItem.ConfigureRelations(modelBuilder);

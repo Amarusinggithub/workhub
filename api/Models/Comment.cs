@@ -187,5 +187,11 @@ public class Comment
             .WithMany(p=> p.PinnedComments)
             .HasForeignKey(iug => iug.PinnedById)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Comment>()
+            .HasOne(iug => iug.ApprovedBy)
+            .WithMany(p=> p.ApprovedComments)
+            .HasForeignKey(iug => iug.ApprovedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -17,6 +17,12 @@ public class WorkspaceRole
     public Workspace Workspace { get; set; }
 
     [Required]
+    public Guid CreatedById { get; set; }
+    [ForeignKey(nameof(CreatedById))]
+
+    public User Createdby { get; set; }
+
+    [Required]
     public Guid RoleId { get; set; }
     [ForeignKey(nameof(RoleId))]
     public Role Role { get; set; }
@@ -38,6 +44,12 @@ public class WorkspaceRole
                 .HasOne(uwr => uwr.Workspace)
                 .WithMany(w => w.WorkspaceRoles)
                 .HasForeignKey(uwr => uwr.WorkspaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WorkspaceRole>()
+                .HasOne(uwr => uwr.Createdby)
+                .WithMany()
+                .HasForeignKey(uwr => uwr.CreatedById)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

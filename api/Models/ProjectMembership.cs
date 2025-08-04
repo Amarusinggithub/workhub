@@ -50,7 +50,7 @@ public class ProjectMembership
 
         modelBuilder.Entity<ProjectMembership>()
             .HasOne(inp => inp.AddedBy)
-            .WithMany(u => u.ProjectMemberships)
+            .WithMany()
             .HasForeignKey(inp => inp.AddedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 

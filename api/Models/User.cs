@@ -224,6 +224,9 @@ public class User: IdentityUser<Guid >
     public ICollection<ProjectAttachment> CreatedProjectAttachments { get; set; } = new List<ProjectAttachment>();
 
 
+
+    public ICollection<GroupMembership> CreatedGroupMemberships { get; set; } = new List<GroupMembership>();
+
     public ICollection<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>();
     public ICollection<CommentAttachment> CreatedCommentAttachments { get; set; } = new List<CommentAttachment>();
 

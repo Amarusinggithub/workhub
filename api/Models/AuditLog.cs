@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models;
 
@@ -90,5 +91,30 @@ public class AuditLog
         {
             MetadataJson = null;
         }
+    }
+
+
+    // Indexing hints for Entity Framework
+    public static void ConfigureIndexes(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(a => a.PerformedAt)
+            .HasDatabaseName("IX_AuditLog_PerformedAt");
+
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(a => a.PerformedById)
+            .HasDatabaseName("IX_AuditLog_PerformedById");
+
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(a => new { a.EntityType, a.EntityId })
+            .HasDatabaseName("IX_AuditLog_Entity");
+
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(a => a.CorrelationId)
+            .HasDatabaseName("IX_AuditLog_CorrelationId");
+
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(a => a.Action)
+            .HasDatabaseName("IX_AuditLog_Action");
     }
 }

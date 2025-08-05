@@ -28,14 +28,13 @@ public class Workspace
     public Guid UserGroupId { get; set; }
     [ForeignKey(nameof(UserGroupId))]
 
-
     public UserGroup UserGroup { get; set; }
 
     public WorkspaceVisibility Visibility { get; set; } = WorkspaceVisibility.Private;
 
     public WorkspaceStatus Status { get; set; } = WorkspaceStatus.Active;
 
-    public bool IsPersonal { get; set; } = false;
+    public bool IsPersonal { get; set; }
 
     public int MaxMembers { get; set; } = 10;
 
@@ -45,11 +44,11 @@ public class Workspace
     public long MaxStorageBytes { get; set; } = 1_000_000_000; // 1GB default
 
     [Column(TypeName = "bigint")]
-    public long CurrentStorageBytes { get; set; } = 0;
+    public long CurrentStorageBytes { get; set; }
 
     public bool AllowExternalInvites { get; set; } = true;
 
-    public bool RequireApprovalForJoining { get; set; } = false;
+    public bool RequireApprovalForJoining { get; set; }
 
     [MaxLength(100)]
     public string? TimeZone { get; set; }
@@ -66,23 +65,149 @@ public class Workspace
        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
 
 
-    public DateTime? DeletedAt { get; set; }
+       public WorkspaceStatus IsActive { get; set; } = WorkspaceStatus.Active;
 
-    public Guid? ModifiedByUserId { get; set; }
+       public bool IsDeleted { get; set; }
+
+       public DateTime? DeletedAt { get; set; }
+
+       public Guid? DeletedById { get; set; }
+
+       [ForeignKey(nameof(DeletedById))]
+       public User? DeletedBy { get; set; }
+
+       [StringLength(500)]
+       public string? DeactivationReason { get; set; }
+
+
+    public Guid? UpdatedByUserId { get; set; }
+    [ForeignKey(nameof(UpdatedByUserId))]
+    public User? UpdatedBy { get; set; }
 
     public int ProjectCount => Projects?.Count(p => p.DeletedAt == null) ?? 0;
 
     public int MemberCount => WorkspaceMemberships?.Count(m => m.RemovedAt == null) ?? 0;
 
-    public bool IsDeleted => DeletedAt.HasValue;
-
-    public bool IsActive => Status == WorkspaceStatus.Active && !IsDeleted;
+   // public bool IsActive => Status == WorkspaceStatus.Active && !IsDeleted;
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<WorkspaceRole> WorkspaceRoles { get; set; } = new List<WorkspaceRole>();
     public ICollection<WorkspaceMemberShip> WorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
     public ICollection<ProjectAttachment> ProjectResources { get; set; } = new List<ProjectAttachment>();
     public ICollection<WorkspaceInvitation> Invitations { get; set; } = new List<WorkspaceInvitation>();
+
+    public void SoftDelete(Guid? deleteById, string? reason = null)
+    {
+        IsActive = WorkspaceStatus.Deleted;
+        IsDeleted = true;
+        DeletedAt=DateTime.UtcNow;
+        DeletedById = deleteById;
+        UpdatedByUserId = deleteById;
+        UpdatedAt=DateTime.UtcNow;
+        DeactivationReason = reason;
+        LastActivityAt=DateTime.UtcNow;
+
+    }
+
+    public void Reactivate(Guid ? reactivatedById)
+    {
+        IsActive=WorkspaceStatus.Active;
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        DeactivationReason = null;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedByUserId = reactivatedById;
+        LastActivityAt=DateTime.UtcNow;
+
+    }
+
+    public void UpdateName(string updatedName,Guid updatedById)
+    {
+        WorkSpaceName = updatedName;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void UpdateActivity()
+    {
+        LastActivityAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateDescription(string updatedDescription,Guid updatedById)
+    {
+        Description = updatedDescription;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void UpdateWorkspaceCode(string updatedWorkspaceCode,Guid updatedById)
+    {
+        WorkspaceCode = updatedWorkspaceCode;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void UpdateSettings(string updatedSettings,Guid updatedById)
+    {
+        Settings = updatedSettings;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void UpdateLanguage(string updatedLanguage,Guid updatedById)
+    {
+        Language = updatedLanguage;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+
+    public void UpdateTimezone(string updatedTimeZone,Guid updatedById)
+    {
+        TimeZone = updatedTimeZone;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void ChangeVisibility(WorkspaceVisibility updatedVisibility,Guid updatedById)
+    {
+        Visibility=updatedVisibility;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void ChangeIsPersonal(bool updatedIsPersonal,Guid updatedById)
+    {
+        IsPersonal=updatedIsPersonal;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void ChangeAllowExternalInvites(bool updateAllowExternalInvites,Guid updatedById)
+    {
+        AllowExternalInvites=updateAllowExternalInvites;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
+
+    public void ChangeRequireApprovalForJoining(bool updateRequireApprovalForJoining,Guid updatedById)
+    {
+        RequireApprovalForJoining=updateRequireApprovalForJoining;
+        UpdatedAt=DateTime.UtcNow;
+        UpdatedByUserId = updatedById;
+        LastActivityAt=DateTime.UtcNow;
+    }
 
 
     public static void ConfigureRelations(ModelBuilder modelBuilder)

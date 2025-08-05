@@ -42,6 +42,8 @@ builder.Services.AddLogging(config =>
 
 
 builder.Services.AddOpenApi();
+
+//add authentication via cookie or header
  builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "DualScheme";
@@ -101,14 +103,17 @@ builder.Services.AddOpenApi();
             });
 
 
-
+//turns routes to lower case so controller path doest affect it
  builder.Services.Configure<RouteOptions>(options =>
  {
      options.LowercaseUrls = true;
      options.LowercaseQueryStrings = true;
  });
+
+
 builder.Services.AddAuthorizationBuilder();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 
@@ -142,6 +147,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddControllers();
 
+// cookie policies
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -149,7 +155,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy=CookieSecurePolicy.None;
 });
 
-
+// configure Cacheing
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     string? connect = builder.Configuration.GetConnectionString("Redis");
@@ -162,7 +168,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
         };
 });
 
-
+// configure Api Versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -176,6 +182,8 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.GroupNameFormat="'v'VVV";
 });
+
+
 
 // Configure rate limiting
 builder.Services.AddRateLimiter(options =>
@@ -237,7 +245,7 @@ builder.Services.AddScoped<IIntegrationService, IntegrationService>();
 builder.Services.AddScoped<IAIService, AIService>();
 
 
-
+// configures cor policy
 var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
@@ -279,8 +287,7 @@ if (app.Environment.IsDevelopment())
 app.MapIdentityApi<User>();
 //app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
-//app.UseMiddleware<JwtMiddleware>();
-// app.UseCookiePolicy();
+app.UseCookiePolicy();
 app.UseRouting();
 app.MapControllers();
  app.UseRateLimiter();
@@ -289,8 +296,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // app.UseSession();
-// app.UseResponseCompression();
-// app.UseResponseCaching();
-
+//app.UseResponseCompression();
+ app.UseResponseCaching();
 app.Run();
 

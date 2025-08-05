@@ -11,23 +11,32 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Auth.v1;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/v{version:apiVersion}/auth")]
 [ApiVersion("1")]
-public class AuthController(IAuthService service) : ControllerBase
+public class AuthController(IAuthService service, ILogger<AuthController> logger) : ControllerBase
 {
     private readonly IAuthService _service = service ?? throw new ArgumentNullException(nameof(service));
+    private readonly ILogger<AuthController> _logger = logger;
 
 
     [HttpGet("me")]
     [Authorize]
+    [ProducesResponseType(typeof(UserDto) ,200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> AuthMe()
     {
 
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+        if (string.IsNullOrEmpty(userIdClaim) )
         {
-            return Unauthorized("Invalid token");
+            return Unauthorized("Invalid or missing user token");
+        }
+
+        if (!Guid.TryParse(userIdClaim, out Guid userId))
+        {
+            return Unauthorized("Invalid user identifier in token");
         }
 
         UserDto?  response= await _service.GetById(userId);
@@ -39,6 +48,9 @@ public class AuthController(IAuthService service) : ControllerBase
     }
 
     [HttpPost("register")]
+    [ProducesResponseType(typeof(UserDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -46,24 +58,36 @@ public class AuthController(IAuthService service) : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var existingUser = await _service.GetByEmail(requestDto.email);
-        if (existingUser is not null)
+        try
         {
-            return BadRequest("User with this email already exists");
+            var existingUser = await _service.GetByEmail(requestDto.email);
+            if (existingUser is not null)
+            {
+                return BadRequest("Registration failed. Please check your details and try again.");
+            }
+
+            var response = await _service.Register(requestDto.lastName, requestDto.firstName, requestDto.password, requestDto.email);
+            if (response==null)
+            {
+                return StatusCode(500, "Registration failed. Please try again later.");
+            }
+
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+             _logger.LogError(ex, "Error during user registration for email: {Email}", requestDto.email);
+            return StatusCode(500, "Registration failed. Please try again later.");
         }
 
-        var response = await _service.Register(requestDto.lastName, requestDto.firstName, requestDto.password, requestDto.email);
-        if (response==null)
-        {
-            return StatusCode(500, "Something went wrong while creating the user");
-        }
-
-
-        return Ok(response);
     }
 
 
     [HttpPost("login")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(429)]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto requestDto)
     {
         if (!ModelState.IsValid)
@@ -71,34 +95,80 @@ public class AuthController(IAuthService service) : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var response = await  _service.Authenticate(requestDto.email, requestDto.password);
-
-        if (response==null)
+        try
         {
-            return BadRequest("Invalid email or password");
+            var response = await  _service.Authenticate(requestDto.email, requestDto.password);
+
+            if (response==null)
+            {
+                return BadRequest("Invalid credentials. Please check your email and password.");
+            }
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+             _logger.LogError(ex, "Error during authentication for email: {Email}", requestDto.email);
+            return StatusCode(500, "Authentication failed. Please try again later.");
         }
 
-        return Ok(response);
+
     }
 
     [Authorize]
     [HttpPost("logout")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> Logout( )
 
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+
+        if (string.IsNullOrEmpty(userIdClaim))
         {
-            return Unauthorized("Invalid token");
+            return Unauthorized("Invalid or missing user token");
         }
 
-        bool response = await _service.Logout(userId);
-        if (!response)
+        if (!Guid.TryParse(userIdClaim, out Guid userId))
         {
-            return StatusCode(500, "Logout failed");
+            return Unauthorized("Invalid user identifier in token");
         }
 
-        return Ok(new { message = "Logged out successfully" });
+        try
+        {
+            bool response = await _service.Logout(userId);
+            if (!response)
+            {
+                return StatusCode(500, "Logout failed. Please try again.");
+            }
+
+            return Ok(new { message = "Successfully logged out", timestamp = DateTime.UtcNow });
+        }
+        catch (Exception ex)
+        {
+             _logger.LogError(ex, "Error during logout for user: {UserId}", userId);
+            return StatusCode(500, "Logout failed. Please try again.");
+        }
+
+    }
+
+    [HttpGet("status")]
+    [Authorize]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    public IActionResult GetAuthStatus()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        return Ok(new
+        {
+            isAuthenticated = true,
+            userId = userIdClaim,
+            email = emailClaim,
+            timestamp = DateTime.UtcNow
+        });
     }
 
 

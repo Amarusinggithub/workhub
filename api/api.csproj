@@ -46,6 +46,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="DTOs\Auth\Responses\" />
       <Folder Include="DTOs\Notifications\Responses\" />
       <Folder Include="DTOs\Users\Responses\" />
       <Folder Include="Migrations\" />

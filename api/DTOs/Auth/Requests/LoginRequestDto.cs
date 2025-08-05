@@ -4,10 +4,10 @@ namespace api.DTOs.Auth.Requests;
 
 public class LoginRequestDto
 {
-    [Required]
-    [EmailAddress]
-    public string email { get; set; }
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    public string email { get; set; } = string.Empty;
 
-    [Required]
-    public string password { get; set; }
+    [Required(ErrorMessage = "Password is required")]
+    public string password { get; set; } = string.Empty;
 }

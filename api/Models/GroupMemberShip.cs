@@ -11,7 +11,7 @@ public class GroupMemberShip
     public int Id { get; set; }
 
     [Required]
-    public int UserGroupId { get; set; }
+    public Guid UserGroupId { get; set; }
     [ForeignKey(nameof(UserGroupId))]
 
     public UserGroup UserGroup { get; set; }
@@ -85,13 +85,13 @@ public class GroupMemberShip
 
         modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.AddedBy)
-            .WithMany(ug => ug.CreatedGroupMemberships)
+            .WithMany(ug => ug.CreatedGroupMemberShips)
             .HasForeignKey(iug => iug.AddedByUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GroupMemberShip>()
             .HasOne(iug => iug.User)
-            .WithMany(u => u.GroupMemberships)
+            .WithMany(u => u.GroupMemberShips)
             .HasForeignKey(iug => iug.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

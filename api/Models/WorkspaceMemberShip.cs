@@ -81,13 +81,13 @@ public class WorkspaceMemberShip
 
         modelBuilder.Entity<WorkspaceMemberShip>()
             .HasOne(iws => iws.User)
-            .WithMany(u => u.WorkspaceMemberships)
+            .WithMany(u => u.WorkspaceMemberShips)
             .HasForeignKey(iws => iws.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<WorkspaceMemberShip>()
             .HasOne(iws => iws.AddedBy)
-            .WithMany(u => u.CreatedWorkspaceMemberships)
+            .WithMany(u => u.CreatedWorkspaceMemberShips)
             .HasForeignKey(iws => iws.AddedByUserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

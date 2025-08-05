@@ -202,13 +202,13 @@ public class User: IdentityUser<Guid >
     public ICollection<TaskItem> Issues { get; set; } = new List<TaskItem>();
 
 
-    public ICollection<WorkspaceMemberShip> CreatedWorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
-    public ICollection<WorkspaceMemberShip> WorkspaceMemberships { get; set; } = new List<WorkspaceMemberShip>();
+    public ICollection<WorkspaceMemberShip> CreatedWorkspaceMemberShips { get; set; } = new List<WorkspaceMemberShip>();
+    public ICollection<WorkspaceMemberShip> WorkspaceMemberShips { get; set; } = new List<WorkspaceMemberShip>();
 
 
     public ICollection<UserResource> UserResources { get; set; } = new List<UserResource>();
 
-    public ICollection<ProjectMemberShip> CreatedProjectMemberships { get; set; } = new List<ProjectMemberShip>();
+    public ICollection<ProjectMemberShip> CreatedProjectMemberShips { get; set; } = new List<ProjectMemberShip>();
 
     public ICollection<TaskAssignment> AssignedToTasks { get; set; } = new List<TaskAssignment>();
     public ICollection<TaskAssignment> CreatedAssignedTasks { get; set; } = new List<TaskAssignment>();
@@ -220,9 +220,9 @@ public class User: IdentityUser<Guid >
 
 
 
-    public ICollection<GroupMemberShip> CreatedGroupMemberships { get; set; } = new List<GroupMemberShip>();
+    public ICollection<GroupMemberShip> CreatedGroupMemberShips { get; set; } = new List<GroupMemberShip>();
 
-    public ICollection<GroupMemberShip> GroupMemberships { get; set; } = new List<GroupMemberShip>();
+    public ICollection<GroupMemberShip> GroupMemberShips { get; set; } = new List<GroupMemberShip>();
     public ICollection<CommentAttachment> CreatedCommentAttachments { get; set; } = new List<CommentAttachment>();
 
 

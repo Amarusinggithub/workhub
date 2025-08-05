@@ -4,9 +4,9 @@
   backend:
     networks:
       - workhub-net
-    image: backend
+    image: api
     build:
-      context: ./backend
+      context: ./api
       dockerfile: Dockerfile
     depends_on:
       db:
@@ -18,7 +18,7 @@
       networks:
         - workhub-net
       build:
-        context: ./frontend
+        context: ./client
         dockerfile: Dockerfile
       environment:
         NODE_ENV: development

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ using api.Services.Workspaces;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -175,6 +177,18 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat="'v'VVV";
 });
 
+// Configure rate limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("FixedPolicy", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);    // Time window of 1 minute
+        opt.PermitLimit = 100;                   // Allow 100 requests per minute
+        opt.QueueLimit = 2;                      // Queue limit of 2
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
+
 
 
 
@@ -244,7 +258,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Workhub API",
+        Title = "Workhub-API",
         Version = "v1"
     });
 });
@@ -258,7 +272,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Workhub API");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Workhub-API");
     });
 }
 
@@ -269,7 +283,7 @@ app.UseCors(myAllowSpecificOrigins);
 // app.UseCookiePolicy();
 app.UseRouting();
 app.MapControllers();
-// app.UseRateLimiter();
+ app.UseRateLimiter();
 // app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();

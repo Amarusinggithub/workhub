@@ -39,7 +39,9 @@ public class AuthService(
             {
                 _logger.LogInformation("Authentication successful for user: {UserId}", user.Id);
 
-                user.LastLoggedIn = DateTime.UtcNow;
+
+
+                user.RecordLogin();
                 await unitOfWork.CompleteAsync();
 
 
@@ -48,7 +50,6 @@ public class AuthService(
                     var (jwtToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
                     var (refreshTokenValue, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
 
-                    //var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
 
                     user.RefreshToken = refreshTokenValue;
                     user.RefreshTokenExpiresAtUtc = refreshTokenExpirationDateInUtc;
@@ -157,12 +158,51 @@ public class AuthService(
     }
 
 
-
-
-    public async Task<bool> ValidateToken( string token ,Guid userId)
+    public async Task<UserDto?> GetById(Guid id)
     {
-        return await tokenService.ValidateRefreshTokenAsync(token,userId);
+        _logger.LogInformation("Retrieving user by email");
+
+        try
+        {
+            User? user = await unitOfWork.Users.GetById(id);
+
+            if (user != null)
+            {
+                _logger.LogInformation("User found - UserId: {UserId}", user.Id);
+                return new UserDto
+                {
+                    id=user.Id,
+                    email = user.Email,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    headerImageUrl = user.HeaderImageUrl,
+                    jobTitle = user.JobTitle,
+                    organization = user.Organization,
+                    isActive = user.IsActive,
+                    location = user.Location,
+                    avatarUrl = user.AvatarUrl,
+                    lastLoggedIn = user.LastLoggedIn,
+                    createdAt = user.CreatedAt,
+                };
+
+            }
+
+            _logger.LogInformation("User not found by id");
+
+
+            return null;
+
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving user by email");
+            throw;
+        }
     }
+
+
+
 
     public async Task<bool> Logout(Guid userId)
     {

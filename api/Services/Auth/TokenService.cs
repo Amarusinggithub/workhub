@@ -289,16 +289,9 @@ public class TokenService(
     }
 
 
-    public void RemoveAuthTokenAsHttpOnlyCookie(string cookieName
-      )
+    private void RemoveAuthTokenAsHttpOnlyCookie(string cookieName)
     {
-        _httpContextAccessor!.HttpContext.Response.Cookies.Delete(cookieName,new CookieOptions
-            {
-                HttpOnly = true,
-                IsEssential = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-            });
+        _httpContextAccessor.HttpContext!.Response.Cookies.Delete(cookieName);
 
 
     }

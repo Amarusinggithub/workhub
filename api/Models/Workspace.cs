@@ -24,11 +24,12 @@ public class Workspace
 
     public User Owner { get; set; }
 
-    public int? UserGroupId { get; set; }
+    [Required]
+    public Guid UserGroupId { get; set; }
     [ForeignKey(nameof(UserGroupId))]
 
 
-    public UserGroup? UserGroup { get; set; }
+    public UserGroup UserGroup { get; set; }
 
     public WorkspaceVisibility Visibility { get; set; } = WorkspaceVisibility.Private;
 

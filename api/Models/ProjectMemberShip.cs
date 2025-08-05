@@ -49,7 +49,7 @@ public class ProjectMemberShip
 
         modelBuilder.Entity<ProjectMemberShip>()
             .HasOne(inp => inp.AddedBy)
-            .WithMany()
+            .WithMany(u => u.CreatedProjectMemberShips)
             .HasForeignKey(inp => inp.AddedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 

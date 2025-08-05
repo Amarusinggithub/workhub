@@ -11,7 +11,7 @@ public class Subscription
     public Guid Id { get; set; }
 
     [Required]
-    public int UserGroupId { get; set; }
+    public Guid UserGroupId { get; set; }
     [ForeignKey(nameof(UserGroupId))]
 
     public UserGroup UserGroup { get; set; }

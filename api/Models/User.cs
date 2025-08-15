@@ -242,6 +242,8 @@ public class User: IdentityUser<Guid >
 
 
     public ICollection<OAuthAccount> OAuthAccounts { get; set; } = new List<OAuthAccount>();
+    public ICollection<Workspace> DeletedWorkspaces { get; set; } = new List<Workspace>();
+
     public ICollection<Workspace> CreatedWorkspaces { get; set; } = new List<Workspace>();
     public ICollection<Project> CreatedProjects { get; set; } = new List<Project>();
     public ICollection<Resource> UploadedResources { get; set; } = new List<Resource>();
@@ -330,14 +332,14 @@ public class User: IdentityUser<Guid >
     {
         RefreshToken = token;
         RefreshTokenExpiresAtUtc = validity;
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public void ClearRefreshToken()
     {
         RefreshToken = null;
         RefreshTokenExpiresAtUtc = null;
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public void SoftDelete(Guid? deletedById = null, string? reason = null)
@@ -361,28 +363,28 @@ public class User: IdentityUser<Guid >
         DeletedById = null;
         DeactivationReason = null;
         Status = "Active";
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public void AcceptTerms(string version)
     {
         TermsAcceptedAt = DateTime.UtcNow;
         TermsVersion = version;
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public void AcceptPrivacyPolicy(string version)
     {
         PrivacyPolicyAcceptedAt = DateTime.UtcNow;
         PrivacyPolicyVersion = version;
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public void UnlockAccount()
     {
         AccountLockedUntil = null;
         FailedLoginAttempts = 0;
-        UpdatedAt = DateTime.UtcNow;
+        UpdateActivity();
     }
 
     public bool HasAcceptedCurrentTerms(string currentVersion)

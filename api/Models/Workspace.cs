@@ -217,5 +217,11 @@ public class Workspace
             .WithMany(u => u.CreatedWorkspaces)
             .HasForeignKey(ugr => ugr.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Workspace>()
+            .HasOne(ugr => ugr.DeletedBy)
+            .WithMany(u => u.DeletedWorkspaces)
+            .HasForeignKey(ugr => ugr.DeletedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

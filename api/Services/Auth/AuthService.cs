@@ -14,12 +14,14 @@ public class AuthService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
     IPasswordHashService hashService,
-    ITokenService tokenService)
+    ITokenService tokenService,IHttpContextAccessor httpContextAccessor)
     : IAuthService
 {
     private readonly ILogger<UserService> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
     private readonly IMapper _mapper = mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor=httpContextAccessor;
+
 
     public async Task<UserDto?> Authenticate(string email, string password)
     {
@@ -39,22 +41,16 @@ public class AuthService(
             {
                 _logger.LogInformation("Authentication successful for user: {UserId}", user.Id);
 
-
-
                 user.RecordLogin();
                 await unitOfWork.CompleteAsync();
 
-
-
-
                     var (jwtToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
                     var (refreshTokenValue, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
+                    var remoteIpAddress =_httpContextAccessor!.HttpContext.Connection.RemoteIpAddress;
+                    user.SetRefreshToken(refreshTokenValue,refreshTokenExpirationDateInUtc);
+                    user.RecordLogin(ipAddress:remoteIpAddress!.ToString());
 
-
-                    user.RefreshToken = refreshTokenValue;
-                    user.RefreshTokenExpiresAtUtc = refreshTokenExpirationDateInUtc;
-
-                    await _userManager.UpdateAsync(user);
+                    await unitOfWork.Users.Update(user);
 
                     tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
                     tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
@@ -109,7 +105,9 @@ public class AuthService(
                 Email = email,
                 PasswordHash = hashService.Hash(password),
                 CreatedAt = DateTime.UtcNow,
-                IsActive = true
+                IsActive = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+
             };
 
             await unitOfWork.Users.Add(entity);
@@ -166,32 +164,22 @@ public class AuthService(
         {
             User? user = await unitOfWork.Users.GetById(id);
 
-            if (user != null)
+            _logger.LogInformation("User found - UserId: {UserId}", user.Id);
+            return new UserDto
             {
-                _logger.LogInformation("User found - UserId: {UserId}", user.Id);
-                return new UserDto
-                {
-                    id=user.Id,
-                    email = user.Email,
-                    firstName = user.FirstName,
-                    lastName = user.LastName,
-                    headerImageUrl = user.HeaderImageUrl,
-                    jobTitle = user.JobTitle,
-                    organization = user.Organization,
-                    isActive = user.IsActive,
-                    location = user.Location,
-                    avatarUrl = user.AvatarUrl,
-                    lastLoggedIn = user.LastLoggedIn,
-                    createdAt = user.CreatedAt,
-                };
-
-            }
-
-            _logger.LogInformation("User not found by id");
-
-
-            return null;
-
+                id=user.Id,
+                email = user.Email,
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                headerImageUrl = user.HeaderImageUrl,
+                jobTitle = user.JobTitle,
+                organization = user.Organization,
+                isActive = user.IsActive,
+                location = user.Location,
+                avatarUrl = user.AvatarUrl,
+                lastLoggedIn = user.LastLoggedIn,
+                createdAt = user.CreatedAt,
+            };
 
         }
         catch (Exception ex)

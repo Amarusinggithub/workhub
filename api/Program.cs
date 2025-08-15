@@ -119,7 +119,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddIdentityCore<User>(options =>
+builder.Services.AddIdentity<User,Role>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.Lockout.DefaultLockoutTimeSpan=TimeSpan.FromMinutes(4);
@@ -137,8 +137,9 @@ builder.Services.AddIdentityCore<User>(options =>
         options.User.RequireUniqueEmail = true;
 
     })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders()
     .AddApiEndpoints();
+
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

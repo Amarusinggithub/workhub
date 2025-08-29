@@ -1,6 +1,4 @@
-using api.Models;
-
-namespace api.Services.interfaces;
+namespace api.Services.Workspaces.interfaces;
 
 public interface IWorkspaceService
 {

@@ -19,6 +19,8 @@ using api.Services.Tasks;
 using api.Services.Users;
 using api.Services.Users.interfaces;
 using api.Services.Workspaces;
+using api.Services.Workspaces.interfaces;
+
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +30,31 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 using System.Security.Claims;
+using System.Text.Json;
+using api.Repositories.interfaces;
+using api.Repository;
+using api.Repository.Analytics;
+using api.Repository.Analytics.interfaces;
+using api.Repository.Boards;
+using api.Repository.Boards.interfaces;
+using api.Repository.Infrastructure;
+using api.Repository.Infrastructure.interfaces;
+using api.Repository.interfaces;
+using api.Repository.Notifications;
+using api.Repository.Notifications.interfaces;
+using api.Repository.Projects;
+using api.Repository.Projects.interfaces;
+using api.Repository.Software;
+using api.Repository.Subscription;
+using api.Repository.Subscription.interfaces;
+using api.Repository.Tasks;
+using api.Repository.Tasks.interfaces;
+using api.Repository.Users;
+using api.Repository.Users.interfaces;
+using api.Repository.Workspaces;
+using api.Repository.Workspaces.interfaces;
+using api.Services.Infanstructure.interfaces;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -380,8 +407,8 @@ void ConfigureCors(WebApplicationBuilder builder)
                     policy.WithOrigins(
                             "http://localhost:3000",
                             "http://localhost:5173",
-                            "https://localhost:5174"
-                             "https://localhost:80")
+                            "https://localhost:5174",
+                            "https://localhost:80")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
@@ -403,88 +430,120 @@ void ConfigureCors(WebApplicationBuilder builder)
 void RegisterRepositories(WebApplicationBuilder builder)
 {
     builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
-    builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-    builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-    builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-    builder.Services.AddScoped<IBillingRepository, BillingRepository>();
-    builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-    builder.Services.AddScoped<IUserInvitationRepository, UserInvitationRepository>();
-    builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
-    builder.Services.AddScoped<IWorkSpaceSettingsRepository, WorkSpaceSettingsRepository>();
-    builder.Services.AddScoped<IWorkSpaceAccessControlRepository, WorkSpaceAccessControlRepository>();
-    builder.Services.AddScoped<IWorkSpaceMemberRepository, WorkSpaceMemberRepository>();
-    builder.Services.AddScoped<INotificationPreferenceRepository, NotificationPreferenceRepository>();
-    builder.Services.AddScoped<IUsageTrackingRepository, UsageTrackingRepository>();
-    builder.Services.AddScoped<IUserActivityRepository, UserActivityRepository>();
     builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+    builder.Services.AddScoped<IUserActivityRepository, UserActivityRepository>();
+    builder.Services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+
+    builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+    builder.Services.AddScoped<IWorkspaceSettingsRepository, WorkspaceSettingsRepository>();
+    builder.Services.AddScoped<IWorkspaceAccessControlRepository, WorkspaceAccessControlRepository>();
+    builder.Services.AddScoped<IWorkspaceMemberRepository, WorkspaceMemberRepository>();
+    builder.Services.AddScoped<IWorkspaceInviteRepository, WorkspaceInviteRepository>();
+    builder.Services.AddScoped<IWorkspaceRoleRepository, WorkspaceRoleRepository>();
+
+    builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
     builder.Services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>();
     builder.Services.AddScoped<IProjectSettingsRepository, ProjectSettingsRepository>();
+
     builder.Services.AddScoped<IBoardRepository, BoardRepository>();
     builder.Services.AddScoped<IBoardColumnRepository, BoardColumnRepository>();
     builder.Services.AddScoped<IBoardFilterRepository, BoardFilterRepository>();
     builder.Services.AddScoped<IBoardSortRepository, BoardSortRepository>();
-    builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-    builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
-    builder.Services.AddScoped<IReportRepository, ReportRepository>();
+    builder.Services.AddScoped<IBoardViewRepository, BoardViewRepository>();
+
     builder.Services.AddScoped<ITaskRepository, TaskRepository>();
     builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>();
     builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
     builder.Services.AddScoped<ITaskCommentRepository, TaskCommentRepository>();
     builder.Services.AddScoped<ITaskLabelRepository, TaskLabelRepository>();
     builder.Services.AddScoped<ITaskAttachmentRepository, TaskAttachmentRepository>();
+    builder.Services.AddScoped<ITaskHistoryRepository, TaskHistoryRepository>();
     builder.Services.AddScoped<ISubtaskRepository, SubtaskRepository>();
-    builder.Services.AddScoped<IWebhookRepository, WebhookRepository>();
+
+    builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+    builder.Services.AddScoped<INotificationPreferenceRepository, NotificationPreferenceRepository>();
+    builder.Services.AddScoped<IEmailLogRepository, EmailLogRepository>();
+    builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+
+    builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+    builder.Services.AddScoped<IBillingRepository, BillingRepository>();
+    builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+    builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+    builder.Services.AddScoped<IUsageRecordRepository, UsageRecordRepository>();
+
+    builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+    builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+    builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+    builder.Services.AddScoped<IUsageTrackingRepository, UsageTrackingRepository>();
+    builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+    builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
     builder.Services.AddScoped<IIntegrationRepository, IntegrationRepository>();
+    builder.Services.AddScoped<IWebhookRepository, WebhookRepository>();
+
+    builder.Services.AddScoped<ICacheRepository, CacheRepository>();
+    builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+    builder.Services.AddScoped<IStorageRepository, StorageRepository>();
+
+    builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 }
 
 void RegisterServices(WebApplicationBuilder builder)
 {
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
-    builder.Services.AddScoped<INotificationService, NotificationService>();
-    builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+    builder.Services.AddScoped<IAIService, AIService>();
+
     builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
-    builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
-    builder.Services.AddScoped<ICacheService, CacheService>();
-    builder.Services.AddScoped<IBillingService, BillingService>();
-    builder.Services.AddScoped<IEmailService, EmailService>();
-    builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-    builder.Services.AddScoped<IUserInvitationService, UserInvitationService>();
-    builder.Services.AddScribed<ITokenService, TokenService>();
     builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-    builder.Services.AddScoped<IWorkSpaceSettingsService, WorkSpaceSettingsService>();
-    builder.Services.AddScoped<IWorkSpaceAccessControlService, WorkSpaceAccessControlService>();
-    builder.Services.AddScoped<IWorkSpaceMemberService, WorkSpaceMemberService>();
-    builder.Services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
-    builder.Services.AddScoped<IUsageTrackingService, UsageTrackingService>();
-    builder.Services.AddScoped<IStorageService, StorageService>();
-    builder.Services.AddScoped<IUserActivityService, UserActivityService>();
-    builder.Services.AddScoped<IUserRoleService, UserRoleService>();
-    builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
-    builder.Services.AddScoped<IProjectSettingsService, ProjectSettingsService>();
-    builder.Services.AddScoped<IRateLimiterService, RateLimiterService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
+
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
+    builder.Services.AddScoped<ITokenService, TokenService>();
+
     builder.Services.AddScoped<IBoardService, BoardService>();
     builder.Services.AddScoped<IBoardColumnService, BoardColumnService>();
     builder.Services.AddScoped<IBoardFilterService, BoardFilterService>();
     builder.Services.AddScoped<IBoardSortService, BoardSortService>();
-    builder.Services.AddScoped<IProjectService, ProjectService>();
+
+    builder.Services.AddScoped<ICacheService, CacheService>();
     builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
-    builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<IIntegrationService, IntegrationService>();
+    builder.Services.AddScoped<IRateLimiterService, RateLimiterService>();
+    builder.Services.AddScoped<IStorageService, StorageService>();
+    builder.Services.AddScoped<IWebhookService, WebhookService>();
+
+    builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<INotificationService, NotificationService>();
+    builder.Services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
+
+    builder.Services.AddScoped<IProjectService, ProjectService>();
+    builder.Services.AddScoped<IProjectMemberService, ProjectMemberService>();
+    builder.Services.AddScoped<IProjectSettingsService, ProjectSettingsService>();
+
+    builder.Services.AddScoped<IBillingService, BillingService>();
+    builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+    builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+    builder.Services.AddScoped<IUsageTrackingService, UsageTrackingService>();
+
+    builder.Services.AddScoped<ISubtaskService, SubtaskService>();
     builder.Services.AddScoped<ITaskService, TaskService>();
     builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
-    builder.Services.AddScoped<ITaskStatusService, TaskStatusService>();
+    builder.Services.AddScoped<ITaskAttachmentService, TaskAttachmentService>();
     builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
     builder.Services.AddScoped<ITaskLabelService, TaskLabelService>();
-    builder.Services.AddScoped<ITaskAttachmentService, TaskAttachmentService>();
-    builder.Services.AddScoped<ISubtaskService, SubtaskService>();
-    builder.Services.AddScoped<IWebhookService, WebhookService>();
-    builder.Services.AddScoped<IIntegrationService, IntegrationService>();
-    builder.Services.AddScoped<IAIService, AIService>();
-}
+    builder.Services.AddScoped<ITaskStatusService, TaskStatusService>();
 
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+    builder.Services.AddScoped<IUserInvitationService, UserInvitationService>();
+    builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+
+    builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
+    builder.Services.AddScoped<IWorkSpaceAccessControlService, WorkSpaceAccessControlService>();
+    builder.Services.AddScoped<IWorkSpaceMemberService, WorkSpaceMemberService>();
+    builder.Services.AddScoped<IWorkSpaceSettingsService, WorkSpaceSettingsService>();
+}
 void ConfigurePipeline(WebApplication app)
 {
     app.UseExceptionHandler();
@@ -505,54 +564,53 @@ void ConfigurePipeline(WebApplication app)
     });
 
     // Health checks
-        app.MapHealthChecks("/health", new HealthCheckOptions
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
         {
-            ResponseWriter = async (context, report) =>
+            var response = new
             {
-                var response = new
+                Status = report.Status.ToString(),
+                Checks = report.Entries.Select(entry => new
                 {
-                    Status = report.Status.ToString(),
-                    Checks = report.Entries.Select(entry => new
-                    {
-                        Name = entry.Key,
-                        Status = entry.Value.Status.ToString(),
-                        Description = entry.Value.Description,
-                        Duration = entry.Value.Duration.TotalMilliseconds
-                    }),
-                    TotalDuration = report.TotalDuration.TotalMilliseconds
-                };
-                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-            }
-        });
-
-        app.MapHealthChecks("/health/ready", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("ready")
-        });
-
-        app.MapHealthChecks("/health/live", new HealthCheckOptions
-        {
-            Predicate = _ => false
-        });
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.MapOpenApi();
-            app.UseSwagger();
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "WorkHub API v1");
-                options.RoutePrefix = "swagger";
-                options.DisplayRequestDuration();
-                options.EnableTryItOutByDefault();
-                options.DefaultModelsExpandDepth(-1);
-            });
+                    Name = entry.Key,
+                    Status = entry.Value.Status.ToString(),
+                    Description = entry.Value.Description,
+                    Duration = entry.Value.Duration.TotalMilliseconds
+                }),
+                TotalDuration = report.TotalDuration.TotalMilliseconds
+            };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
-        else
+    });
+
+    app.MapHealthChecks("/health/ready", new HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains("ready")
+    });
+
+    app.MapHealthChecks("/health/live", new HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
         {
-            app.UseHsts();
-            app.UseHttpsRedirection();
-        }
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "WorkHub API v1");
+            options.RoutePrefix = "swagger";
+            options.DisplayRequestDuration();
+            options.EnableTryItOutByDefault();
+            options.DefaultModelsExpandDepth(-1);
+        });
+    }
+    else
+    {
+        app.UseHsts();
+        app.UseHttpsRedirection();
     }
 
     app.UseForwardedHeaders();
@@ -573,20 +631,20 @@ void ConfigurePipeline(WebApplication app)
     app.MapIdentityApi<User>();
     app.MapControllers();
 
-   app.MapGet("/", () => new
-       {
-           Message = "WorkHub API",
-           Version = "v1.0",
-           Status = "Running",
-           Environment = app.Environment.EnvironmentName,
-           Timestamp = DateTime.UtcNow,
-           Links = new
-           {
-               Documentation = "/swagger",
-               Health = "/health",
-               Ready = "/health/ready"
-           }
-       })
-       .WithName("Root")
-       .WithOpenApi();
+    app.MapGet("/", () => new
+    {
+        Message = "WorkHub API",
+        Version = "v1.0",
+        Status = "Running",
+        Environment = app.Environment.EnvironmentName,
+        Timestamp = DateTime.UtcNow,
+        Links = new
+        {
+            Documentation = "/swagger",
+            Health = "/health",
+            Ready = "/health/ready"
+        }
+    })
+    .WithName("Root")
+    .WithOpenApi();
 }

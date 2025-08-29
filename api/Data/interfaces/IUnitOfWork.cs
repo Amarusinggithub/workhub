@@ -24,7 +24,7 @@ namespace api.Data.interfaces;
 public interface IUnitOfWork
 {
     IUserRepository Users { get; }
-    IWorkSpaceRepository Workspaces {get; }
+    IWorkspaceRepository Workspaces {get; }
     IProjectRepository Projects { get; }
     ITaskRepository Tasks { get;  }
     IActivityLogRepository ActivityLogs { get;  }
@@ -61,10 +61,10 @@ public interface IUnitOfWork
 
     INotificationRepository Notifications{get; }
 
-    IWorkSpaceInviteRepository WorkSpaceInvites { get; }
-    IWorkSpaceMemberRepository WorkSpaceMembers { get; }
-    IWorkSpaceRoleRepository WorkSpaceRoles { get; }
-    IWorkSpaceSettingsRepository WorkSpaceSettings { get; }
+    IWorkspaceInviteRepository WorkspaceInvites { get; }
+    IWorkspaceMemberRepository WorkspaceMembers { get; }
+    IWorkspaceRoleRepository WorkspaceRoles { get; }
+    IWorkspaceSettingsRepository WorkspaceSettings { get; }
 
 
 

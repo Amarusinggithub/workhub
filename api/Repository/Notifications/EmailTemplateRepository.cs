@@ -1,6 +1,8 @@
+using api.Repository.Notifications.interfaces;
+
 namespace api.Repository.Notifications;
 
-public class EmailTemplateRepository
+public class EmailTemplateRepository:IEmailTemplateRepository
 {
-    
+
 }

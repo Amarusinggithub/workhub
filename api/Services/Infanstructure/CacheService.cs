@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using api.Services.interfaces;
+using api.Services.Infanstructure.interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace api.Services;
+namespace api.Services.Infanstructure;
 
 public class CacheService :ICacheService
 

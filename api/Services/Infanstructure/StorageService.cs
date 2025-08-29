@@ -3,6 +3,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using api.Services.Infanstructure.interfaces;
 using api.Services.interfaces;
 
 namespace api.Services.Infanstructure;

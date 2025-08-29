@@ -1,6 +1,8 @@
+using api.Repository.Tasks.interfaces;
+
 namespace api.Repository.Tasks;
 
-public class TaskAssignmentRepository
+public class TaskAssignmentRepository:ITaskAssignmentRepository
 {
-    
+
 }

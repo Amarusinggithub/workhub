@@ -30,7 +30,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly ApplicationDbContext _context;
 
     public IUserRepository Users { get; private set; }
-    public IWorkSpaceRepository Workspaces { get; private set; }
+    public IWorkspaceRepository Workspaces { get; private set; }
     public IProjectRepository Projects { get; private set; }
     public ITaskRepository Tasks { get; private set; }
     public IActivityLogRepository ActivityLogs { get; private set; }
@@ -60,10 +60,10 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public ITaskLabelRepository TaskLabels { get; private set; }
     public ITaskStatusRepository TaskStatuses { get; private set; }
     public INotificationRepository Notifications { get; private set; }
-    public IWorkSpaceInviteRepository WorkSpaceInvites { get; private set; }
-    public IWorkSpaceMemberRepository WorkSpaceMembers { get; private set; }
-    public IWorkSpaceRoleRepository WorkSpaceRoles { get; private set; }
-    public IWorkSpaceSettingsRepository WorkSpaceSettings { get; private set; }
+    public IWorkspaceInviteRepository WorkspaceInvites { get; private set; }
+    public IWorkspaceMemberRepository WorkspaceMembers { get; private set; }
+    public IWorkspaceRoleRepository WorkspaceRoles { get; private set; }
+    public IWorkspaceSettingsRepository WorkspaceSettings { get; private set; }
 
     public UnitOfWork(ApplicationDbContext context, ILoggerFactory loggerFactory)
     {
@@ -71,7 +71,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         _logger = loggerFactory.CreateLogger("logs");
 
         Users = new UserRepository(_context, _logger);
-        Workspaces = new WorkSpaceRepository(_context, _logger);
+        Workspaces = new WorkspaceRepository(_context, _logger);
         Projects = new ProjectRepository(_context, _logger);
         Tasks = new TaskRepository(_context, _logger);
         ActivityLogs = new ActivityLogRepository(_context, _logger);
@@ -101,10 +101,10 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         TaskLabels = new TaskLabelRepository(_context, _logger);
         TaskStatuses = new TaskStatusRepository(_context, _logger);
         Notifications = new NotificationRepository(_context, _logger);
-        WorkSpaceInvites = new WorkSpaceInviteRepository(_context, _logger);
-        WorkSpaceMembers = new WorkSpaceMemberRepository(_context, _logger);
-        WorkSpaceRoles = new WorkSpaceRoleRepository(_context, _logger);
-        WorkSpaceSettings = new WorkSpaceSettingsRepository(_context, _logger);
+        WorkspaceInvites = new WorkspaceInviteRepository(_context, _logger);
+        WorkspaceMembers = new WorkspaceMemberRepository(_context, _logger);
+        WorkspaceRoles = new WorkspaceRoleRepository(_context, _logger);
+        WorkspaceSettings = new WorkspaceSettingsRepository(_context, _logger);
     }
 
     public async Task CompleteAsync()

@@ -1,6 +1,6 @@
-using api.Services.interfaces;
+using api.Services.Workspaces.interfaces;
 
-namespace api.Services;
+namespace api.Services.Workspaces;
 
 public class WorkSpaceSettingsService:IWorkSpaceSettingsService
 {

@@ -1,6 +1,8 @@
+using api.Repository.Notifications.interfaces;
+
 namespace api.Repository.Notifications;
 
-public class NotificationPreferenceRepository
+public class NotificationPreferenceRepository:INotificationPreferenceRepository
 {
 
 }

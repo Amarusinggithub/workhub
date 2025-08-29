@@ -20,7 +20,7 @@ public class TaskRepository: GenericRepository<TaskItem,Guid>,ITaskRepository
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(WorkSpaceRepository));
+            _logger.LogError(e,"{Repo} All method error ",typeof(WorkspaceRepository));
             return new List<TaskItem>();
         }
 

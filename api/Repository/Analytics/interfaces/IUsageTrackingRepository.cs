@@ -1,6 +1,6 @@
 namespace api.Repository.Analytics.interfaces;
 
-public class IUsageTrackingRepository
+public interface IUsageTrackingRepository
 {
-    
+
 }

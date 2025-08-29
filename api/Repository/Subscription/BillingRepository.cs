@@ -1,6 +1,8 @@
+using api.Repository.Subscription.interfaces;
+
 namespace api.Repository.Subscription;
 
-public class BillingRepository
+public class BillingRepository:IBillingRepository
 {
-    
+
 }

@@ -2,6 +2,7 @@ using api.Data.interfaces;
 using api.Models;
 using api.Services.interfaces;
 using api.Services.Users;
+using api.Services.Workspaces.interfaces;
 
 namespace api.Services.Workspaces;
 

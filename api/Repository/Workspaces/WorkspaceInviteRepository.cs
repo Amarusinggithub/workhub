@@ -3,7 +3,7 @@ using api.Repository.Workspaces.interfaces;
 
 namespace api.Repository.Workspaces;
 
-public class WorkSpaceInviteRepository(ApplicationDbContext context, ILogger logger) :IWorkSpaceInviteRepository
+public class WorkspaceInviteRepository(ApplicationDbContext context, ILogger logger) :IWorkspaceInviteRepository
 {
 
 }

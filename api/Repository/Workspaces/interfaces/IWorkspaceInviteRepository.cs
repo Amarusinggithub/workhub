@@ -1,6 +1,6 @@
 namespace api.Repository.Workspaces.interfaces;
 
-public interface IWorkSpaceInviteRepository
+public interface IWorkspaceInviteRepository
 {
     
 }

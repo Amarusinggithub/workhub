@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository.Workspaces;
 
-public class WorkSpaceRepository : GenericRepository<Workspace,Guid>,IWorkSpaceRepository
+public class WorkspaceRepository : GenericRepository<Workspace,Guid>,IWorkspaceRepository
 {
-    public WorkSpaceRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
+    public WorkspaceRepository(ApplicationDbContext context, ILogger logger) : base(context, logger)
     {
 
     }
@@ -21,7 +21,7 @@ public class WorkSpaceRepository : GenericRepository<Workspace,Guid>,IWorkSpaceR
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(WorkSpaceRepository));
+            _logger.LogError(e,"{Repo} All method error ",typeof(WorkspaceRepository));
             return new List<Workspace>();
         }
     }
@@ -42,7 +42,7 @@ public class WorkSpaceRepository : GenericRepository<Workspace,Guid>,IWorkSpaceR
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} Upsert method error ",typeof(WorkSpaceRepository));
+            _logger.LogError(e,"{Repo} Upsert method error ",typeof(WorkspaceRepository));
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class WorkSpaceRepository : GenericRepository<Workspace,Guid>,IWorkSpaceR
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} Delete method error ",typeof(WorkSpaceRepository));
+            _logger.LogError(e,"{Repo} Delete method error ",typeof(WorkspaceRepository));
             return false;
         }
 

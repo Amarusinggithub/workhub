@@ -1,6 +1,6 @@
 namespace api.Repository.Workspaces.interfaces;
 
-public interface IWorkSpaceMemberRepository
+public interface IWorkspaceMemberRepository
 {
     
 }

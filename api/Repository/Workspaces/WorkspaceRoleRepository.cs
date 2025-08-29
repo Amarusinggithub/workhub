@@ -3,7 +3,7 @@ using api.Repository.Workspaces.interfaces;
 
 namespace api.Repository.Workspaces;
 
-public class WorkSpaceRoleRepository(ApplicationDbContext context, ILogger logger) :IWorkSpaceRoleRepository
+public class WorkspaceRoleRepository(ApplicationDbContext context, ILogger logger) :IWorkspaceRoleRepository
 {
 
 }

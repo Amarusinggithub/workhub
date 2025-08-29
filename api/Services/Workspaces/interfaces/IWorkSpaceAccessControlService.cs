@@ -1,6 +1,6 @@
-namespace api.Services.interfaces;
+namespace api.Services.Workspaces.interfaces;
 
 public class IWorkSpaceAccessControlService
 {
-    
+
 }

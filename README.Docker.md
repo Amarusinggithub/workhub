@@ -20,3 +20,6 @@ docs for more detail on building and pushing.
 
 ### References
 * [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
+
+### To Run Rabbit MQ
+``docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4.1.3-management``

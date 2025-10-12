@@ -90,7 +90,7 @@ finally
 void ConfigureServices(WebApplicationBuilder builder)
 {
     // Health checks
-    builder.Services.AddHealthChecks()
+   /* builder.Services.AddHealthChecks()
         .AddDbContext<ApplicationDbContext>()
         .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
@@ -99,7 +99,7 @@ void ConfigureServices(WebApplicationBuilder builder)
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         options.KnownNetworks.Clear();
         options.KnownProxies.Clear();
-    });
+    });*/
 
     // Security headers
     builder.Services.AddHsts(options =>

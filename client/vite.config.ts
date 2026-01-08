@@ -6,6 +6,19 @@ import { defineConfig } from 'vite';
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [react(), tailwindcss()],
+	assetsInclude: ['**/*.lottie'],
+	server: {
+		host: true,
+		port: 5173,
+	},
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, './src'),
+		},
+	},
 	envDir: path.resolve(__dirname, '../'),
 	envPrefix: 'VITE_',
+	preview: {
+		port: 3000,
+	},
 });

@@ -3,11 +3,11 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+workhub.sln.DotSettings.user
 
-
-docker-compose.override.yml  
-docker-compose.dev.yml      
-docker-compose.test.yml     
+docker-compose.override.yml
+docker-compose.dev.yml
+docker-compose.test.yml
 
 !Dockerfile
 !docker-compose.yml
@@ -29,12 +29,12 @@ frontend/yjs-wss-db/*
 
 cypress.env.json
 *.local
-.env  
+.env
 .env.production
 .env.development
 .env.local
 .vscode/
-!.vscode/extensions.json  
+!.vscode/extensions.json
 .idea/
 .DS_Store
 

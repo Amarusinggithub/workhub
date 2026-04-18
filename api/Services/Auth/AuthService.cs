@@ -1,9 +1,7 @@
-using api.Data.interfaces;
 using api.DTOs.Users;
 using api.Models;
 using api.Services.Auth.interfaces;
 using api.Services.Users;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace api.Services.Auth;
@@ -11,17 +9,14 @@ namespace api.Services.Auth;
 public class AuthService(
     ILogger<UserService> logger,
     UserManager<User> userManager,
-    IMapper mapper,
-    IUnitOfWork unitOfWork,
-    IPasswordHashService hashService,
-    ITokenService tokenService,IHttpContextAccessor httpContextAccessor)
+    ITokenService tokenService,
+    IHttpContextAccessor httpContextAccessor)
     : IAuthService
 {
     private readonly ILogger<UserService> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
-    private readonly IMapper _mapper = mapper;
-    private readonly IHttpContextAccessor _httpContextAccessor=httpContextAccessor;
-
+    private readonly ITokenService _tokenService = tokenService;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<UserDto?> Authenticate(string email, string password)
     {
@@ -29,54 +24,34 @@ public class AuthService(
 
         try
         {
-            var user = await GetByEmail(email);
-
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 _logger.LogWarning("Authentication failed - user not found");
                 return null;
             }
 
-            if (user.PasswordHash != null && hashService.Verify(password, user.PasswordHash))
-            {
-                _logger.LogInformation("Authentication successful for user: {UserId}", user.Id);
-
-                user.RecordLogin();
-                await unitOfWork.CompleteAsync();
-
-                    var (jwtToken, expirationDateInUtc) = await tokenService.GenerateToken(user);
-                    var (refreshTokenValue, refreshTokenExpirationDateInUtc) = await tokenService.GenerateAndSaveRefreshTokenAsync(user);
-                    var remoteIpAddress =_httpContextAccessor!.HttpContext.Connection.RemoteIpAddress;
-                    user.SetRefreshToken(refreshTokenValue,refreshTokenExpirationDateInUtc);
-                    user.RecordLogin(ipAddress:remoteIpAddress!.ToString());
-
-                    await unitOfWork.Users.Update(user);
-
-                    tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
-                    tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
-
-
-                return new UserDto
-                {
-                    id=user.Id,
-                    email = user.Email,
-                    firstName = user.FirstName,
-                    lastName = user.LastName,
-                    headerImageUrl = user.HeaderImageUrl,
-                    jobTitle = user.JobTitle,
-                    organization = user.Organization,
-                    isActive = user.IsActive,
-                    location = user.Location,
-                    avatarUrl = user.AvatarUrl,
-                    lastLoggedIn = user.LastLoggedIn,
-                    createdAt = user.CreatedAt,
-                };
-            }
-            else
+            if (!await _userManager.CheckPasswordAsync(user, password))
             {
                 _logger.LogWarning("Authentication failed - invalid credentials for user: {UserId}", user.Id);
                 return null;
             }
+
+            _logger.LogInformation("Authentication successful for user: {UserId}", user.Id);
+
+            var (jwtToken, expirationDateInUtc) = await _tokenService.GenerateToken(user);
+            var (refreshTokenValue, refreshTokenExpirationDateInUtc) = await _tokenService.GenerateAndSaveRefreshTokenAsync(user);
+            var remoteIpAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+
+            user.SetRefreshToken(refreshTokenValue, refreshTokenExpirationDateInUtc);
+            user.RecordLogin(ipAddress: remoteIpAddress?.ToString());
+
+            await _userManager.UpdateAsync(user);
+
+            _tokenService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtToken, expirationDateInUtc);
+            _tokenService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
+
+            return MapToDto(user);
         }
         catch (Exception ex)
         {
@@ -91,31 +66,26 @@ public class AuthService(
 
         try
         {
-            var existingUser = await GetByEmail(email);
-            if (existingUser != null)
-            {
-                _logger.LogWarning("User creation failed - email already exists");
-                return null;
-            }
-
-            User entity = new User
+            var entity = new User
             {
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,
-                PasswordHash = hashService.Hash(password),
+                UserName = email,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
-                SecurityStamp = Guid.NewGuid().ToString()
-
             };
 
-            await unitOfWork.Users.Add(entity);
-            await unitOfWork.CompleteAsync();
+            var result = await _userManager.CreateAsync(entity, password);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning("User creation failed: {Errors}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                return null;
+            }
 
             _logger.LogInformation("User created successfully with ID: {UserId}", entity.Id);
-
-            return await Authenticate(entity.Email, password);
+            return await Authenticate(entity.Email!, password);
         }
         catch (Exception ex)
         {
@@ -124,29 +94,13 @@ public class AuthService(
         }
     }
 
-
-
-
-
-
     public async Task<User?> GetByEmail(string email)
     {
         _logger.LogInformation("Retrieving user by email");
 
         try
         {
-            User? userExist = await unitOfWork.Users.GetByEmail(email);
-
-            if (userExist != null)
-            {
-                _logger.LogInformation("User found - UserId: {UserId}", userExist.Id);
-            }
-            else
-            {
-                _logger.LogInformation("User not found by email");
-            }
-
-            return userExist;
+            return await _userManager.FindByEmailAsync(email);
         }
         catch (Exception ex)
         {
@@ -154,49 +108,42 @@ public class AuthService(
             throw;
         }
     }
-
 
     public async Task<UserDto?> GetById(Guid id)
     {
-        _logger.LogInformation("Retrieving user by email");
+        _logger.LogInformation("Retrieving user by ID: {UserId}", id);
 
         try
         {
-            User? user = await unitOfWork.Users.GetById(id);
-
-            _logger.LogInformation("User found - UserId: {UserId}", user.Id);
-            return new UserDto
-            {
-                id=user.Id,
-                email = user.Email,
-                firstName = user.FirstName,
-                lastName = user.LastName,
-                headerImageUrl = user.HeaderImageUrl,
-                jobTitle = user.JobTitle,
-                organization = user.Organization,
-                isActive = user.IsActive,
-                location = user.Location,
-                avatarUrl = user.AvatarUrl,
-                lastLoggedIn = user.LastLoggedIn,
-                createdAt = user.CreatedAt,
-            };
-
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) return null;
+            return MapToDto(user);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while retrieving user by email");
+            _logger.LogError(ex, "Error occurred while retrieving user by ID");
             throw;
         }
     }
 
-
-
-
     public async Task<bool> Logout(Guid userId)
     {
-        return await tokenService.RevokeRefreshTokenAsync(userId);
+        return await _tokenService.RevokeRefreshTokenAsync(userId);
     }
 
+    private static UserDto MapToDto(User user) => new()
+    {
+        id = user.Id,
+        email = user.Email,
+        firstName = user.FirstName,
+        lastName = user.LastName,
+        headerImageUrl = user.HeaderImageUrl,
+        jobTitle = user.JobTitle,
+        organization = user.Organization,
+        isActive = user.IsActive,
+        location = user.Location,
+        avatarUrl = user.AvatarUrl,
+        lastLoggedIn = user.LastLoggedIn,
+        createdAt = user.CreatedAt,
+    };
 }
-
-

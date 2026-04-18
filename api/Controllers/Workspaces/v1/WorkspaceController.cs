@@ -1,64 +1,35 @@
-using api.Services.interfaces;
 using api.Services.Workspaces.interfaces;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers.Workspaces.v1;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/workspaces")]
 [ApiVersion("1")]
-
+[Authorize]
 public class WorkspaceController(IWorkspaceService service) : ControllerBase
 {
-
-
     private readonly IWorkspaceService _service = service ?? throw new ArgumentNullException(nameof(service));
 
-
-
     [HttpPost]
-    [Route("create-workspace")]
     public async Task<IActionResult> Create([FromBody] string name)
     {
-
-
-        bool IsCreated = await _service.CreateWorkspace(name);
-
-        if (IsCreated) return Ok();
-
-        return BadRequest("");
-
+        bool isCreated = await _service.CreateWorkspace(name);
+        if (isCreated) return Ok();
+        return BadRequest("Failed to create workspace.");
     }
 
-
-
-    [HttpPost]
-    [Route("edit-workspace")]
-    public async Task<IActionResult> Edit([FromBody] string id)
+    [HttpPut("{id}")]
+    public IActionResult Edit(Guid id)
     {
-
-
-        bool IsCreated = await _service.CreateWorkspace(id);
-
-        if (IsCreated) return Ok();
-
-        return BadRequest("");
-
+        return StatusCode(501, "Edit workspace is not yet implemented.");
     }
 
-
-    [HttpPost]
-    [Route("add-user-workspace")]
-    public async Task<IActionResult> AddUser([FromBody] string id)
+    [HttpPost("{id}/members")]
+    public IActionResult AddUser(Guid id)
     {
-
-
-        bool IsCreated = await _service.CreateWorkspace(id);
-
-        if (IsCreated) return Ok();
-
-        return BadRequest("");
-
+        return StatusCode(501, "Add workspace member is not yet implemented.");
     }
 }

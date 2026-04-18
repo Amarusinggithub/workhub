@@ -12,18 +12,20 @@ public class TaskRepository: GenericRepository<TaskItem,Guid>,ITaskRepository
     {
     }
 
-    public override async Task<IEnumerable<TaskItem>> GetAll()
+    public override async Task<IEnumerable<TaskItem>> GetAll(int page = 1, int pageSize = 50)
     {
         try
         {
-            return await dbSet.ToListAsync();
+            return await dbSet
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(WorkspaceRepository));
+            _logger.LogError(e, "{Repo} All method error", typeof(TaskRepository));
             return new List<TaskItem>();
         }
-
     }
 
     public override async Task<bool> Upsert(TaskItem entity)

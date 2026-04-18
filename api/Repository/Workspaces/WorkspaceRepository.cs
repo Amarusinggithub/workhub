@@ -13,15 +13,18 @@ public class WorkspaceRepository : GenericRepository<Workspace,Guid>,IWorkspaceR
 
     }
 
-    public override async Task<IEnumerable<Workspace>> GetAll()
+    public override async Task<IEnumerable<Workspace>> GetAll(int page = 1, int pageSize = 50)
     {
         try
         {
-            return await dbSet.ToListAsync();
+            return await dbSet
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(WorkspaceRepository));
+            _logger.LogError(e, "{Repo} All method error", typeof(WorkspaceRepository));
             return new List<Workspace>();
         }
     }

@@ -11,15 +11,18 @@ public class NotificationRepository:GenericRepository<Notification,Guid>,INotifi
     {
     }
 
-    public override  async Task<IEnumerable<Notification>> GetAll()
+    public override async Task<IEnumerable<Notification>> GetAll(int page = 1, int pageSize = 50)
     {
         try
         {
-            return await dbSet.ToListAsync();
+            return await dbSet
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(NotificationRepository));
+            _logger.LogError(e, "{Repo} All method error", typeof(NotificationRepository));
             return new List<Notification>();
         }
     }

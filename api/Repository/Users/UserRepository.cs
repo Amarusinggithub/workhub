@@ -9,15 +9,19 @@ namespace api.Repository.Users;
 public class UserRepository(ApplicationDbContext context, ILogger logger)
     : GenericRepository<User,Guid>(context, logger), IUserRepository
 {
-    public override async Task<IEnumerable<User>> GetAll()
+    public override async Task<IEnumerable<User>> GetAll(int page = 1, int pageSize = 50)
     {
         try
         {
-            return await dbSet.Where(x => x.IsActive == true).ToListAsync();
+            return await dbSet
+                .Where(x => x.IsActive == true)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(e,"{Repo} All method error ",typeof(UserRepository));
+            _logger.LogError(e, "{Repo} All method error", typeof(UserRepository));
             return new List<User>();
         }
     }

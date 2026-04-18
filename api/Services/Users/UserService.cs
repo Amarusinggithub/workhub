@@ -10,12 +10,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace api.Services.Users;
 
-public class UserService(ILogger<UserService> logger, UserManager<User> userManager,  IMapper mapper,IUnitOfWork unitOfWork, IPasswordHashService hashService, ITokenService tokenService)
+public class UserService(ILogger<UserService> logger, UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, ITokenService tokenService)
     : IUserService
 {
     private readonly ILogger<UserService> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
     private readonly IMapper _mapper = mapper;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
 
 
@@ -78,22 +79,26 @@ public class UserService(ILogger<UserService> logger, UserManager<User> userMana
                 return false;
             }
 
-            User entity = new User
+            var entity = new User
             {
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,
-                PasswordHash = hashService.Hash(password),
+                UserName = email,
                 CreatedAt = DateTime.UtcNow,
-                IsActive = true
+                IsActive = true,
             };
 
-           bool isUserAdded= await unitOfWork.Users.Add(entity);
-            await unitOfWork.CompleteAsync();
+            var result = await _userManager.CreateAsync(entity, password);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning("User creation failed: {Errors}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                return false;
+            }
 
             _logger.LogInformation("User created successfully with ID: {UserId}", entity.Id);
-
-            return isUserAdded;
+            return true;
         }
         catch (Exception ex)
         {

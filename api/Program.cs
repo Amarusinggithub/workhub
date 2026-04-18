@@ -1,5 +1,6 @@
 using System.Text;
 using System.Threading.RateLimiting;
+using Prometheus;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -89,17 +90,22 @@ finally
 
 void ConfigureServices(WebApplicationBuilder builder)
 {
-    // Health checks
-   /* builder.Services.AddHealthChecks()
-        .AddDbContext<ApplicationDbContext>()
-        .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
+    builder.WebHost.UseSentry(o =>
+    {
+        o.Dsn = builder.Configuration["Sentry:Dsn"];
+        o.TracesSampleRate = builder.Environment.IsDevelopment() ? 1.0 : 0.1;
+        o.Environment = builder.Environment.EnvironmentName;
+        o.SendDefaultPii = false;
+    });
+
+    builder.Services.AddHealthChecks();
 
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         options.KnownNetworks.Clear();
         options.KnownProxies.Clear();
-    });*/
+    });
 
     // Security headers
     builder.Services.AddHsts(options =>
@@ -498,7 +504,6 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReportService, ReportService>();
 
     builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IPasswordHashService, PasswordHashService>();
     builder.Services.AddScoped<ITokenService, TokenService>();
 
     builder.Services.AddScoped<IBoardService, BoardService>();
@@ -621,6 +626,8 @@ void ConfigurePipeline(WebApplication app)
 
     app.UseRouting();
 
+    app.UseHttpMetrics();
+
     app.UseRateLimiter();
 
     app.UseAuthentication();
@@ -630,6 +637,7 @@ void ConfigurePipeline(WebApplication app)
 
     app.MapIdentityApi<User>();
     app.MapControllers();
+    app.MapMetrics("/metrics");
 
     app.MapGet("/", () => new
     {

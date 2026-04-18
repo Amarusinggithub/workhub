@@ -1,0 +1,387 @@
+services:
+
+  # ── Reverse proxy ─────────────────────────────────────────────────────────────
+  traefik:
+    image: traefik:latest
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"       # All HTTP traffic routed by Traefik
+      - "8081:8080"   # Traefik dashboard → http://localhost:8081
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Application ───────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"   # Direct access (bypasses Traefik, useful for load testing)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.localhost`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # DB goes through pgBouncer — Pooling=false lets pgBouncer own the connections
+      - ConnectionStrings__Database=Host=pgbouncer;Port=6432;Database=workhub;Username=postgres;Password=postgres;Pooling=false
+      - ConnectionStrings__ClickHouse=Host=clickhouse;Port=8123;Database=workhub_analytics;Username=default;Password=
+      - ConnectionStrings__Redis=redis:6379
+      - AppSettings__Secret=${JWT_SECRET:-dev-secret-change-in-production-min32chars!!}
+      - AppSettings__Issuer=workhub-api
+      - AppSettings__Audience=workhub-client
+      # Object storage — RustFS (S3-compatible)
+      - AWS__AccessKey=workhub-dev
+      - AWS__SecretKey=workhub-dev-secret
+      - AWS__Region=us-east-1
+      - AWS__ServiceUrl=http://rustfs:9000
+      - AWS__BucketName=workhub
+      # Email — Mailpit captures everything in dev
+      - Email__Host=mailpit
+      - Email__Port=1025
+      - Email__From=noreply@workhub.local
+      # Message queue — RabbitMQ
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=workhub
+      - RabbitMQ__Password=workhub
+      - RabbitMQ__VirtualHost=/
+      # Search — Meilisearch
+      - Meilisearch__Url=http://meilisearch:7700
+      - Meilisearch__MasterKey=workhub-dev-master-key
+      # Distributed tracing — Jaeger via OTLP
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=workhub-api
+      # Feature flags — Unleash
+      - Unleash__ServerUrl=http://unleash:4242/api
+      - Unleash__ClientApiToken=default:development.unleash-insecure-api-token
+      # Error tracking — GlitchTip (Sentry-compatible)
+      # Fill in after first run: visit http://localhost:8000 → create project → copy DSN
+      - Sentry__Dsn=${SENTRY_DSN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      rustfs:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Data stores ───────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: workhub
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"   # Direct Postgres access for DB tools (DBeaver, Rider, etc.)
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Creates 'unleash' and 'glitchtip' databases on first start
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "workhub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # pgBouncer pools connections between the API and Postgres.
+  # Transaction mode means each query can reuse any connection — handles burst load well.
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_NAME: workhub
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+      AUTH_TYPE: plain
+    ports:
+      - "6432:6432"   # Connect here from outside to see pgBouncer in action
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9009:9000"   # Native client port (host 9009 to avoid RustFS conflict on 9000)
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./infra/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Object storage ────────────────────────────────────────────────────────────
+  rustfs:
+    image: rustfs/rustfs:latest
+    ports:
+      - "9000:9000"   # S3 API endpoint
+      - "9001:9001"   # Console UI → http://localhost:9001
+    environment:
+      RUSTFS_ACCESS_KEY_ID: workhub-dev
+      RUSTFS_SECRET_ACCESS_KEY: workhub-dev-secret
+    volumes:
+      - rustfs-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Message queue ─────────────────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI → http://localhost:15672 (workhub/workhub)
+      - "15692:15692" # Prometheus metrics
+    environment:
+      RABBITMQ_DEFAULT_USER: workhub
+      RABBITMQ_DEFAULT_PASS: workhub
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Email ─────────────────────────────────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI → http://localhost:8025
+    environment:
+      - MP_SMTP_AUTH_ACCEPT_ANY=true
+      - MP_SMTP_AUTH_ALLOW_INSECURE=true
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Search ────────────────────────────────────────────────────────────────────
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    ports:
+      - "7700:7700"   # API + dashboard → http://localhost:7700
+    environment:
+      - MEILI_MASTER_KEY=workhub-dev-master-key
+      - MEILI_ENV=development
+    volumes:
+      - meilisearch-data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Feature flags ─────────────────────────────────────────────────────────────
+  unleash:
+    image: unleashorg/unleash-server:latest
+    ports:
+      - "4242:4242"   # UI → http://localhost:4242 (admin/unleash4all)
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/unleash"
+      DATABASE_SSL: "false"
+      INIT_FRONTEND_API_TOKENS: "default:development.unleash-insecure-frontend-api-token"
+      INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Error tracking (Sentry-compatible) ────────────────────────────────────────
+  # First run: visit http://localhost:8000 → register → create org → create project
+  # → copy the DSN → paste it into SENTRY_DSN env var for the api service above.
+  glitchtip:
+    image: glitchtip/glitchtip:latest
+    ports:
+      - "8000:8000"   # UI → http://localhost:8000
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/glitchtip"
+      SECRET_KEY: "glitchtip-dev-secret-change-in-production"
+      PORT: 8000
+      EMAIL_URL: "smtp://mailpit:1025"
+      GLITCHTIP_DOMAIN: "http://localhost:8000"
+      DEFAULT_FROM_EMAIL: "errors@workhub.local"
+      REDIS_URL: "redis://redis:6379/2"
+      CELERY_WORKER_AUTOSCALE: "1,3"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  glitchtip-worker:
+    image: glitchtip/glitchtip:latest
+    command: ./bin/run-celery-with-beat.sh
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/glitchtip"
+      SECRET_KEY: "glitchtip-dev-secret-change-in-production"
+      EMAIL_URL: "smtp://mailpit:1025"
+      REDIS_URL: "redis://redis:6379/2"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  # ── Observability ─────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"   # UI → http://localhost:9090
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d"
+      - "--web.enable-lifecycle"
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki.yml
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./observability/promtail/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      loki:
+        condition: service_healthy
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # UI → http://localhost:16686
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"   # UI → http://localhost:3000 (admin/admin)
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - workhub-net
+    restart: unless-stopped
+
+networks:
+  workhub-net:
+    driver: bridge
+
+volumes:
+  db-data:
+  redis-data:
+  clickhouse-data:
+  rustfs-data:
+  rabbitmq-data:
+  meilisearch-data:
+  prometheus-data:
+  loki-data:
+  grafana-data:

@@ -10,24 +10,37 @@ namespace api.Services.Infanstructure;
 
 public class StorageService : IStorageService
 {
-    private readonly string _accessKey;
-    private readonly string _secretKey;
-    private readonly string _region;
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
 
     public StorageService(IConfiguration config)
     {
-        // Use AWS SDK's default credential chain to pick up credentials from ~/.aws/credentials
-        _s3Client = new AmazonS3Client(); // Automatically picks credentials from ~/.aws/credentials
-        _bucketName = config["AWS:BucketName"]; // The retrieve bucket name appsettings.json
+        var accessKey = config["AWS:AccessKey"]
+            ?? throw new InvalidOperationException("AWS:AccessKey is not configured");
+        var secretKey = config["AWS:SecretKey"]
+            ?? throw new InvalidOperationException("AWS:SecretKey is not configured");
+        var region = config["AWS:Region"] ?? "us-east-1";
+        var serviceUrl = config["AWS:ServiceUrl"];
+        _bucketName = config["AWS:BucketName"] ?? "workhub";
+
+        var credentials = new BasicAWSCredentials(accessKey, secretKey);
+        var s3Config = new AmazonS3Config
+        {
+            RegionEndpoint = RegionEndpoint.GetBySystemName(region),
+            ForcePathStyle = true,
+        };
+
+        if (!string.IsNullOrEmpty(serviceUrl))
+        {
+            s3Config.ServiceURL = serviceUrl;
+        }
+
+        _s3Client = new AmazonS3Client(credentials, s3Config);
     }
 
     public AmazonS3Client CreateS3Client()
     {
-        var credentials = new BasicAWSCredentials(_accessKey, _secretKey);
-        var region = RegionEndpoint.GetBySystemName(_region);
-        return new AmazonS3Client(credentials, region);
+        return (AmazonS3Client)_s3Client;
     }
 
     public async Task<string> UploadFileAsync(IFormFile file)
@@ -48,7 +61,7 @@ public class StorageService : IStorageService
 
         if (response.HttpStatusCode == HttpStatusCode.OK)
         {
-            return key; // Return the key to access the file.
+            return key;
         }
 
         throw new Exception("File upload failed.");
@@ -67,14 +80,7 @@ public class StorageService : IStorageService
             VersioningConfig = versioningConfig
         };
 
-        try
-        {
-            await _s3Client.PutBucketVersioningAsync(request);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"An error occurred while setting versioning: {ex.Message}");
-        }
+        await _s3Client.PutBucketVersioningAsync(request);
     }
 
     public async Task<Stream> GetFileStreamAsync(string key, string versionId = null)
@@ -85,15 +91,9 @@ public class StorageService : IStorageService
             Key = key,
             VersionId = versionId
         };
-        try
-        {
-            var response = await _s3Client.GetObjectAsync(getRequest);
-            return response.ResponseStream; // Return the stream directly.
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"An error occurred while retrieving the file: {ex.Message}");
-        }
+
+        var response = await _s3Client.GetObjectAsync(getRequest);
+        return response.ResponseStream;
     }
 
     public async Task<string> UpdateFileAsync(string key, IFormFile file)
@@ -103,39 +103,32 @@ public class StorageService : IStorageService
         var putRequest = new PutObjectRequest
         {
             BucketName = _bucketName,
-            Key = key,  // Use the existing key to overwrite the file.
+            Key = key,
             InputStream = stream,
             ContentType = file.ContentType
         };
 
         var response = await _s3Client.PutObjectAsync(putRequest);
-        // With versioning enabled, this response contains a VersionId
 
         if (response.HttpStatusCode == HttpStatusCode.OK)
         {
-            return response.VersionId;  // Return the version ID for tracking the updated file version.
+            return response.VersionId;
         }
 
         throw new Exception("File update failed.");
     }
+
     public async Task<bool> DeleteFileAsync(string key, string versionId = null)
     {
         var deleteRequest = new DeleteObjectRequest
         {
             BucketName = _bucketName,
             Key = key,
-            VersionId = versionId  // If versionId is provided, it deletes that specific version.
+            VersionId = versionId
         };
 
-        try
-        {
-            var response = await _s3Client.DeleteObjectAsync(deleteRequest);
-            return response.HttpStatusCode == HttpStatusCode.NoContent;
-        }
-        catch (AmazonS3Exception ex)
-        {
-            throw new Exception($"Error encountered while deleting file: {ex.Message}");
-        }
+        var response = await _s3Client.DeleteObjectAsync(deleteRequest);
+        return response.HttpStatusCode == HttpStatusCode.NoContent;
     }
 
     public string GeneratePresignedUrl(string key, int expirationInMinutes)
@@ -145,110 +138,83 @@ public class StorageService : IStorageService
             BucketName = _bucketName,
             Key = key,
             Expires = DateTime.UtcNow.AddMinutes(expirationInMinutes),
-            Verb = HttpVerb.GET // This specifies read-only access. Use HttpVerb.PUT for generating upload URLs
+            Verb = HttpVerb.GET
         };
+
+        return _s3Client.GetPreSignedURL(request);
+    }
+
+    public async Task<string> ParallelMultipartUploadAsync(IFormFile file)
+    {
+        var uploadId = await InitiateMultipartUploadAsync(file.FileName);
+        var partETags = new List<PartETag>();
 
         try
         {
-            var url = _s3Client.GetPreSignedURL(request);
-            return url; // Returns the presigned URL
-        }
-        catch (AmazonS3Exception ex)
-        {
-            throw new Exception($"Error generating presigned URL: {ex.Message}");
-        }
-    }
+            using var stream = file.OpenReadStream();
+            const int partSize = 5 * 1024 * 1024;
+            var buffer = new byte[partSize];
+            int partNumber = 1;
+            var uploadTasks = new List<Task<UploadPartResponse>>();
 
-
-    public async Task<string> ParallelMultipartUploadAsync(IFormFile file)
-{
-    var uploadId = await InitiateMultipartUploadAsync(file.FileName);
-    var partETags = new List<PartETag>();
-
-    try
-    {
-        using var stream = file.OpenReadStream();
-        const int partSize = 5 * 1024 * 1024; // 5 MB
-        var buffer = new byte[partSize];
-        int bytesRead;
-        int partNumber = 1;
-
-        var uploadTasks = new List<Task<UploadPartResponse>>();
-
-        while ((bytesRead = await stream.ReadAsync(buffer, 0, partSize)) > 0)
-        {
-            var memoryStream = new MemoryStream(buffer, 0, bytesRead);
-
-            var uploadPartRequest = new UploadPartRequest
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, partSize)) > 0)
             {
-                BucketName = _bucketName,
-                Key = file.FileName,
-                UploadId = uploadId,
-                PartNumber = partNumber,
-                InputStream = memoryStream,
-                PartSize = bytesRead
-            };
+                var memoryStream = new MemoryStream(buffer, 0, bytesRead);
+                uploadTasks.Add(_s3Client.UploadPartAsync(new UploadPartRequest
+                {
+                    BucketName = _bucketName,
+                    Key = file.FileName,
+                    UploadId = uploadId,
+                    PartNumber = partNumber++,
+                    InputStream = memoryStream,
+                    PartSize = bytesRead
+                }));
+            }
 
-            // Create a task to upload the part
-            var uploadTask = _s3Client.UploadPartAsync(uploadPartRequest);
-            uploadTasks.Add(uploadTask);
+            var uploadResponses = await Task.WhenAll(uploadTasks);
+            partETags = uploadResponses
+                .Select((r, i) => new PartETag(i + 1, r.ETag))
+                .ToList();
 
-            partNumber++;
+            return await CompleteMultipartUploadAsync(file.FileName, uploadId, partETags);
         }
-
-        // Wait for all the upload tasks to complete
-        var uploadResponses = await Task.WhenAll(uploadTasks);
-
-        // Collect the ETags for completing the multipart upload
-        partETags = uploadResponses
-            .Select((response, index) => new PartETag(index + 1, response.ETag))
-            .ToList();
-
-        return await CompleteMultipartUploadAsync(file.FileName, uploadId, partETags);
+        catch (Exception ex)
+        {
+            await AbortMultipartUploadAsync(file.FileName, uploadId);
+            throw new Exception($"Parallel multipart upload failed: {ex.Message}");
+        }
     }
-    catch (Exception ex)
+
+    private async Task<string> InitiateMultipartUploadAsync(string key)
     {
-        await AbortMultipartUploadAsync(file.FileName, uploadId);
-        throw new Exception($"Parallel multipart upload failed: {ex.Message}");
+        var response = await _s3Client.InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
+        {
+            BucketName = _bucketName,
+            Key = key
+        });
+        return response.UploadId;
+    }
+
+    private async Task<string> CompleteMultipartUploadAsync(string key, string uploadId, List<PartETag> partETags)
+    {
+        var response = await _s3Client.CompleteMultipartUploadAsync(new CompleteMultipartUploadRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            UploadId = uploadId,
+            PartETags = partETags
+        });
+        return response.Location;
+    }
+
+    private async Task AbortMultipartUploadAsync(string key, string uploadId)
+    {
+        await _s3Client.AbortMultipartUploadAsync(new AbortMultipartUploadRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            UploadId = uploadId
+        });
     }
 }
-private async Task<string> InitiateMultipartUploadAsync(string key)
-{
-    var initiateRequest = new InitiateMultipartUploadRequest
-    {
-        BucketName = _bucketName,
-        Key = key
-    };
-
-    var initiateResponse = await _s3Client.InitiateMultipartUploadAsync(initiateRequest);
-    return initiateResponse.UploadId;
-}
-
-private async Task<string> CompleteMultipartUploadAsync(string key, string uploadId, List<PartETag> partETags)
-{
-    var completeRequest = new CompleteMultipartUploadRequest
-    {
-        BucketName = _bucketName,
-        Key = key,
-        UploadId = uploadId,
-        PartETags = partETags
-    };
-
-    var completeResponse = await _s3Client.CompleteMultipartUploadAsync(completeRequest);
-    return completeResponse.Location; // Returns the URL of the uploaded object
-}
-
-private async Task AbortMultipartUploadAsync(string key, string uploadId)
-{
-    var abortRequest = new AbortMultipartUploadRequest
-    {
-        BucketName = _bucketName,
-        Key = key,
-        UploadId = uploadId
-    };
-
-    await _s3Client.AbortMultipartUploadAsync(abortRequest);
-}
-
-}
-
